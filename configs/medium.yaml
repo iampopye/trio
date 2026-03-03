@@ -1,0 +1,37 @@
+# Trio Medium Config — RunPod A100 (40GB+ VRAM)
+# ~1B parameters — Grouped Query Attention
+
+model_name: trio-medium
+version: 0.1.0
+
+vocab_size: 50257
+context_length: 4096
+d_model: 2048
+num_heads: 16
+num_layers: 24
+ff_dim: 8192
+dropout: 0.05
+bias: false
+use_rope: true
+rope_base: 10000
+use_swiglu: true
+num_kv_heads: 8    # GQA: 8 KV heads → 16 Q heads
+
+batch_size: 4
+gradient_accumulation_steps: 16
+learning_rate: 0.00003
+weight_decay: 0.1
+max_iters: 200000
+warmup_iters: 5000
+eval_interval: 1000
+eval_iters: 200
+save_interval: 5000
+grad_clip: 1.0
+
+data_dir: data/corpus
+checkpoint_dir: checkpoints
+log_dir: logs
+
+device: cuda
+dtype: bfloat16
+constitution_path: training/constitution.md

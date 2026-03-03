@@ -1,0 +1,6 @@
+# This file keeps the data/corpus directory tracked by git.
+# Actual training data files (*.txt, *.jsonl, *.bin) are in .gitignore
+# because they can be very large (GBs to TBs).
+#
+# To get started, the dataset.py will auto-generate a small sample corpus
+# when you first run: python training/pretrain.py --preset nano

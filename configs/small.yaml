@@ -1,0 +1,37 @@
+# Trio Nano Config — Kaggle / Google Colab (T4 GPU, 16GB VRAM)
+# ~125M parameters
+
+model_name: trio-small
+version: 0.1.0
+
+vocab_size: 50257
+context_length: 1024
+d_model: 768
+num_heads: 12
+num_layers: 12
+ff_dim: 3072
+dropout: 0.1
+bias: false
+use_rope: true
+rope_base: 10000
+use_swiglu: true
+num_kv_heads: null
+
+batch_size: 8
+gradient_accumulation_steps: 8
+learning_rate: 0.0001
+weight_decay: 0.1
+max_iters: 50000
+warmup_iters: 2000
+eval_interval: 500
+eval_iters: 100
+save_interval: 2000
+grad_clip: 1.0
+
+data_dir: data/corpus
+checkpoint_dir: checkpoints
+log_dir: logs
+
+device: cuda
+dtype: float16
+constitution_path: training/constitution.md

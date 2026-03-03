@@ -1,0 +1,57 @@
+# Patterns to ignore in git
+# ── Python ──────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# ── Virtual environments ──────────────────────
+venv/
+env/
+.venv/
+trio_env/
+
+# ── Checkpoints & model weights ──────────────
+# (large binary files - push to HuggingFace Hub or cloud storage instead)
+checkpoints/*.pt
+checkpoints/sft/*.pt
+*.bin
+*.safetensors
+
+# ── Training data (large files) ──────────────
+data/corpus/*.txt
+data/corpus/*.jsonl
+data/corpus/*.bin
+data/corpus/*.npy
+
+# EXCEPT sample data used for first-run testing
+!data/corpus/.gitkeep
+
+# ── Logs ─────────────────────────────────────
+logs/
+*.jsonl
+*.log
+
+# ── Tokenizer vocab (regenerate from training) ─
+data/vocab.json
+
+# ── OS files ─────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Jupyter ───────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb

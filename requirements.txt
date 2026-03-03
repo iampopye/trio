@@ -1,0 +1,31 @@
+# Trio AI — Core Dependencies
+# Install with: pip install -r requirements.txt
+
+# ── Core ────────────────────────────────────
+torch>=2.0.0            # PyTorch (CPU version fine for Mac Mini)
+numpy>=1.24.0
+pyyaml>=6.0
+
+# ── Tokenizer ───────────────────────────────
+tiktoken>=0.5.0         # BPE tokenizer (for small/medium configs)
+regex>=2023.0.0         # required by tiktoken
+
+# ── Data Processing ──────────────────────────
+datasets>=2.14.0        # HuggingFace datasets (for downloading training data)
+tqdm>=4.65.0
+
+# ── Inference Server ─────────────────────────
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.0.0
+
+# ── Experiment Tracking (optional) ───────────
+# wandb>=0.16.0         # Weights & Biases (uncomment when using cloud GPU)
+
+# ── Fine-tuning tools (optional) ─────────────
+# transformers>=4.35.0  # HuggingFace transformers
+# trl>=0.7.0            # RLHF / SFT utilities
+# accelerate>=0.24.0    # Multi-GPU training
+
+# ── Development ──────────────────────────────
+matplotlib>=3.7.0       # loss curve plotting
