@@ -28,8 +28,8 @@ def _friendly_path(p: Path) -> str:
 async def run_onboard():
     """Interactive setup wizard for first-time users."""
     console.print(Panel.fit(
-        "[bold cyan]Welcome to trio![/bold cyan]\n"
-        "The open agent framework for every platform.\n\n"
+        "[bold cyan]Welcome to trio.ai![/bold cyan]\n"
+        "Train your own AI. Deploy it everywhere.\n\n"
         "Let's get you set up.",
         border_style="cyan",
     ))
@@ -47,30 +47,62 @@ async def run_onboard():
 
     # Provider setup
     console.print("\n[bold]Step 1: LLM Provider[/bold]")
-    console.print("trio works with Ollama (free, local) or any cloud provider (BYOK).\n")
-
-    provider = Prompt.ask(
-        "Primary provider",
-        choices=["ollama", "openai", "anthropic", "gemini", "openrouter", "custom"],
-        default="ollama",
+    console.print(
+        "Choose how trio powers its AI:\n"
+        "  [cyan]default[/cyan]  — Built-in Trio model (runs on your system, no API keys needed)\n"
+        "  [cyan]custom[/cyan]   — Use an external model (Ollama, OpenAI, Claude, Gemini, etc.)\n"
     )
 
-    if provider == "ollama":
-        base_url = Prompt.ask("Ollama URL", default="http://localhost:11434")
-        model = Prompt.ask("Default model", default="llama3.1:8b")
-        config["providers"]["ollama"]["base_url"] = base_url
-        config["providers"]["ollama"]["default_model"] = model
-        config["agents"]["defaults"]["provider"] = "ollama"
-        config["agents"]["defaults"]["model"] = model
+    mode = Prompt.ask(
+        "Setup mode",
+        choices=["default", "custom"],
+        default="default",
+    )
+
+    if mode == "default":
+        # Built-in Trio model — zero config needed
+        console.print("\n[green]Using built-in Trio model (trio-nano).[/green]")
+        console.print("[dim]The model will auto-initialize on first use using your system's CPU.[/dim]")
+        console.print("[dim]No downloads, no API keys, no external dependencies.[/dim]")
+
+        preset = Prompt.ask(
+            "Model size",
+            choices=["nano", "small", "medium"],
+            default="nano",
+        )
+        model_name = f"trio-{preset}"
+
+        config["providers"]["trio"] = {"default_model": model_name}
+        config["agents"]["defaults"]["provider"] = "trio"
+        config["agents"]["defaults"]["model"] = model_name
+
     else:
-        api_key = Prompt.ask(f"{provider} API key")
-        model = Prompt.ask("Default model")
-        config["providers"][provider] = {
-            "apiKey": api_key,
-            "default_model": model,
-        }
-        config["agents"]["defaults"]["provider"] = provider
-        config["agents"]["defaults"]["model"] = model
+        # Custom provider
+        console.print("\n[bold]Select your provider:[/bold]")
+        provider = Prompt.ask(
+            "Provider",
+            choices=["ollama", "openai", "anthropic", "gemini", "groq", "openrouter", "deepseek"],
+            default="ollama",
+        )
+
+        if provider == "ollama":
+            base_url = Prompt.ask("Ollama URL", default="http://localhost:11434")
+            model = Prompt.ask("Default model", default="llama3.1:8b")
+            config["providers"]["ollama"] = {
+                "base_url": base_url,
+                "default_model": model,
+            }
+            config["agents"]["defaults"]["provider"] = "ollama"
+            config["agents"]["defaults"]["model"] = model
+        else:
+            api_key = Prompt.ask(f"{provider} API key")
+            model = Prompt.ask("Default model")
+            config["providers"][provider] = {
+                "apiKey": api_key,
+                "default_model": model,
+            }
+            config["agents"]["defaults"]["provider"] = provider
+            config["agents"]["defaults"]["model"] = model
 
     # Channel setup
     console.print("\n[bold]Step 2: Chat Channels (optional)[/bold]")
@@ -131,8 +163,13 @@ async def run_onboard():
     console.print(f"\n  Config saved to {_friendly_path(config_path)}")
 
     # Done
+    provider_info = config["agents"]["defaults"]["provider"]
+    model_info = config["agents"]["defaults"]["model"]
+
     console.print(Panel.fit(
         "[bold green]Setup complete![/bold green]\n\n"
+        f"Provider: {provider_info}\n"
+        f"Model: {model_info}\n"
         f"Config: {_friendly_path(config_path)}\n"
         f"Workspace: {_friendly_path(get_workspace_dir())}\n\n"
         "Quick start:\n"

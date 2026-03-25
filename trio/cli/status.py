@@ -35,13 +35,22 @@ async def run_status():
 
     # Provider
     defaults = config.get("agents", {}).get("defaults", {})
-    provider = defaults.get("provider", "ollama")
+    provider = defaults.get("provider", "trio")
     model = defaults.get("model", "?")
     console.print(f"\nProvider: [cyan]{provider}[/cyan]")
     console.print(f"Default model: [cyan]{model}[/cyan]")
 
-    # Check Ollama connection
-    if provider == "ollama":
+    # Check provider status
+    if provider == "trio":
+        from pathlib import Path as _P
+        model_dir = _P.home() / ".trio" / "models"
+        presets = ["trio-nano.pt", "trio-small.pt", "trio-medium.pt"]
+        found = [p.stem for p in model_dir.glob("*.pt")] if model_dir.exists() else []
+        if found:
+            console.print(f"Trio model: [green]ready[/green] ({', '.join(found)})")
+        else:
+            console.print("Trio model: [yellow]will auto-initialize on first use[/yellow]")
+    elif provider == "ollama":
         base_url = config.get("providers", {}).get("ollama", {}).get("base_url", "http://localhost:11434")
         try:
             import aiohttp

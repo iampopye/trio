@@ -77,7 +77,7 @@ def _list_providers():
     config = load_config()
     providers = config.get("providers", {})
     defaults = config.get("agents", {}).get("defaults", {})
-    default_provider = defaults.get("provider", "ollama")
+    default_provider = defaults.get("provider", "trio")
 
     table = Table(title="Configured Providers")
     table.add_column("Name", style="cyan")
@@ -88,7 +88,7 @@ def _list_providers():
     for name, pconfig in providers.items():
         is_default = "***" if name == default_provider else ""
         model = pconfig.get("default_model", "")
-        ptype = "ollama" if name == "ollama" else "openai-compat"
+        ptype = "built-in" if name == "trio" else ("ollama" if name == "ollama" else "openai-compat")
         table.add_row(name, ptype, model, is_default)
 
     console.print(table)

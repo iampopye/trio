@@ -35,9 +35,9 @@ class TrioEngine:
             self.model.load_state_dict(ckpt["model"])
             step = ckpt.get("step", "?")
             val_loss = ckpt.get("val_loss", "?")
-            print(f"[Trio Engine] ✅ Loaded! Step={step}, val_loss={val_loss}")
+            print(f"[Trio Engine] Loaded! Step={step}, val_loss={val_loss}")
         else:
-            print(f"[Trio Engine] ⚠ Checkpoint not found at {checkpoint_path}")
+            print(f"[Trio Engine] Checkpoint not found at {checkpoint_path}")
             print("[Trio Engine] Using random weights (for testing only)")
 
         self.model.eval()

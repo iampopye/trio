@@ -30,7 +30,7 @@ async def run_gateway():
 
     # Initialize provider
     register_all_providers()
-    provider_name = defaults.get("provider", "ollama")
+    provider_name = defaults.get("provider", "trio")
     provider_config = config.get("providers", {}).get(provider_name, {})
     provider_config["provider_name"] = provider_name
 

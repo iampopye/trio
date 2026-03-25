@@ -1,15 +1,66 @@
-"""Trio Local Provider — use the built-in Trio LLM for agent inference."""
+"""Trio Local Provider — self-contained LLM that runs on the user's system.
 
+No external dependencies. No API keys. No Ollama.
+On first use, auto-initializes the Trio nano model using system CPU/GPU.
+"""
+
+import os
 from typing import Any, AsyncIterator
+from pathlib import Path
 
 from trio.providers.base import BaseProvider, LLMResponse, StreamChunkData
 
 
-class TrioLocalProvider(BaseProvider):
-    """Use a locally trained Trio model as an LLM provider.
+def _get_trio_model_dir() -> Path:
+    """Get the directory for trio model checkpoints."""
+    model_dir = Path.home() / ".trio" / "models"
+    model_dir.mkdir(parents=True, exist_ok=True)
+    return model_dir
 
-    Supports trio-nano, trio-small, and trio-medium presets.
-    Requires a trained checkpoint in the default checkpoint directory.
+
+def _auto_setup_model(preset: str = "nano") -> str:
+    """Auto-setup the Trio model on first use. Returns checkpoint path."""
+    import torch
+    from trio_model.config import get_config
+    from trio_model.model.architecture import TrioModel
+    from trio_model.data.tokenizer import get_tokenizer
+
+    model_dir = _get_trio_model_dir()
+    ckpt_path = model_dir / f"trio-{preset}.pt"
+
+    if ckpt_path.exists():
+        return str(ckpt_path)
+
+    print(f"\n[trio.ai] First-time setup: Initializing trio-{preset} model...")
+    print(f"[trio.ai] This only happens once. Model will be saved to {ckpt_path}")
+
+    cfg = get_config(preset)
+    tokenizer = get_tokenizer(preset)
+    cfg.vocab_size = tokenizer.vocab_size
+
+    model = TrioModel(cfg)
+    params = model.num_parameters()
+    print(f"[trio.ai] Model: trio-{preset} | {params / 1e6:.1f}M parameters")
+
+    # Save the initialized model as checkpoint
+    ckpt = {
+        "step": 0,
+        "val_loss": float("inf"),
+        "model": model.state_dict(),
+        "config": cfg.__dict__,
+    }
+    torch.save(ckpt, str(ckpt_path))
+    print(f"[trio.ai] Model ready at {ckpt_path}")
+    print(f"[trio.ai] Tip: Train it with `python -m trio_model.training.pretrain --preset {preset}` for better responses\n")
+
+    return str(ckpt_path)
+
+
+class TrioLocalProvider(BaseProvider):
+    """Built-in Trio LLM that runs entirely on the user's machine.
+
+    Zero external dependencies. Auto-initializes on first use.
+    Supports trio-nano (CPU), trio-small (GPU), trio-medium (A100).
     """
 
     def __init__(self, config: dict[str, Any]):
@@ -18,10 +69,9 @@ class TrioLocalProvider(BaseProvider):
         self.default_model = config.get("default_model", "trio-nano")
 
     def _get_engine(self, model: str | None = None):
-        """Lazy-load the Trio model engine."""
+        """Lazy-load the Trio model engine. Auto-setup if needed."""
         if self._engine is None:
             try:
-                import os
                 import torch
                 from trio_model.config import get_config
                 from trio_model.inference.server import TrioEngine
@@ -30,24 +80,13 @@ class TrioLocalProvider(BaseProvider):
                 if preset not in ("nano", "small", "medium"):
                     preset = "nano"
 
-                cfg = get_config(preset)
-                # Find best checkpoint
-                ckpt_path = None
-                for candidate in [
-                    os.path.join(cfg.checkpoint_dir, "sft", "trio_latest.pt"),
-                    os.path.join(cfg.checkpoint_dir, "trio_latest.pt"),
-                ]:
-                    if os.path.exists(candidate):
-                        ckpt_path = candidate
-                        break
-                if not ckpt_path:
-                    ckpt_path = os.path.join(cfg.checkpoint_dir, "trio_latest.pt")
-
+                # Auto-setup: download/initialize model if not present
+                ckpt_path = _auto_setup_model(preset)
                 self._engine = TrioEngine(ckpt_path, preset=preset)
             except ImportError as e:
                 raise RuntimeError(
                     f"Trio model dependencies not installed: {e}\n"
-                    "Install with: pip install torch tiktoken"
+                    "Install with: pip install trio-ai[model]"
                 )
         return self._engine
 
@@ -94,9 +133,8 @@ class TrioLocalProvider(BaseProvider):
         temperature: float = 0.7,
         max_tokens: int = 1024,
     ) -> AsyncIterator[StreamChunkData]:
-        """Stream response (Trio model generates all at once, so we yield one chunk)."""
+        """Stream response (yields full response as one chunk)."""
         response = await self.generate(messages, model, tools, temperature, max_tokens)
-        # Simulate streaming by yielding the full response as one chunk
         yield StreamChunkData(text=response.content, is_final=True)
 
     async def list_models(self) -> list[str]:

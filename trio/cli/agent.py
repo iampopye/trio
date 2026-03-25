@@ -35,7 +35,7 @@ async def run_agent(message: str | None = None, no_markdown: bool = False, show_
 
     # Initialize providers
     register_all_providers()
-    provider_name = defaults.get("provider", "ollama")
+    provider_name = defaults.get("provider", "trio")
     provider_config = config.get("providers", {}).get(provider_name, {})
     provider_config["provider_name"] = provider_name
 

@@ -7,20 +7,14 @@ from typing import Any
 
 DEFAULT_CONFIG = {
     "providers": {
-        "ollama": {
-            "base_url": "http://localhost:11434",
-            "default_model": "llama3.1:8b",
-            "models": {
-                "coding": "qwen3-coder:480b-cloud",
-                "reasoning": "deepseek-r1:8b",
-                "vision": "llava",
-            },
+        "trio": {
+            "default_model": "trio-nano",
         }
     },
     "agents": {
         "defaults": {
-            "provider": "ollama",
-            "model": "llama3.1:8b",
+            "provider": "trio",
+            "model": "trio-nano",
             "max_iterations": 20,
             "memory_window": 20,
         }
@@ -109,15 +103,15 @@ def _deep_merge(base: dict, override: dict) -> dict:
 def get_provider_config(config: dict, provider_name: str | None = None) -> dict:
     """Get config for a specific provider."""
     if provider_name is None:
-        provider_name = config.get("agents", {}).get("defaults", {}).get("provider", "ollama")
+        provider_name = config.get("agents", {}).get("defaults", {}).get("provider", "trio")
     return config.get("providers", {}).get(provider_name, {})
 
 
 def get_agent_defaults(config: dict) -> dict:
     """Get agent default settings."""
     return config.get("agents", {}).get("defaults", {
-        "provider": "ollama",
-        "model": "llama3.1:8b",
+        "provider": "trio",
+        "model": "trio-nano",
         "max_iterations": 20,
         "memory_window": 20,
     })
