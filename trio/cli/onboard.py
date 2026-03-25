@@ -1,4 +1,4 @@
-"""trioai onboard — interactive setup wizard."""
+"""trio onboard — interactive setup wizard."""
 
 import json
 from pathlib import Path
@@ -173,9 +173,9 @@ async def run_onboard():
         f"Config: {_friendly_path(config_path)}\n"
         f"Workspace: {_friendly_path(get_workspace_dir())}\n\n"
         "Quick start:\n"
-        "  [cyan]trioai agent[/cyan]      — Chat in terminal\n"
-        "  [cyan]trioai gateway[/cyan]    — Start all channels\n"
-        "  [cyan]trioai status[/cyan]     — Check system status\n"
-        "  [cyan]trioai provider add[/cyan] — Add another provider",
+        "  [cyan]trio agent[/cyan]      — Chat in terminal\n"
+        "  [cyan]trio gateway[/cyan]    — Start all channels\n"
+        "  [cyan]trio status[/cyan]     — Check system status\n"
+        "  [cyan]trio provider add[/cyan] — Add another provider",
         border_style="green",
     ))

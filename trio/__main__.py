@@ -7,7 +7,7 @@ import sys
 
 
 def _ensure_path():
-    """On Windows, ensure pip Scripts folder is on PATH so 'trioai' works."""
+    """On Windows, ensure pip Scripts folder is on PATH so 'trio' works."""
     if sys.platform != "win32":
         return
     scripts_dir = os.path.join(os.path.dirname(sys.executable), "Scripts")
@@ -28,7 +28,7 @@ def _ensure_path():
                 if scripts_dir.lower() not in current.lower():
                     winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, current + ";" + scripts_dir)
                     print(f"[trio.ai] Added {scripts_dir} to your PATH.")
-                    print("[trio.ai] Restart your terminal for 'trioai' command to work.\n")
+                    print("[trio.ai] Restart your terminal for 'trio' command to work.\n")
         except Exception:
             pass
 
@@ -37,31 +37,31 @@ def main():
     _ensure_path()
 
     parser = argparse.ArgumentParser(
-        prog="trioai",
+        prog="trio",
         description="trio.ai - train your own AI, deploy it everywhere",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # trioai onboard
+    # trio onboard
     subparsers.add_parser("onboard", help="Initialize config and workspace")
 
-    # trioai agent
+    # trio agent
     agent_parser = subparsers.add_parser("agent", help="Interactive chat mode")
     agent_parser.add_argument("-m", "--message", help="Send a single message")
     agent_parser.add_argument("--no-markdown", action="store_true", help="Plain text output")
     agent_parser.add_argument("--logs", action="store_true", help="Show runtime logs")
 
-    # trioai gateway
+    # trio gateway
     subparsers.add_parser("gateway", help="Start all enabled channels")
 
-    # trioai provider
+    # trio provider
     provider_parser = subparsers.add_parser("provider", help="Manage LLM providers")
     provider_sub = provider_parser.add_subparsers(dest="provider_action")
     provider_sub.add_parser("add", help="Add a new provider interactively")
     provider_sub.add_parser("list", help="List configured providers")
     provider_sub.add_parser("login", help="OAuth login for a provider")
 
-    # trioai status
+    # trio status
     subparsers.add_parser("status", help="Show system status")
 
     args = parser.parse_args()

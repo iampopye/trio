@@ -104,7 +104,7 @@ if __name__ == "__main__":
         print("=" * 55)
         print("\nNext steps:")
         print("  Train model:  python -m trio_model.training.pretrain --preset nano")
-        print("  Run agent:    trioai onboard && trioai agent")
+        print("  Run agent:    trio onboard && trio agent")
     except Exception as e:
         import traceback
         print(f"\nTEST FAILED: {e}")

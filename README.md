@@ -45,8 +45,8 @@
 
 ```bash
 pip install trio-ai
-trioai onboard          # Interactive setup wizard
-trioai agent            # Start chatting
+trio onboard          # Interactive setup wizard
+trio agent            # Start chatting
 ```
 
 ### Option B: Train Your Own Model + Deploy
@@ -67,8 +67,8 @@ python -m trio_model.training.sft --preset nano
 python -m trio_model.inference.server --preset nano --mode cli
 
 # Or deploy as a multi-platform agent
-trioai onboard          # Select "trio" as provider
-trioai agent            # Chat using your own model
+trio onboard          # Select "trio" as provider
+trio agent            # Chat using your own model
 ```
 
 ---
@@ -122,13 +122,13 @@ trio.ai/
 ## CLI Commands
 
 ```bash
-trioai onboard              # Setup wizard (providers, channels, features)
-trioai agent                # Interactive chat
-trioai agent -m "message"   # Single message mode
-trioai gateway              # Start all enabled channels (Discord, Telegram, etc.)
-trioai provider list        # List configured LLM providers
-trioai provider add         # Add a new provider
-trioai status               # Show system status
+trio onboard              # Setup wizard (providers, channels, features)
+trio agent                # Interactive chat
+trio agent -m "message"   # Single message mode
+trio gateway              # Start all enabled channels (Discord, Telegram, etc.)
+trio provider list        # List configured LLM providers
+trio provider add         # Add a new provider
+trio status               # Show system status
 ```
 
 ---

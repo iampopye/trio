@@ -1,4 +1,4 @@
-"""trioai provider — manage LLM providers."""
+"""trio provider — manage LLM providers."""
 
 from rich.console import Console
 from rich.table import Table
@@ -19,7 +19,7 @@ async def run_provider(action: str | None = None):
     elif action == "login":
         console.print("[yellow]OAuth login not yet implemented.[/yellow]")
     else:
-        console.print("Usage: trioai provider [add|list|login]")
+        console.print("Usage: trio provider [add|list|login]")
 
 
 async def _add_provider():

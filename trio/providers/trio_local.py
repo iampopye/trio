@@ -182,22 +182,22 @@ class _FallbackEngine:
         ),
         "help": (
             "Quick commands:\n\n"
-            "  trioai agent           - Chat with me\n"
-            "  trioai agent -m \"msg\"  - Single message\n"
-            "  trioai status          - System status\n"
-            "  trioai provider add    - Add cloud LLM\n"
-            "  trioai onboard         - Re-run setup\n\n"
+            "  trio agent           - Chat with me\n"
+            "  trio agent -m \"msg\"  - Single message\n"
+            "  trio status          - System status\n"
+            "  trio provider add    - Add cloud LLM\n"
+            "  trio onboard         - Re-run setup\n\n"
             "To train me: python -m trio_model.training.pretrain --preset nano"
         ),
-        "farewell": "Goodbye! Run `trioai agent` anytime to chat again.",
+        "farewell": "Goodbye! Run `trio agent` anytime to chat again.",
         "default": (
             "I understand your question, but I need training to give you a proper answer.\n\n"
             "Right now I'm running with base weights (untrained). To train me:\n"
             "  python -m trio_model.training.pretrain --preset nano\n\n"
             "This takes a few hours on CPU. After training, I'll give much better responses.\n\n"
             "In the meantime, you can:\n"
-            "- Add a cloud provider: trioai provider add\n"
-            "- Use Ollama locally: trioai provider add (select ollama)"
+            "- Add a cloud provider: trio provider add\n"
+            "- Use Ollama locally: trio provider add (select ollama)"
         ),
     }
 

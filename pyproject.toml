@@ -52,7 +52,7 @@ all = [
 dev = ["pytest>=7.0", "pytest-asyncio>=0.21.0"]
 
 [project.scripts]
-trioai = "trio.__main__:main"
+trio = "trio.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/iampopye/trio"

@@ -1,4 +1,4 @@
-"""CLI channel — interactive terminal chat for `trioai agent`."""
+"""CLI channel — interactive terminal chat for `trio agent`."""
 
 import asyncio
 import sys
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class CLIChannel(BaseChannel):
-    """Interactive terminal channel for `trioai agent` mode."""
+    """Interactive terminal channel for `trio agent` mode."""
 
     def __init__(self, bus: MessageBus, config: dict | None = None):
         super().__init__(name="cli", bus=bus, config=config or {})
