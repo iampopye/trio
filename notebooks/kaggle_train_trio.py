@@ -44,7 +44,7 @@ print(f"PyTorch: {torch.__version__}")
 print(f"CUDA available: {torch.cuda.is_available()}")
 if torch.cuda.is_available():
     print(f"GPU: {torch.cuda.get_device_name(0)}")
-    print(f"VRAM: {torch.cuda.get_device_properties(0).total_mem / 1024**3:.1f}GB")
+    print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f}GB")
 
 # ── Cell 2: Auto-detect best model size for this GPU ──────────────────────────
 
@@ -57,7 +57,7 @@ def auto_config_for_gpu():
         from trio_model.config import NanoConfig
         return NanoConfig()
 
-    vram_gb = torch.cuda.get_device_properties(0).total_mem / 1024**3
+    vram_gb = torch.cuda.get_device_properties(0).total_memory / 1024**3
 
     if vram_gb >= 30:
         # A100/H100 — go big
