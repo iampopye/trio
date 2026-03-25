@@ -2,7 +2,7 @@
 name: hig-components-system
 description: 'Apple HIG guidance for system experience components: widgets, live activities, notifications, complications, home screen quick actions, top shelf, watch faces, app clips, and app shortcuts.'
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -95,7 +95,6 @@ Check for `.trio/apple-design-context.md` before asking questions. Use existing 
 
 ---
 
-*Built by [Raintree Technology](https://raintree.technology) · [More developer tools](https://raintree.technology)*
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

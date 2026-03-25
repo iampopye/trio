@@ -2,7 +2,7 @@
 name: odoo-inventory-optimizer
 description: "Expert guide for Odoo Inventory: stock valuation (FIFO/AVCO), reordering rules, putaway strategies, routes, and multi-warehouse configuration."
 risk: safe
-source: "self"
+source: builtin
 ---
 
 # Odoo Inventory Optimizer

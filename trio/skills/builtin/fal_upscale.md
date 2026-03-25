@@ -2,7 +2,7 @@
 name: fal-upscale
 description: "Upscale and enhance image and video resolution using AI"
 risk: safe
-source: "https://github.com/fal-ai-community/skills/blob/main/skills/trio.ai/fal-upscale/SKILL.md"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -20,4 +20,4 @@ Use this skill when you need to work with upscale and enhance image and video re
 
 This skill provides guidance and patterns for upscale and enhance image and video resolution using ai.
 
-For more information, see the [source repository](https://github.com/fal-ai-community/skills/blob/main/skills/trio.ai/fal-upscale/SKILL.md).
+For more information, see the [source repository](https://github.com/iampopye/trio/blob/main/skills/trio.ai/fal-upscale/SKILL.md).

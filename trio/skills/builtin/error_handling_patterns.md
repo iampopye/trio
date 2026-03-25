@@ -2,7 +2,7 @@
 name: error-handling-patterns
 description: "Build resilient applications with robust error handling strategies that gracefully handle failures and provide excellent debugging experiences."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

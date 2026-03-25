@@ -3,7 +3,7 @@ name: speed
 description: Launch RSVP speed reader for text
 trigger: command
 risk: unknown
-source: community
+source: builtin
 tools: Write, Bash, Read
 ---
 

@@ -3,9 +3,8 @@ name: k6-load-testing
 description: "Comprehensive k6 load testing skill for API, browser, and scalability testing. Write realistic load scenarios, analyze results, and integrate with CI/CD."
 category: testing
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-13"
-author: Kairo Official
 tags: [k6, load-testing, performance, api-testing, ci-cd]
 tools: [trio, cursor, gemini]
 ---
@@ -622,6 +621,6 @@ export default function () {
 ## Additional Resources
 
 - [k6 Documentation](https://k6.io/docs/)
-- [k6 Examples](https://github.com/grafana/k6/tree/master/examples)
+- [k6 Examples](https://github.com/iampopye/trio/tree/master/examples)
 - [k6 Load Testing Guides](https://k6.io/guides/)
 - [k6 Cloud](https://k6.io/cloud/)

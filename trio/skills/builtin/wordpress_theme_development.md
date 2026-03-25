@@ -3,7 +3,7 @@ name: wordpress-theme-development
 description: "WordPress theme development workflow covering theme architecture, template hierarchy, custom post types, block editor support, responsive design, and WordPress 7.0 features: DataViews, Pattern Editing, Navigation Overlays, and admin refresh."
 category: granular-workflow-bundle
 risk: safe
-source: personal
+source: builtin
 date_added: "2026-02-27"
 ---
 

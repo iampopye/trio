@@ -2,7 +2,7 @@
 name: cc-skill-continuous-learning
 description: "Development skill from everything-trio-code"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

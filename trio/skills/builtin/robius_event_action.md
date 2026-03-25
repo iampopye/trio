@@ -6,7 +6,7 @@ description: |
   handle_actions, DefaultNone, widget action, event handling,
   事件处理, 自定义动作
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Robius Event and Action Patterns Skill

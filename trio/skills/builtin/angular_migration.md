@@ -2,7 +2,7 @@
 name: angular-migration
 description: "Master AngularJS to Angular migration, including hybrid apps, component conversion, dependency injection changes, and routing migration."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

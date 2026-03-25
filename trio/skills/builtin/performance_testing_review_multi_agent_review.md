@@ -2,7 +2,7 @@
 name: performance-testing-review-multi-agent-review
 description: "Use when working with performance testing review multi agent review"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

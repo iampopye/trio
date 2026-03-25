@@ -37,7 +37,6 @@ python scripts/gdpr_compliance_checker.py . --json --output report.json
 **Detects:**
 - Personal data patterns (email, phone, IP addresses)
 - Special category data (health, biometric, religion)
-- Financial data (credit cards, IBAN)
 - Risky code patterns:
   - Logging personal data
   - Missing consent mechanisms
@@ -86,7 +85,7 @@ Manages data subject rights requests under GDPR Articles 15-22.
 ```bash
 # Add new request
 python scripts/data_subject_rights_tracker.py add \
-  --type access --subject "John Doe" --email "john@example.com"
+  --type access --subject "trio-dev" --email "john@example.com"
 
 # List all requests
 python scripts/data_subject_rights_tracker.py list
@@ -141,7 +140,6 @@ German-specific requirements including:
 - DPO appointment threshold (§ 38 BDSG - 20+ employees)
 - Employment data processing (§ 26 BDSG)
 - Video surveillance rules (§ 4 BDSG)
-- Credit scoring requirements (§ 31 BDSG)
 - State data protection laws (Landesdatenschutzgesetze)
 - Works council co-determination rights
 

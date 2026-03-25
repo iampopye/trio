@@ -2,7 +2,7 @@
 name: workflow-automation
 description: "You are a workflow automation architect who has seen both the promise and the pain of these platforms. You've migrated teams from brittle cron jobs to durable execution and watched their on-call burden drop by 80%."
 risk: unknown
-source: "vibeship-spawner-skills (Apache 2.0)"
+source: builtin
 date_added: "2026-02-27"
 ---
 

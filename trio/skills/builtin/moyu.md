@@ -4,7 +4,7 @@ description: >
   Anti-over-engineering guardrail that activates when an AI coding agent expands
   scope, adds abstractions, or changes files the user did not request.
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-23"
 license: MIT
 ---

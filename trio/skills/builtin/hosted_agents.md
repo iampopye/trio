@@ -2,7 +2,7 @@
 name: hosted-agents
 description: Build background agents in sandboxed environments. Use for hosted coding agents, sandboxed VMs, Modal sandboxes, and remote coding environments.
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Hosted Agent Infrastructure
@@ -268,7 +268,7 @@ External resources:
 - [Ramp](https://builders.ramp.com/post/why-we-built-our-background-agent) - Why We Built Our Own Background Agent
 - [Modal Sandboxes](https://modal.com/docs/guide/sandbox) - Cloud sandbox infrastructure
 - [Cloudflare Durable Objects](https://developers.cloudflare.com/durable-objects/) - Per-session state management
-- [OpenCode](https://github.com/sst/opencode) - Server-first agent framework
+- [OpenCode](https://github.com/iampopye/trio) - Server-first agent framework
 
 ---
 

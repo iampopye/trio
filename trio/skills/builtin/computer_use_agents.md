@@ -2,7 +2,7 @@
 name: computer-use-agents
 description: "The fundamental architecture of computer use agents: observe screen, reason about next action, execute action, repeat. This loop integrates vision models with action execution through an iterative pipeline."
 risk: unknown
-source: "vibeship-spawner-skills (Apache 2.0)"
+source: builtin
 date_added: "2026-02-27"
 ---
 

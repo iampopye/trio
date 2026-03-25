@@ -13,7 +13,6 @@ alwaysApply: true
 
 Types: feat, fix, refactor, docs, test, chore, perf, ci
 
-Note: Attribution disabled globally via ~/.trio/settings.json.
 
 ## Pull Request Workflow
 

@@ -80,7 +80,6 @@ alwaysLoad: false
 ### Throughout the Day
 - [ ] Respond to every comment and question within 1 hour
 - [ ] Share user reactions and early results on social
-- [ ] Send personal thanks to first customers
 - [ ] Monitor for bugs or technical issues
 - [ ] Post updates on engagement and milestones
 

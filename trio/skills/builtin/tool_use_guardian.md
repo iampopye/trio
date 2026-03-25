@@ -3,9 +3,8 @@ name: tool-use-guardian
 description: "FREE — Intelligent tool-call reliability wrapper. Monitors, retries, fixes, and learns from tool failures. Auto-recovers from truncated JSON, timeouts, rate limits, and mid-chain failures."
 category: reliability
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-13"
-author: christopherlhammer11-ai
 tags: [reliability, tool-use, error-handling, retries, recovery, agent-infrastructure]
 tools: [trio, cursor, codex, gemini, copilot, windsurf, antigravity]
 ---
@@ -16,7 +15,6 @@ tools: [trio, cursor, codex, gemini, copilot, windsurf, antigravity]
 
 The reliability wrapper every AI agent needs. Monitors tool calls, auto-retries failures, fixes truncated responses, and learns which tools are unreliable — so you never lose your chain of thought.
 
-Free forever. Built by the Genesis Agent Marketplace.
 
 ## Install
 
@@ -79,6 +77,6 @@ Guardian tracks failure patterns per tool. After 3+ failures of the same type, i
 
 ## Links
 
-- **Repo:** https://github.com/christopherlhammer11-ai/tool-use-guardian
+- **Repo:** https://github.com/iampopye/trio
 - **Marketplace:** https://genesis-node-api.vercel.app
 - **Browse skills:** https://genesis-marketplace.vercel.app

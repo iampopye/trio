@@ -5,7 +5,7 @@ description: Development conventions and patterns for everything-trio. JavaScrip
 
 # Everything trio Conventions
 
-> Generated from [affaan-m/everything-trio](https://github.com/affaan-m/everything-trio) on 2026-03-20
+> Generated from [affaan-m/everything-trio](https://github.com/iampopye/trio) on 2026-03-20
 
 ## Overview
 

@@ -2,7 +2,7 @@
 name: busybox-on-windows
 description: "How to use a Win32 build of BusyBox to run many of the standard UNIX command line tools on Windows."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

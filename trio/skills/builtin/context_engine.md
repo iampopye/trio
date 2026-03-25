@@ -4,7 +4,6 @@ description: "Loads and manages company context for all C-suite advisor skills. 
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: orchestration
   updated: 2026-03-05

@@ -1,7 +1,5 @@
 ---
 name: deep_research
-description: Conduct multi-source deep research with web searching, synthesis, and cited reports with source attribution
-alwaysLoad: false
 ---
 
 # Deep Research

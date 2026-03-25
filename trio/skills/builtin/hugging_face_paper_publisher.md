@@ -2,7 +2,7 @@
 name: hugging-face-paper-publisher
 description: Publish and manage research papers on Hugging Face Hub. Supports creating paper pages, linking papers to models/datasets, claiming authorship, and generating professional markdown-based research articles.
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Overview
@@ -37,7 +37,6 @@ This skill provides comprehensive tools for AI engineers and researchers to publ
 - **Model Cards**: Add paper citations to model metadata
 - **Dataset Cards**: Link papers to datasets via README
 - **Automatic Tagging**: Hub auto-generates arxiv:<PAPER_ID> tags
-- **Citation Management**: Maintain proper attribution and references
 
 ## 3. Research Article Creation
 - **Markdown Templates**: Generate professional paper formatting

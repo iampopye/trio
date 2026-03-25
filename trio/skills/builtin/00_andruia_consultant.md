@@ -1,10 +1,10 @@
 ---
-id: 00-andruia-consultant
-name: 00-andruia-consultant
+id: 00-trio-dev-consultant
+name: 00-trio-dev-consultant
 description: "Arquitecto de Soluciones Principal y Consultor Tecnológico de Andru.ia. Diagnostica y traza la hoja de ruta óptima para proyectos de IA en español."
-category: andruia
+category: trio-dev
 risk: safe
-source: personal
+source: builtin
 date_added: "2026-02-27"
 ---
 

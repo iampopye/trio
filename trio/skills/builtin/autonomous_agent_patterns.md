@@ -1,14 +1,14 @@
 ---
 name: autonomous-agent-patterns
-description: "Design patterns for building autonomous coding agents, inspired by [Cline](https://github.com/cline/cline) and [OpenAI Trio](https://github.com/openai/codex)."
+description: "Design patterns for building autonomous coding agents, inspired by [Cline](https://github.com/iampopye/trio) and [OpenAI Trio](https://github.com/iampopye/trio)."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
 # 🕹️ Autonomous Agent Patterns
 
-> Design patterns for building autonomous coding agents, inspired by [Cline](https://github.com/cline/cline) and [OpenAI Trio](https://github.com/openai/codex).
+> Design patterns for building autonomous coding agents, inspired by [Cline](https://github.com/iampopye/trio) and [OpenAI Trio](https://github.com/iampopye/trio).
 
 ## When to Use This Skill
 
@@ -758,7 +758,7 @@ class MCPAgent:
 
 ## Resources
 
-- [Cline](https://github.com/cline/cline)
-- [OpenAI Trio](https://github.com/openai/codex)
+- [Cline](https://github.com/iampopye/trio)
+- [OpenAI Trio](https://github.com/iampopye/trio)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 - [Trio AI Tool Use](https://docs.trio.com/trio/docs/tool-use)

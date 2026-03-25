@@ -2,7 +2,7 @@
 name: odoo-project-timesheet
 description: "Expert guide for Odoo Project and Timesheets: task stages, billable time tracking, timesheet approval, budget alerts, and invoicing from timesheets."
 risk: safe
-source: "self"
+source: builtin
 ---
 
 # Odoo Project & Timesheet
@@ -52,7 +52,7 @@ Budget:
 ```text
 Method A — Directly inside the Task (recommended for accuracy):
   Open Task → Timesheets tab → Add a Line
-  Employee:    John Doe
+  Employee:    trio-dev
   Date:        Today
   Description: "Initial wireframes and site map" (required for clear invoices)
   Duration:    3:30  (3 hours 30 minutes)

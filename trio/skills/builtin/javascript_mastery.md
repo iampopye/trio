@@ -1,14 +1,14 @@
 ---
 name: javascript-mastery
-description: "33+ essential JavaScript concepts every developer should know, inspired by [33-js-concepts](https://github.com/leonardomso/33-js-concepts)."
+description: "33+ essential JavaScript concepts every developer should know, inspired by [33-js-concepts](https://github.com/iampopye/trio)."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
 # 🧠 JavaScript Mastery
 
-> 33+ essential JavaScript concepts every developer should know, inspired by [33-js-concepts](https://github.com/leonardomso/33-js-concepts).
+> 33+ essential JavaScript concepts every developer should know, inspired by [33-js-concepts](https://github.com/iampopye/trio).
 
 ## When to Use This Skill
 
@@ -642,7 +642,7 @@ const value2 = 0 || "default"; // "default" (0 is falsy)
 
 ## Resources
 
-- [33 JS Concepts](https://github.com/leonardomso/33-js-concepts)
+- [33 JS Concepts](https://github.com/iampopye/trio)
 - [JavaScript.info](https://javascript.info/)
 - [MDN JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide)
-- [You Don't Know JS](https://github.com/getify/You-Dont-Know-JS)
+- [You Don't Know JS](https://github.com/iampopye/trio)

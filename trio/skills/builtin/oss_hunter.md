@@ -2,7 +2,7 @@
 name: oss-hunter
 description: "Automatically hunt for high-impact OSS contribution opportunities in trending repositories."
 risk: safe
-source: "https://github.com/jackjin1997/ClawForge"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -69,6 +69,6 @@ Generate a structured report for the human:
 
 ## Contributing to the Matrix
 
-Build a better hunter by adding new heuristics to Phase 3. Submit your improvements to the [ClawForge](https://github.com/jackjin1997/ClawForge).
+Build a better hunter by adding new heuristics to Phase 3. Submit your improvements to the [ClawForge](https://github.com/iampopye/trio).
 
 *Powered by OpenClaw & ClawForge.*

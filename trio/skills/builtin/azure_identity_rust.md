@@ -2,7 +2,7 @@
 name: azure-identity-rust
 description: Azure Identity SDK for Rust authentication. Use for DeveloperToolsCredential, ManagedIdentityCredential, ClientSecretCredential, and token-based authentication.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -111,7 +111,7 @@ let credential = ClientSecretCredential::new(
 | Resource | Link |
 |----------|------|
 | API Reference | https://docs.rs/azure_identity |
-| Source Code | https://github.com/Azure/azure-sdk-for-rust/tree/main/sdk/identity/azure_identity |
+| Source Code | https://github.com/iampopye/trio/tree/main/sdk/identity/azure_identity |
 | crates.io | https://crates.io/crates/azure_identity |
 
 ## When to Use

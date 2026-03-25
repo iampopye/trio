@@ -5,7 +5,7 @@ description: >
   Use when user says "content quality", "E-E-A-T", "content analysis",
   "readability check", "thin content", or "content audit".
 risk: unknown
-source: "https://github.com/AgriciDaniel/trio-seo"
+source: builtin
 date_added: "2026-03-21"
 user-invokable: true
 argument-hint: "[url]"
@@ -119,8 +119,6 @@ Google's raters now formally assess whether content appears AI-generated.
 - Generic phrasing, lack of specificity
 - No original insight
 - Repetitive structure across pages
-- No author attribution
-- Factual inaccuracies
 
 > **Helpful Content System (March 2024):** The Helpful Content System was merged into Google's core ranking algorithm during the March 2024 core update. It no longer operates as a standalone classifier. Helpfulness signals are now weighted within every core update. The same principles apply (people-first content, demonstrating E-E-A-T, satisfying user intent), but enforcement is continuous rather than through separate HCU updates.
 
@@ -133,7 +131,6 @@ Optimize for AI search engines (ChatGPT, Perplexity, Google AI Overviews):
 - Strong heading hierarchy (H1->H2->H3 flow)
 - Answer-first formatting for key questions
 - Tables and lists for comparative data
-- Clear attribution and source citations
 
 ### AI Search Visibility & GEO (2025-2026)
 
@@ -148,7 +145,6 @@ Optimize for AI search engines (ChatGPT, Perplexity, Google AI Overviews):
 - **Multi-platform tracking:** Monitor visibility across Google AI Overviews, AI Mode, ChatGPT, Perplexity, and Bing Copilot, not just traditional rankings. Treat AI citation as a standalone KPI alongside organic rankings and traffic.
 
 **Generative Engine Optimization (GEO):**
-GEO is the emerging discipline of optimizing content specifically for AI-generated answers. Key GEO signals include: quotability (clear, concise extractable facts), attribution (source citations within your content), structure (well-organized heading hierarchy), and freshness (regularly updated data). Cross-reference the `seo-geo` skill for detailed GEO workflows.
 
 ## Content Freshness
 

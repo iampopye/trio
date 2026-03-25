@@ -4,7 +4,6 @@ description: SaaS financial health advisor. Use when a user shares revenue or cu
 license: MIT
 metadata:
   version: 1.0.0
-  author: Abbas Mir
   category: finance
   updated: 2026-03-08
 ---

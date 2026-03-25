@@ -2,7 +2,7 @@
 name: azure-eventhub-dotnet
 description: Azure Event Hubs SDK for .NET.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

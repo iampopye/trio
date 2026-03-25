@@ -2,7 +2,7 @@
 name: shader-programming-glsl
 description: "Expert guide for writing efficient GLSL shaders (Vertex/Fragment) for web and game engines, covering syntax, uniforms, and common effects."
 risk: safe
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

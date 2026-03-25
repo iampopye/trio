@@ -2,7 +2,7 @@
 name: tutorial-engineer
 description: Creates step-by-step tutorials and educational content from code. Transforms complex concepts into progressive learning experiences with hands-on examples.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-02'
 metadata:
   version: '2.0.0'

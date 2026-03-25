@@ -2,9 +2,8 @@
 name: advogado-especialista
 description: 'Advogado especialista em todas as areas do Direito brasileiro: familia, criminal, trabalhista, tributario, consumidor, imobiliario, empresarial, civil e constitucional.'
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - legal
 - brazilian-law
@@ -1027,7 +1026,7 @@ Skill baseada em conhecimento (knowledge-only). Nao requer instalacao de depende
 
 ## Verificar Se A Skill Esta Registrada:
 
-python C:\Users\renat\skills\agent-orchestrator\scripts\scan_registry.py
+python C:\Users\trio-dev\skills\agent-orchestrator\scripts\scan_registry.py
 ```
 
 ---

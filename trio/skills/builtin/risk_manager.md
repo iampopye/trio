@@ -2,7 +2,7 @@
 name: risk-manager
 description: Monitor portfolio risk, R-multiples, and position limits. Creates hedging strategies, calculates expectancy, and implements stop-losses.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

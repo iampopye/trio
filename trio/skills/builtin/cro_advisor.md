@@ -4,7 +4,6 @@ description: "Revenue leadership for B2B SaaS companies. Revenue forecasting, sa
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: cro-leadership
   updated: 2026-03-05
@@ -131,7 +130,6 @@ NRR = (Opening + Expansion - Contraction - Churn) / Opening
 | NRR declining | CPO + COO | Root cause: product gaps or CS process failures |
 | Enterprise expansion | CEO | Executive sponsorship, board-level relationships |
 | Revenue targets | CFO | Bottoms-up model to validate top-down board targets |
-| Pipeline SLA | CMO | MQL → SQL conversion, CAC by channel, attribution |
 | Security reviews | CISO | Unblock enterprise deals with security artifacts |
 | Sales ops scaling | COO | RevOps staffing, commission infrastructure, tooling |
 

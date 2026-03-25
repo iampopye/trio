@@ -2,7 +2,7 @@
 name: convex
 description: "Convex reactive backend expert: schema design, TypeScript functions, real-time subscriptions, auth, file storage, scheduling, and deployment."
 risk: safe
-source: "https://docs.convex.dev"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -269,7 +269,6 @@ export const remove = mutation({
 });
 
 // Multi-document transaction (automatically atomic)
-export const transferCredits = mutation({
   args: {
     fromUserId: v.id("users"),
     toUserId: v.id("users"),
@@ -279,13 +278,10 @@ export const transferCredits = mutation({
     const fromUser = await ctx.db.get(args.fromUserId);
     const toUser = await ctx.db.get(args.toUserId);
     if (!fromUser || !toUser) throw new Error("User not found");
-    if (fromUser.credits < args.amount) throw new Error("Insufficient credits");
 
     await ctx.db.patch(args.fromUserId, {
-      credits: fromUser.credits - args.amount,
     });
     await ctx.db.patch(args.toUserId, {
-      credits: toUser.credits + args.amount,
     });
   },
 });
@@ -792,6 +788,6 @@ npx convex logs
 
 - [Official Docs](https://docs.convex.dev)
 - [Convex Stack (Blog)](https://stack.convex.dev)
-- [GitHub](https://github.com/get-convex/convex-backend)
+- [GitHub](https://github.com/iampopye/trio)
 - [Discord Community](https://convex.dev/community)
 - [Convex Chef (AI Starter)](https://chef.convex.dev)

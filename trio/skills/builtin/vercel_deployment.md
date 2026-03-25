@@ -2,7 +2,7 @@
 name: vercel-deployment
 description: "Expert knowledge for deploying to Vercel with Next.js Use when: vercel, deploy, deployment, hosting, production."
 risk: safe
-source: "vibeship-spawner-skills (Apache 2.0)"
+source: builtin
 date_added: "2026-02-27"
 ---
 

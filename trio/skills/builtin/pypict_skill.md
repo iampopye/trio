@@ -2,7 +2,7 @@
 name: pypict-skill
 description: "Pairwise test generation"
 risk: safe
-source: "https://github.com/omkamal/pypict-trio-skill/blob/main/SKILL.md"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -20,4 +20,4 @@ Use this skill when you need to work with pairwise test generation.
 
 This skill provides guidance and patterns for pairwise test generation.
 
-For more information, see the [source repository](https://github.com/omkamal/pypict-trio-skill/blob/main/SKILL.md).
+For more information, see the [source repository](https://github.com/iampopye/trio/blob/main/SKILL.md).

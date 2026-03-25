@@ -2,9 +2,8 @@
 name: trio-monitor
 description: Monitor de performance do Trio e sistema local. Diagnostica lentidao, mede CPU/RAM/disco, verifica API latency e gera relatorios de saude do sistema.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - monitoring
 - performance
@@ -57,7 +56,7 @@ Determina se o gargalo é local (PC) ou remoto (API Trio) e sugere ações corre
 Rode SEMPRE como primeiro passo:
 
 ```bash
-python C:\Users\renat\skills\trio-monitor\scripts\health_check.py
+python C:\Users\trio-dev\skills\trio-monitor\scripts\health_check.py
 ```
 
 O script analisa em ~3 segundos:
@@ -91,7 +90,7 @@ Baseado no diagnóstico, ofereça ao usuário:
 
 #### Se browsers pesados (>5GB RAM ou >40 processos):
 ```bash
-python C:\Users\renat\skills\trio-monitor\scripts\health_check.py --browsers-detail
+python C:\Users\trio-dev\skills\trio-monitor\scripts\health_check.py --browsers-detail
 ```
 Mostra RAM por browser e sugere quais fechar. **Nunca fechar processos sem permissão explícita do usuário.**
 
@@ -108,7 +107,7 @@ Mostra RAM por browser e sugere quais fechar. **Nunca fechar processos sem permi
 Se o usuário quiser monitoramento em background:
 
 ```bash
-python C:\Users\renat\skills\trio-monitor\scripts\monitor.py --interval 30 --duration 300
+python C:\Users\trio-dev\skills\trio-monitor\scripts\monitor.py --interval 30 --duration 300
 ```
 
 Parâmetros:
@@ -129,7 +128,7 @@ O monitor salva snapshots periódicos e gera um relatório ao final com:
 Para testar se a lentidão é da API:
 
 ```bash
-python C:\Users\renat\skills\trio-monitor\scripts\api_bench.py
+python C:\Users\trio-dev\skills\trio-monitor\scripts\api_bench.py
 ```
 
 Mede o tempo de resposta do processo Trio local (não faz chamadas à API).

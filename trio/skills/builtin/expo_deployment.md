@@ -2,7 +2,7 @@
 name: expo-deployment
 description: "Deploy Expo apps to production"
 risk: safe
-source: "https://github.com/expo/skills/tree/main/plugins/expo-deployment"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -70,4 +70,4 @@ This skill provides guidance for deploying Expo apps:
 
 ## Resources
 
-For more information, see the [source repository](https://github.com/expo/skills/tree/main/plugins/expo-deployment).
+For more information, see the [source repository](https://github.com/iampopye/trio/tree/main/plugins/expo-deployment).

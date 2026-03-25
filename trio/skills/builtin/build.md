@@ -2,7 +2,7 @@
 name: build
 description: build
 risk: unknown
-source: community
+source: builtin
 ---
 
 ---
@@ -10,7 +10,7 @@ name: build
 description: Feature development pipeline - research, plan, track, and implement major features.
 argument-hint: [subcommand] [name]
 metadata:
-  author: Shpigford
+  author: trio-dev
   version: "1.0"
 ---
 

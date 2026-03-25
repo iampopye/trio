@@ -2,7 +2,7 @@
 name: odoo-edi-connector
 description: "Guide for implementing EDI (Electronic Data Interchange) with Odoo: X12, EDIFACT document mapping, partner onboarding, and automated order processing."
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Odoo EDI Connector

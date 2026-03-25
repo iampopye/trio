@@ -2,9 +2,8 @@
 name: leiloeiro-mercado
 description: Analise de mercado imobiliario para leiloes. Liquidez, desagio tipico, ROI, estrategias de saida (flip/reforma/renda), Selic 2025 e benchmark CDI/FII.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - market-analysis
 - real-estate
@@ -425,7 +424,7 @@ Skill baseada em conhecimento (knowledge-only). Não requer instalação de depe
 
 ## Verificar Se A Skill Está Registrada:
 
-python C:\Users\renat\skills\agent-orchestrator\scripts\scan_registry.py
+python C:\Users\trio-dev\skills\agent-orchestrator\scripts\scan_registry.py
 ```
 
 ---

@@ -2,7 +2,7 @@
 name: code-review-checklist
 description: "Comprehensive checklist for conducting thorough code reviews covering functionality, security, performance, and maintainability"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -439,7 +439,7 @@ This is great because [explain why]
 
 - [Google Code Review Guidelines](https://google.github.io/eng-practices/review/)
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Code Review Best Practices](https://github.com/thoughtbot/guides/tree/main/code-review)
+- [Code Review Best Practices](https://github.com/iampopye/trio/tree/main/code-review)
 - [How to Review Code](https://www.kevinlondon.com/2015/05/05/code-review-best-practices.html)
 
 ---

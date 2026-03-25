@@ -2,7 +2,7 @@
 name: hybrid-cloud-networking
 description: "Configure secure, high-performance connectivity between on-premises and cloud environments using VPN, Direct Connect, and ExpressRoute."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

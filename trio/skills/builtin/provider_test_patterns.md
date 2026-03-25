@@ -19,8 +19,8 @@ metadata:
 # Provider Acceptance Test Patterns
 
 Patterns for writing acceptance tests using
-[terraform-plugin-testing](https://github.com/hashicorp/terraform-plugin-testing)
-with the [Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework).
+[terraform-plugin-testing](https://github.com/iampopye/trio)
+with the [Plugin Framework](https://github.com/iampopye/trio).
 
 Source: [HashiCorp Testing Patterns](https://developer.hashicorp.com/terraform/plugin/testing/testing-patterns)
 
@@ -269,7 +269,7 @@ Name and document regression tests to identify the issue they fix. Include a
 link to the original bug report when possible.
 
 ```go
-// TestAccExample_regressionGH1234 verifies fix for https://github.com/org/repo/issues/1234
+// TestAccExample_regressionGH1234 verifies fix for https://github.com/iampopye/trio/issues/1234
 func TestAccExample_regressionGH1234(t *testing.T) {
     rName := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
     resourceName := "example_widget.test"

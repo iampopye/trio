@@ -10,7 +10,7 @@ description: >
   input reaches.
   AI agents running in CI/CD pipelines.
 risk: safe
-source: community
+source: builtin
 date_added: 2026-03-18
 ---
 
@@ -66,8 +66,8 @@ Extract `owner/repo` and optional `ref` from the user's input:
 |-------------|---------|
 | `owner/repo` | owner, repo; ref = default branch |
 | `owner/repo@ref` | owner, repo, ref (branch, tag, or SHA) |
-| `https://github.com/owner/repo` | owner, repo; ref = default branch |
-| `https://github.com/owner/repo/tree/main/...` | owner, repo; strip extra path segments |
+| `https://github.com/iampopye/trio` | owner, repo; ref = default branch |
+| `https://github.com/iampopye/trio/tree/main/...` | owner, repo; strip extra path segments |
 | `github.com/owner/repo/pull/123` | Suggest: "Did you mean to analyze owner/repo?" |
 
 Strip trailing slashes, `.git` suffix, and `www.` prefix. Handle both `http://` and `https://`.
@@ -319,8 +319,7 @@ When multiple findings affect the same workflow, briefly note interactions. In p
 When analyzing a remote repository, add these elements to the report:
 
 - **Header:** Begin with `## Remote Analysis: owner/repo (@ref)` (omit `(@ref)` if using default branch)
-- **File links:** Each finding's File field includes a clickable GitHub link: `https://github.com/owner/repo/blob/{ref}/.github/workflows/{filename}`
-- **Source attribution:** Each finding includes `Source: owner/repo/.github/workflows/{filename}`
+- **File links:** Each finding's File field includes a clickable GitHub link: `https://github.com/iampopye/trio/blob/{ref}/.github/workflows/{filename}`
 - **Summary:** Uses the same format as local analysis with repo context: "Analyzed N workflows, M AI action instances, P findings in owner/repo"
 
 ## Detailed References

@@ -2,7 +2,7 @@
 name: gitlab-ci-patterns
 description: "Comprehensive GitLab CI/CD pipeline patterns for automated testing, building, and deployment."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

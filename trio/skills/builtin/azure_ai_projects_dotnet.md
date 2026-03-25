@@ -2,7 +2,7 @@
 name: azure-ai-projects-dotnet
 description: Azure AI Projects SDK for .NET. High-level client for Azure AI Foundry projects including agents, connections, datasets, deployments, evaluations, and indexes.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -345,8 +345,8 @@ catch (RequestFailedException ex)
 |----------|-----|
 | NuGet Package | https://www.nuget.org/packages/Azure.AI.Projects |
 | API Reference | https://learn.microsoft.com/dotnet/api/azure.ai.projects |
-| GitHub Source | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/ai/Azure.AI.Projects |
-| Samples | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/ai/Azure.AI.Projects/samples |
+| GitHub Source | https://github.com/iampopye/trio/tree/main/sdk/ai/Azure.AI.Projects |
+| Samples | https://github.com/iampopye/trio/tree/main/sdk/ai/Azure.AI.Projects/samples |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

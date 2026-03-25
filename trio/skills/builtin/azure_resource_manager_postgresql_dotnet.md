@@ -2,7 +2,7 @@
 name: azure-resource-manager-postgresql-dotnet
 description: Azure PostgreSQL Flexible Server SDK for .NET. Database management for PostgreSQL Flexible Server deployments.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -430,7 +430,7 @@ string connectionString = $"Host={server.Data.FullyQualifiedDomainName};" +
 | NuGet Package | https://www.nuget.org/packages/Azure.ResourceManager.PostgreSql |
 | API Reference | https://learn.microsoft.com/dotnet/api/azure.resourcemanager.postgresql |
 | Product Documentation | https://learn.microsoft.com/azure/postgresql/flexible-server/ |
-| GitHub Source | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/postgresql/Azure.ResourceManager.PostgreSql |
+| GitHub Source | https://github.com/iampopye/trio/tree/main/sdk/postgresql/Azure.ResourceManager.PostgreSql |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

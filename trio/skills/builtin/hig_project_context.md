@@ -2,7 +2,7 @@
 name: hig-project-context
 description: Create or update a shared Apple design context document that other HIG skills use to tailor guidance.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -125,7 +125,6 @@ When updating an existing context document:
 
 ---
 
-*Built by [Raintree Technology](https://raintree.technology) · [More developer tools](https://raintree.technology)*
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

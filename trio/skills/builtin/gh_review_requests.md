@@ -3,7 +3,7 @@ name: gh-review-requests
 description: Fetch unread GitHub notifications for open PRs where review is requested from a specified team or opened by a team member. Use when asked to "find PRs I need to review", "show my review requests", "what needs my review", "fetch GitHub review requests", or "check team review queue".
 allowed-tools: Bash
 risk: unknown
-source: community
+source: builtin
 ---
 
 # GitHub Review Requests
@@ -41,10 +41,10 @@ uv run ${CLAUDE_SKILL_ROOT}/scripts/fetch_review_requests.py --org getsentry --t
     {
       "notification_id": "12345",
       "title": "feat(kafka): add workflow to restart a broker",
-      "url": "https://github.com/getsentry/ops/pull/19144",
+      "url": "https://github.com/iampopye/trio/pull/19144",
       "repo": "getsentry/ops",
       "pr_number": 19144,
-      "author": "bmckerry",
+      "author": "Karan Garg",
       "reasons": ["opened by: bmckerry"]
     }
   ]
@@ -61,7 +61,7 @@ Display results as a markdown table with full URLs:
 
 | # | Title | URL | Reason |
 |---|-------|-----|--------|
-| 1 | feat(kafka): add workflow to restart a broker | https://github.com/getsentry/ops/pull/19144 | opened by: evanh |
+| 1 | feat(kafka): add workflow to restart a broker | https://github.com/iampopye/trio/pull/19144 | opened by: evanh |
 
 If `total` is 0, say: "No unread review requests found for that team."
 

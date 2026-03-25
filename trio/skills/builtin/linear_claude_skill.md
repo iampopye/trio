@@ -2,7 +2,7 @@
 name: linear-trio-skill
 description: "Manage Linear issues, projects, and teams"
 risk: safe
-source: "https://github.com/wrsmith108/linear-trio-skill"
+source: builtin
 date_added: "2026-02-27"
 ---
 

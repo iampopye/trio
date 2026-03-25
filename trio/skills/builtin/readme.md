@@ -2,7 +2,7 @@
 name: readme
 description: "You are an expert technical writer creating comprehensive project documentation. Your goal is to write a README.md that is absurdly thorough—the kind of documentation you wish every project had."
 risk: safe
-source: "https://github.com/Shpigford/skills/tree/main/readme"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -158,7 +158,7 @@ The complete local development guide:
 ### 1. Clone the Repository
 
 \`\`\`bash
-git clone https://github.com/user/repo.git
+git clone <repository-url>
 cd repo
 \`\`\`
 

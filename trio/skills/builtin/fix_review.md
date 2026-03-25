@@ -2,7 +2,7 @@
 name: fix-review
 description: "Verify fix commits address audit findings without new bugs"
 risk: safe
-source: "https://github.com/trailofbits/skills/tree/main/plugins/fix-review"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -51,4 +51,4 @@ When reviewing fix commits:
 
 ## Resources
 
-For more information, see the [source repository](https://github.com/trailofbits/skills/tree/main/plugins/fix-review).
+For more information, see the [source repository](https://github.com/iampopye/trio/tree/main/plugins/fix-review).

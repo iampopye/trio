@@ -504,7 +504,7 @@ terraform apply migration.tfplan
 ```hcl
 # Use semantic versioning for modules
 module "vpc" {
-  source  = "git::https://github.com/org/terraform-modules.git//vpc?ref=v1.2.0"
+  source  = "git::https://github.com/iampopye/trio//vpc?ref=v1.2.0"
   version = "~> 1.2"
 }
 

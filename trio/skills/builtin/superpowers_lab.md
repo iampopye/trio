@@ -2,7 +2,7 @@
 name: superpowers-lab
 description: "Lab environment for Trio superpowers"
 risk: safe
-source: "https://github.com/obra/superpowers-lab"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -20,4 +20,4 @@ Use this skill when you need to work with lab environment for trio superpowers.
 
 This skill provides guidance and patterns for lab environment for trio superpowers.
 
-For more information, see the [source repository](https://github.com/obra/superpowers-lab).
+For more information, see the [source repository](https://github.com/iampopye/trio).

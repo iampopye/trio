@@ -4,7 +4,6 @@ description: When the user wants to optimize signup, registration, account creat
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
 ---
@@ -139,7 +138,6 @@ Organized by:
 **Trust Elements**
 - Add social proof next to signup form
 - Test trust badges near form (security, compliance)
-- Add "No credit card required" messaging
 - Include privacy assurance copy
 
 ---
@@ -147,7 +145,6 @@ Organized by:
 ### Trial & Commitment Experiments
 
 **Free Trial Variations**
-- Credit card required vs. not required for trial
 - Test trial length impact (7 vs. 14 vs. 30 days)
 - Freemium vs. free trial model
 - Trial with limited features vs. full access
@@ -184,7 +181,6 @@ Organized by:
 - **onboarding-cro** — WHEN: the signup flow itself completes well but users aren't activating or reaching their "aha moment" after account creation. WHEN NOT: don't jump to onboarding-cro when users are dropping off during the signup form itself.
 - **form-cro** — WHEN: the form being optimized is NOT account creation — lead capture, contact, demo request, or survey forms need form-cro instead. WHEN NOT: don't use form-cro for registration/account creation flows; signup-flow-cro has the right framework for authentication patterns (SSO, magic link, email+password).
 - **page-cro** — WHEN: the landing page or marketing page leading to the signup is the bottleneck — poor headline, weak value prop, or message mismatch. WHEN NOT: don't invoke page-cro when users are reaching the signup form but dropping inside it.
-- **ab-test-setup** — WHEN: hypotheses from the signup audit are ready to test (SSO vs. email, single-step vs. multi-step, credit card required vs. not). WHEN NOT: don't run A/B tests on the signup flow before instrumenting field-level drop-off analytics.
 - **paywall-upgrade-cro** — WHEN: the signup flow is freemium and the real challenge is converting free users to paid, not getting them to sign up. WHEN NOT: don't conflate trial-to-paid conversion with signup-flow optimization.
 - **marketing-context** — WHEN: check `.trio/product-marketing-context.md` for B2B vs. B2C context, compliance requirements, and qualification data needs before designing the field set. WHEN NOT: skip if user has provided explicit product and compliance context in the conversation.
 
@@ -209,7 +205,6 @@ Automatically surface signup-flow-cro when:
 1. **"Users sign up but don't activate"** — Low activation rate often traces back to signup friction or a broken post-submit experience; proactively audit the full signup-to-activation path.
 2. **"Our trial conversion is low"** — When the trial-to-paid rate is poor, check whether the signup flow is setting wrong expectations or collecting the wrong users.
 3. **Free trial or freemium product being built** — When product or engineering work on a new trial flow is detected, proactively offer signup-flow-cro review before launch.
-4. **"Should we require a credit card?"** — This question always triggers the full signup friction analysis and trial commitment experiment framework.
 5. **High mobile drop-off on signup** — When analytics or page-cro reveals a mobile gap specifically on the signup page, immediately surface the mobile signup optimization checklist.
 
 ---

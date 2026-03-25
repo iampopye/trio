@@ -2,7 +2,7 @@
 name: trio-scientific-skills
 description: "Scientific research and analysis skills"
 risk: safe
-source: "https://github.com/K-Dense-AI/trio-scientific-skills"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -20,4 +20,4 @@ Use this skill when you need to work with scientific research and analysis skill
 
 This skill provides guidance and patterns for scientific research and analysis skills.
 
-For more information, see the [source repository](https://github.com/K-Dense-AI/trio-scientific-skills).
+For more information, see the [source repository](https://github.com/iampopye/trio).

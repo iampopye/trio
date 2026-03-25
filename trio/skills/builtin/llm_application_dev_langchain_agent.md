@@ -2,7 +2,7 @@
 name: llm-application-dev-langchain-agent
 description: "You are an expert LangChain agent developer specializing in production-grade AI systems using LangChain 0.1+ and LangGraph."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

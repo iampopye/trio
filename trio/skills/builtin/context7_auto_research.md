@@ -2,7 +2,7 @@
 name: context7-auto-research
 description: "Automatically fetch latest library/framework documentation for Trio via Context7 API. Use when you need up-to-date documentation for libraries and frameworks or asking about React, Next.js, Prisma, or any other popular library."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -26,7 +26,7 @@ npx skills add -g BenedictKing/context7-auto-research
 3. Use naturally in Trio conversations
 
 ## Examples
-See [GitHub Repository](https://github.com/BenedictKing/context7-auto-research) for examples.
+See [GitHub Repository](https://github.com/iampopye/trio) for examples.
 
 ## Best Practices
 - Configure API keys via environment variables for higher rate limits

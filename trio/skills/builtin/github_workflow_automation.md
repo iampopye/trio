@@ -1,14 +1,14 @@
 ---
 name: github-workflow-automation
-description: "Patterns for automating GitHub workflows with AI assistance, inspired by [Trio CLI](https://github.com/google-gemini/gemini-cli) and modern DevOps practices."
+description: "Patterns for automating GitHub workflows with AI assistance, inspired by [Trio CLI](https://github.com/iampopye/trio) and modern DevOps practices."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
 # 🔧 GitHub Workflow Automation
 
-> Patterns for automating GitHub workflows with AI assistance, inspired by [Trio CLI](https://github.com/google-gemini/gemini-cli) and modern DevOps practices.
+> Patterns for automating GitHub workflows with AI assistance, inspired by [Trio CLI](https://github.com/iampopye/trio) and modern DevOps practices.
 
 ## When to Use This Skill
 
@@ -843,7 +843,7 @@ Dockerfile @org/devops-team
 
 ## Resources
 
-- [Trio CLI GitHub Action](https://github.com/google-github-actions/run-gemini-cli)
+- [Trio CLI GitHub Action](https://github.com/iampopye/trio)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [GitHub REST API](https://docs.github.com/en/rest)
 - [CODEOWNERS Syntax](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)

@@ -2,7 +2,7 @@
 name: expo-ui-swift-ui
 description: expo-ui-swift-ui
 risk: unknown
-source: community
+source: builtin
 ---
 
 ---

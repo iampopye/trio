@@ -2,9 +2,8 @@
 name: auri-core
 description: "Auri: assistente de voz inteligente (Alexa + Trio trio-opus-4-20250805). Visao do produto, persona Vitoria Neural, stack AWS, modelo Free/Pro/Business/Enterprise, roadmap 4 fases, GTM, north star WAC e analise competitiva."
 risk: none
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - voice-assistant
 - product-vision
@@ -571,15 +570,15 @@ Se a API da Trio AI estiver indisponivel, o sistema retorna respostas pre-config
 | Recurso | URL / Localizacao |
 |---------|-------------------|
 | Alexa Skills Kit Docs | https://developer.amazon.com/en-US/alexa/alexa-skills-kit |
-| ASK SDK Python | https://github.com/alexa/alexa-skills-kit-sdk-for-python |
+| ASK SDK Python | https://github.com/iampopye/trio |
 | Amazon Polly Vitoria Neural | https://docs.aws.amazon.com/polly/latest/dg/voicelist.html |
 | Trio AI Trio API | https://docs.trio.com/en/api/getting-started |
 | Trio trio-opus-4-20250805 Docs | https://docs.trio.com/en/docs/models-overview |
 | Alexa Skills Store Brasil | https://www.amazon.com.br/alexa-skills |
 | DynamoDB Best Practices | https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html |
 | In-Skill Purchasing | https://developer.amazon.com/en-US/docs/alexa/in-skill-purchase/isp-overview.html |
-| Codigo-fonte Auri | C:/Users/renat/skills/auri-core/ |
-| Amazon Alexa Skill (skill tecnica) | C:/Users/renat/skills/amazon-alexa/SKILL.md |
+| Codigo-fonte Auri | C:/Users/trio-dev/skills/auri-core/ |
+| Amazon Alexa Skill (skill tecnica) | C:/Users/trio-dev/skills/amazon-alexa/SKILL.md |
 
 ---
 

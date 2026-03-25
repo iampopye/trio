@@ -2,9 +2,8 @@
 name: context-agent
 description: Agente de contexto para continuidade entre sessoes. Salva resumos, decisoes, tarefas pendentes e carrega briefing automatico na sessao seguinte.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - context
 - session-management
@@ -48,7 +47,7 @@ arquivos modificados e descobertas técnicas.
 ## Localização
 
 ```
-C:\Users\renat\skills\context-agent\
+C:\Users\trio-dev\skills\context-agent\
 ├── SKILL.md
 ├── scripts/
 │   ├── config.py               # Paths e constantes
@@ -75,7 +74,7 @@ C:\Users\renat\skills\context-agent\
 ## Inicialização (Primeira Vez)
 
 ```bash
-python C:\Users\renat\skills\context-agent\scripts\context_manager.py init
+python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py init
 ```
 
 ## Salvar Contexto Da Sessão Atual
@@ -83,7 +82,7 @@ python C:\Users\renat\skills\context-agent\scripts\context_manager.py init
 Quando a sessão está terminando ou antes de uma tarefa longa, salvar o contexto:
 
 ```bash
-python C:\Users\renat\skills\context-agent\scripts\context_manager.py save
+python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py save
 ```
 
 O que faz:
@@ -99,7 +98,7 @@ O que faz:
 No início de uma nova sessão, carregar o contexto:
 
 ```bash
-python C:\Users\renat\skills\context-agent\scripts\context_manager.py load
+python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py load
 ```
 
 Gera briefing com: projetos ativos, tarefas pendentes (por prioridade),
@@ -108,7 +107,7 @@ bloqueadores, decisões recentes, convenções e resumo das últimas sessões.
 ## Status Rápido
 
 ```bash
-python C:\Users\renat\skills\context-agent\scripts\context_manager.py status
+python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py status
 ```
 
 Resumo em poucas linhas: projetos, pendências críticas, bloqueadores.
@@ -116,7 +115,7 @@ Resumo em poucas linhas: projetos, pendências críticas, bloqueadores.
 ## Buscar No Histórico
 
 ```bash
-python C:\Users\renat\skills\context-agent\scripts\context_manager.py search "rate limit"
+python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py search "rate limit"
 ```
 
 Busca full-text (SQLite FTS5) em todas as sessões — tópicos, decisões,
@@ -125,7 +124,7 @@ erros, arquivos, etc.
 ## Manutenção
 
 ```bash
-python C:\Users\renat\skills\context-agent\scripts\context_manager.py maintain
+python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py maintain
 ```
 
 Arquiva sessões antigas, comprime arquivo, ressincroniza MEMORY.md,
@@ -160,7 +159,7 @@ reconstrói índice de busca.
 ## Integração Com Memory.Md
 
 O ACTIVE_CONTEXT.md é automaticamente copiado para:
-`C:\Users\renat\.trio\projects\C--Users-renat-skills\memory\MEMORY.md`
+`C:\Users\trio-dev\.trio\projects\C--Users-trio-dev-skills\memory\MEMORY.md`
 
 Como o MEMORY.md é incluído no system prompt de toda sessão, o Trio
 sempre começa sabendo o estado atual dos projetos, tarefas pendentes

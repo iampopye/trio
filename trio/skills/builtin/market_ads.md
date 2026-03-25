@@ -280,7 +280,6 @@ Stage 2 Ads (Consideration):
 
 Stage 3 Ads (Conversion):
   Ad 3A: Offer — "[Discount/trial] — limited to [number/time]"
-  Ad 3B: Urgency — "Your free trial starts now (no credit card)"
   Ad 3C: Guarantee — "Try [product] risk-free for [period]"
   Ad 3D: Testimonial — "'[Quote about specific result]' — Start yours"
 ```

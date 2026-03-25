@@ -2,7 +2,7 @@
 name: slack-bot-builder
 description: "The Bolt framework is Slack's recommended approach for building apps. It handles authentication, event routing, request verification, and HTTP request processing so you can focus on app logic."
 risk: unknown
-source: "vibeship-spawner-skills (Apache 2.0)"
+source: builtin
 date_added: "2026-02-27"
 ---
 

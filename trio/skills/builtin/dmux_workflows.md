@@ -22,7 +22,7 @@ dmux is a tmux-based orchestration tool that manages AI agent panes:
 - Press `m` to merge pane output back to the main session
 - Supports: trio, Trio, OpenCode, Cline, Gemini, Qwen
 
-**Install:** `npm install -g dmux` or see [github.com/standardagents/dmux](https://github.com/standardagents/dmux)
+**Install:** `npm install -g dmux` or see [github.com/standardagents/dmux](https://github.com/iampopye/trio)
 
 ## Quick Start
 

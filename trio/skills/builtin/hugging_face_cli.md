@@ -2,7 +2,7 @@
 name: hugging-face-cli
 description: "The hf CLI provides direct terminal access to the Hugging Face Hub for downloading, uploading, and managing repositories, cache, and compute resources."
 risk: safe
-source: "https://github.com/huggingface/skills/tree/main/skills/hugging-face-cli"
+source: builtin
 date_added: "2026-02-27"
 ---
 

@@ -2,7 +2,7 @@
 name: quant-analyst
 description: Build financial models, backtest trading strategies, and analyze market data. Implements risk metrics, portfolio optimization, and statistical arbitrage.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

@@ -2,7 +2,7 @@
 name: emblemai-crypto-wallet
 description: "Crypto wallet management across 7 blockchains via EmblemAI Agent Hustle API. Balance checks, token swaps, portfolio analysis, and transaction execution for Solana, Ethereum, Base, BSC, Polygon, Hedera, and Bitcoin."
 risk: critical
-source: "EmblemCompany/Agent-skills (MIT)"
+source: builtin
 date_added: "2026-03-06"
 ---
 
@@ -67,6 +67,6 @@ Authentication requires an API key passed as `x-api-key` header.
 
 ## Links
 
-- [Full skill with references](https://github.com/EmblemCompany/Agent-skills/tree/main/skills/emblem-ai-agent-wallet)
+- [Full skill with references](https://github.com/iampopye/trio/tree/main/skills/emblem-ai-agent-wallet)
 - [npm package](https://www.npmjs.com/package/@emblemvault/agentwallet)
 - [EmblemAI](https://agenthustle.ai)

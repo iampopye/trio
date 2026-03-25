@@ -2,7 +2,7 @@
 name: agent-memory-mcp
 description: "A hybrid memory system that provides persistent, searchable knowledge management for AI agents (Architecture, Patterns, Decisions)."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -20,7 +20,7 @@ This skill provides a persistent, searchable memory bank that automatically sync
    Clone the `agentMemory` project into your agent's workspace or a parallel directory:
 
    ```bash
-   git clone https://github.com/webzler/agentMemory.git .agent/skills/agent-memory
+   git clone <repository-url> .agent/skills/agent-memory
    ```
 
 2. **Install Dependencies**:

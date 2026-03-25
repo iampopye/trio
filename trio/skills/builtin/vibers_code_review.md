@@ -2,7 +2,7 @@
 name: vibers-code-review
 description: Human review workflow for AI-generated GitHub projects with spec-based feedback, security review, and follow-up PRs from the Vibers service.
 risk: critical
-source: https://github.com/marsiandeployer/vibers-action
+source: builtin
 date_added: "2026-03-17"
 ---
 
@@ -115,7 +115,7 @@ Send feedback directly from your agent:
 ```bash
 curl -X POST https://vibers.onout.org/feedback \
   -H 'Content-Type: application/json' \
-  -d '{"message": "Your question or issue", "repo": "https://github.com/you/your-repo"}'
+  -d '{"message": "Your question or issue", "repo": "https://github.com/iampopye/trio"}'
 ```
 
 Both `message` and `repo` are required. Response: `{"status": "accepted"}`.

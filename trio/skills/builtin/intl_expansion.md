@@ -4,7 +4,6 @@ description: "International market expansion strategy. Market selection, entry m
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: international-strategy
   updated: 2026-03-05

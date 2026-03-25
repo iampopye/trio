@@ -4,7 +4,6 @@ description: "When the user wants help with paid advertising campaigns on Google
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
 ---
@@ -235,8 +234,6 @@ LI_LeadGen_CMOs-SaaS_Whitepaper_Mar24
 - Frequency check (fatigue risk)
 - Landing page conversion rate
 
-### Attribution Considerations
-- Platform attribution is inflated
 - Use UTM parameters consistently
 - Compare platform data to GA4
 - Look at blended CAC, not just platform CPA
@@ -313,7 +310,6 @@ For tracking, see also: [ga4.md](../../tools/integrations/ga4.md), [segment.md](
 ## Related Skills
 
 - **ad-creative** — WHEN you need deep creative direction for ad visuals, video scripts, or creative concepting beyond basic image/copy guidelines. NOT for campaign strategy, targeting, or bidding decisions.
-- **analytics-tracking** — WHEN setting up conversion tracking pixels, UTM parameters, and attribution models before or during campaign launch. NOT for campaign creation or creative work.
 - **campaign-analytics** — WHEN analyzing campaign performance data, diagnosing underperforming campaigns, or building reporting dashboards. NOT for initial campaign setup or creative production.
 - **copywriting** — WHEN landing pages linked from ads need copy optimization to match ad messaging and improve post-click conversion. NOT for the ad copy itself.
 - **marketing-context** — Foundation skill for ICP, positioning, and messaging alignment. ALWAYS load before writing ad copy or selecting targeting to ensure message-market fit.
@@ -322,7 +318,6 @@ For tracking, see also: [ga4.md](../../tools/integrations/ga4.md), [segment.md](
 
 ## Communication
 
-Always confirm conversion tracking is in place before recommending creative or targeting changes — a campaign without proper attribution is guesswork. When recommending budget allocation, state the rationale (testing vs. scaling phase). Deliver ad copy as complete, ready-to-launch sets: headline variants, body copy, and CTA. Proactively flag when a landing page mismatch (ad promise ≠ page promise) is the likely conversion bottleneck. Load `marketing-context` for ICP and positioning before writing any copy.
 
 ---
 

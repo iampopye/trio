@@ -2,7 +2,7 @@
 name: architecture-decision-records
 description: "Comprehensive patterns for creating, maintaining, and managing Architecture Decision Records (ADRs) that capture the context and rationale behind significant technical decisions."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -441,4 +441,4 @@ adr link 2 "Complements" 1 "Is complemented by"
 - [Documenting Architecture Decisions (Michael Nygard)](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
 - [MADR Template](https://adr.github.io/madr/)
 - [ADR GitHub Organization](https://adr.github.io/)
-- [adr-tools](https://github.com/npryce/adr-tools)
+- [adr-tools](https://github.com/iampopye/trio)

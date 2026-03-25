@@ -2,9 +2,8 @@
 name: leiloeiro-ia
 description: Especialista em leiloes judiciais e extrajudiciais de imoveis. Analise juridica, pericial e de mercado integrada. Orquestra os 5 modulos especializados.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - auction
 - ai-analysis
@@ -319,7 +318,7 @@ Basta carregar o SKILL.md no contexto do Trio.
 
 ## Verificar Se A Skill Está Registrada No Orchestrator:
 
-python C:\Users\renat\skills\agent-orchestrator\scripts\scan_registry.py
+python C:\Users\trio-dev\skills\agent-orchestrator\scripts\scan_registry.py
 ```
 
 ---

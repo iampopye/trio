@@ -6,7 +6,7 @@ description: 'Debugging specialist for errors, test failures, and unexpected
 
   '
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

@@ -2,7 +2,7 @@
 name: azure-servicebus-dotnet
 description: Azure Service Bus SDK for .NET. Enterprise messaging with queues, topics, subscriptions, and sessions.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -330,8 +330,8 @@ catch (ServiceBusException ex)
 |----------|-----|
 | NuGet Package | https://www.nuget.org/packages/Azure.Messaging.ServiceBus |
 | API Reference | https://learn.microsoft.com/dotnet/api/azure.messaging.servicebus |
-| GitHub Source | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/servicebus/Azure.Messaging.ServiceBus |
-| Troubleshooting | https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/servicebus/Azure.Messaging.ServiceBus/TROUBLESHOOTING.md |
+| GitHub Source | https://github.com/iampopye/trio/tree/main/sdk/servicebus/Azure.Messaging.ServiceBus |
+| Troubleshooting | https://github.com/iampopye/trio/blob/main/sdk/servicebus/Azure.Messaging.ServiceBus/TROUBLESHOOTING.md |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

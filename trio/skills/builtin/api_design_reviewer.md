@@ -227,7 +227,7 @@ X-RateLimit-Reset: 1640995200
 ```json
 {
   "id": "123",
-  "name": "John Doe",
+  "name": "trio-dev",
   "email": "john@example.com",
   "_links": {
     "self": { "href": "/api/v1/users/123" },

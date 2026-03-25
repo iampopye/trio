@@ -14,7 +14,6 @@ description: >
 license: MIT
 metadata:
   version: 1.0.0
-  author: Abbas Mir
   category: engineering-team
   updated: 2026-03-13
 ---

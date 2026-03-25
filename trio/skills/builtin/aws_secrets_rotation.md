@@ -3,7 +3,7 @@ name: aws-secrets-rotation
 description: "Automate AWS secrets rotation for RDS, API keys, and credentials"
 category: security
 risk: safe
-source: community
+source: builtin
 tags: "[aws, secrets-manager, security, automation, kiro-cli, credentials]"
 date_added: "2026-02-27"
 ---
@@ -461,5 +461,5 @@ kiro-cli chat "Create a rotation audit report with aws-secrets-rotation"
 ## Additional Resources
 
 - [AWS Secrets Manager Rotation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html)
-- [Rotation Lambda Templates](https://github.com/aws-samples/aws-secrets-manager-rotation-lambdas)
+- [Rotation Lambda Templates](https://github.com/iampopye/trio)
 - [Best Practices for Secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/best-practices.html)

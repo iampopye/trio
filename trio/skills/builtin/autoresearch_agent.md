@@ -4,7 +4,6 @@ description: "Autonomous experiment loop that optimizes any file by a measurable
 license: MIT
 metadata:
   version: 2.0.0
-  author: Alireza Rezvani
   category: engineering
   updated: 2026-03-13
 ---
@@ -13,7 +12,7 @@ metadata:
 
 > You sleep. The agent experiments. You wake up to results.
 
-Autonomous experiment loop inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch). The agent edits one file, runs a fixed evaluation, keeps improvements, discards failures, and loops indefinitely.
+Autonomous experiment loop inspired by [Karpathy's autoresearch](https://github.com/iampopye/trio). The agent edits one file, runs a fixed evaluation, keeps improvements, discards failures, and loops indefinitely.
 
 Not one guess — fifty measured attempts, compounding.
 
@@ -284,7 +283,7 @@ Flag these without being asked:
 
 ### One-liner (any tool)
 ```bash
-git clone https://github.com/alirezarezvani/trio-skills.git
+git clone <repository-url>
 cp -r trio-skills/engineering/autoresearch-agent ~/.trio/skills/
 ```
 

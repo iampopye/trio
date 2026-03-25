@@ -3,7 +3,7 @@ name: keyword-extractor
 description: >
   Extracts up to 50 highly relevant SEO keywords from text. Use when user wants to generate or extract keywords for given text.
 risk: safe
-source: original
+source: builtin
 date_added: "2026-03-11"
 ---
 

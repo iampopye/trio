@@ -2,7 +2,7 @@
 name: bash-linux
 description: "Bash/Linux terminal patterns. Critical commands, piping, error handling, scripting. Use when working on macOS or Linux systems."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

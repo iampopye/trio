@@ -2,7 +2,7 @@
 name: azure-postgres-ts
 description: Connect to Azure Database for PostgreSQL Flexible Server from Node.js/TypeScript using the pg (node-postgres) package.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -161,7 +161,7 @@ const result = await pool.query(
 // Multiple parameters
 const result = await pool.query(
   "INSERT INTO users (email, name, created_at) VALUES ($1, $2, NOW()) RETURNING *",
-  [email, "John Doe"]
+  [email, "trio-dev"]
 );
 
 // Array parameter
@@ -473,7 +473,7 @@ import {
 |----------|-----|
 | node-postgres Docs | https://node-postgres.com |
 | npm Package | https://www.npmjs.com/package/pg |
-| GitHub Repository | https://github.com/brianc/node-postgres |
+| GitHub Repository | https://github.com/iampopye/trio |
 | Azure PostgreSQL Docs | https://learn.microsoft.com/azure/postgresql/flexible-server/ |
 | Passwordless Connection | https://learn.microsoft.com/azure/postgresql/flexible-server/how-to-connect-with-managed-identity |
 

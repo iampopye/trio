@@ -86,7 +86,6 @@ For each leak point, estimate:
 Generate 3-5 testable hypotheses:
 Format: "If we [change], then [metric] will [improve/increase] because [reason]"
 
-Example: "If we change the CTA from 'Get Started' to 'Start Free Trial — No Credit Card', then signup rate will increase because it removes payment anxiety."
 
 ## Output Format
 

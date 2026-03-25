@@ -2,7 +2,7 @@
 name: azure-ai-agents-persistent-dotnet
 description: Azure AI Agents Persistent SDK for .NET. Low-level SDK for creating and managing AI agents with threads, messages, runs, and tools.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -346,8 +346,8 @@ catch (RequestFailedException ex)
 |----------|-----|
 | NuGet Package | https://www.nuget.org/packages/Azure.AI.Agents.Persistent |
 | API Reference | https://learn.microsoft.com/dotnet/api/azure.ai.agents.persistent |
-| GitHub Source | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/ai/Azure.AI.Agents.Persistent |
-| Samples | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/ai/Azure.AI.Agents.Persistent/samples |
+| GitHub Source | https://github.com/iampopye/trio/tree/main/sdk/ai/Azure.AI.Agents.Persistent |
+| Samples | https://github.com/iampopye/trio/tree/main/sdk/ai/Azure.AI.Agents.Persistent/samples |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

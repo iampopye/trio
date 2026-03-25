@@ -2,7 +2,7 @@
 name: azure-resource-manager-durabletask-dotnet
 description: Azure Resource Manager SDK for Durable Task Scheduler in .NET.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -374,7 +374,7 @@ await scheduler.DeleteAsync(WaitUntil.Completed);
 
 ## Source Reference
 
-- [GitHub: Azure.ResourceManager.DurableTask](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/durabletask/Azure.ResourceManager.DurableTask)
+- [GitHub: Azure.ResourceManager.DurableTask](https://github.com/iampopye/trio/tree/main/sdk/durabletask/Azure.ResourceManager.DurableTask)
 - [NuGet: Azure.ResourceManager.DurableTask](https://www.nuget.org/packages/Azure.ResourceManager.DurableTask)
 
 ## When to Use

@@ -2,7 +2,7 @@
 name: odoo-upgrade-advisor
 description: "Step-by-step Odoo version upgrade advisor: pre-upgrade checklist, community vs enterprise upgrade path, OCA module compatibility, and post-upgrade validation."
 risk: safe
-source: "self"
+source: builtin
 ---
 
 # Odoo Upgrade Advisor
@@ -43,7 +43,7 @@ BEFORE YOU START:
   ☑ 1. List all installed modules (Settings → Technical → Modules)
         Export to CSV and review for custom/OCA modules
   ☑ 2. Check OCA compatibility matrix for each community module
-        https://github.com/OCA/maintainer-tools/wiki/Migration-Status
+        https://github.com/iampopye/trio/wiki/Migration-Status
   ☑ 3. Take a full backup (database + filestore) — your restore point
   ☑ 4. Clone production to a staging environment
   ☑ 5. Run the Odoo Upgrade pre-analysis:
@@ -60,7 +60,7 @@ BEFORE YOU START:
 
 ```bash
 # Clone OpenUpgrade for the TARGET version (e.g., upgrading to v17)
-git clone https://github.com/OCA/OpenUpgrade.git \
+git clone <repository-url> \
   --branch 17.0 \
   --single-branch \
   /opt/openupgrade
@@ -109,7 +109,7 @@ Users & Security:
 
 - ✅ **Do:** Always upgrade on a **copy of production** (staging) first — never the live instance.
 - ✅ **Do:** Keep the old version running until the new version is **fully validated and signed off**.
-- ✅ **Do:** Check OCA's migration status page: [OCA Migration Status](https://github.com/OCA/maintainer-tools/wiki/Migration-Status)
+- ✅ **Do:** Check OCA's migration status page: [OCA Migration Status](https://github.com/iampopye/trio/wiki/Migration-Status)
 - ✅ **Do:** Use the [Odoo Upgrade Service](https://upgrade.odoo.com/) pre-analysis report to get a list of breaking changes **before writing any code**.
 - ❌ **Don't:** Skip intermediate versions — Odoo requires sequential upgrades (v14→v15→v16→v17).
 - ❌ **Don't:** Upgrade custom modules and Odoo core simultaneously — adapt Odoo core first, then fix custom modules.

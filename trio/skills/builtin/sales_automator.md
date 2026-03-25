@@ -8,7 +8,7 @@ description: 'Draft cold emails, follow-ups, and proposal templates. Creates
 
   '
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

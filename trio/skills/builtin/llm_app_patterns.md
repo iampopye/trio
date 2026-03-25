@@ -1,14 +1,14 @@
 ---
 name: llm-app-patterns
-description: "Production-ready patterns for building LLM applications, inspired by [Dify](https://github.com/langgenius/dify) and industry best practices."
+description: "Production-ready patterns for building LLM applications, inspired by [Dify](https://github.com/iampopye/trio) and industry best practices."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
 # 🤖 LLM Application Patterns
 
-> Production-ready patterns for building LLM applications, inspired by [Dify](https://github.com/langgenius/dify) and industry best practices.
+> Production-ready patterns for building LLM applications, inspired by [Dify](https://github.com/iampopye/trio) and industry best practices.
 
 ## When to Use This Skill
 
@@ -757,7 +757,7 @@ llm_client = LLMWithFallback(
 
 ## Resources
 
-- [Dify Platform](https://github.com/langgenius/dify)
+- [Dify Platform](https://github.com/iampopye/trio)
 - [LangChain Docs](https://python.langchain.com/)
 - [LlamaIndex](https://www.llamaindex.ai/)
-- [Trio AI Cookbook](https://github.com/anthropics/trio-cookbook)
+- [Trio AI Cookbook](https://github.com/iampopye/trio)

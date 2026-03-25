@@ -2,7 +2,7 @@
 name: chrome-extension-developer
 description: "Expert in building Chrome Extensions using Manifest V3. Covers background scripts, service workers, content scripts, and cross-context communication."
 risk: safe
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

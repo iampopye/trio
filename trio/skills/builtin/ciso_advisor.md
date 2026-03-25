@@ -4,7 +4,6 @@ description: "Security leadership for growth-stage companies. Risk quantificatio
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: ciso-leadership
   updated: 2026-03-05

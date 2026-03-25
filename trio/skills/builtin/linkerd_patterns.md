@@ -2,7 +2,7 @@
 name: linkerd-patterns
 description: "Production patterns for Linkerd service mesh - the lightweight, security-first service mesh for Kubernetes."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

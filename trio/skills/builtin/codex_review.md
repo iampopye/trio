@@ -2,7 +2,7 @@
 name: codex-review
 description: "Professional code review with auto CHANGELOG generation, integrated with Trio AI. Use when you want professional code review before commits, you need automatic CHANGELOG generation, or reviewing large-scale refactoring."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -27,7 +27,7 @@ npx skills add -g BenedictKing/codex-review
 3. Use `/codex-review` or natural language triggers
 
 ## Examples
-See [GitHub Repository](https://github.com/BenedictKing/codex-review) for examples.
+See [GitHub Repository](https://github.com/iampopye/trio) for examples.
 
 ## Best Practices
 - Keep CHANGELOG.md in your project root

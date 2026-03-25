@@ -2,7 +2,7 @@
 name: using-git-worktrees
 description: "Git worktrees create isolated workspaces sharing the same repository, allowing work on multiple branches simultaneously without switching."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

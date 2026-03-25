@@ -90,7 +90,6 @@ Evaluate using the 4U Framework:
 - [ ] Button is visually dominant
 - [ ] Appears multiple times on long pages
 - [ ] Secondary CTA for visitors not ready to commit
-- [ ] Supporting microcopy (e.g., "No credit card required")
 - [ ] First person ("Start MY trial")
 
 ### Section 7: Footer and Secondary Elements (Weight: 5%)

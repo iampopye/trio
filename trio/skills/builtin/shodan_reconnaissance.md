@@ -2,8 +2,7 @@
 name: shodan-reconnaissance
 description: "Provide systematic methodologies for leveraging Shodan as a reconnaissance tool during penetration testing engagements."
 risk: unknown
-source: community
-author: zebbern
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -53,13 +52,10 @@ shodan init YOUR_API_KEY
 
 # Verify setup
 shodan info
-# Output: Query credits available: 100
-#         Scan credits available: 100
 ```
 
 #### Check Account Status
 ```bash
-# View credits and plan info
 shodan info
 
 # Check your external IP
@@ -101,7 +97,6 @@ shodan honeyscore 192.168.1.100
 
 #### Basic Search (Free)
 ```bash
-# Simple keyword search (no credits consumed)
 shodan search apache
 
 # Specify output fields
@@ -119,8 +114,6 @@ shodan search product:nginx country:US city:"New York"
 
 #### Count Results
 ```bash
-# Get result count without consuming credits
-shodan count openssh
 # Output: 23128
 
 shodan count openssh 7
@@ -206,7 +199,6 @@ screenshot.label:webcam     # Screenshot type
 
 #### Submit Scan
 ```bash
-# Scan single IP (1 credit per IP)
 shodan scan submit 192.168.1.100
 
 # Scan with verbose output (shows scan ID)
@@ -297,7 +289,6 @@ for item in host['data']:
 
 ### Essential CLI Commands
 
-| Command | Description | Credits |
 |---------|-------------|---------|
 | `shodan init KEY` | Initialize API key | 0 |
 | `shodan info` | Show account info | 0 |
@@ -311,7 +302,6 @@ for item in host['data']:
 | `shodan scan submit IP` | On-demand scan | 1/IP |
 | `shodan honeyscore IP` | Honeypot check | 0 |
 
-*Filters consume 1 credit per query
 
 ### Common Search Queries
 
@@ -345,9 +335,7 @@ for item in host['data']:
 | Exposed admin panels | `http.title:"admin" port:443` |
 | Database exposure | `port:3306,5432,27017,6379` |
 
-### Credit System
 
-| Action | Credit Type | Cost |
 |--------|-------------|------|
 | Basic search | Query | 0 (no filters) |
 | Filtered search | Query | 1 |
@@ -362,13 +350,9 @@ for item in host['data']:
 - Rate limited to 1 request per second
 - Scan results not immediate (asynchronous)
 - Cannot re-scan same IP within 24 hours (non-Enterprise)
-- Free accounts have limited credits
-- Some data requires paid subscription
 
 ### Data Freshness
 - Shodan crawls continuously but data may be days/weeks old
-- On-demand scans provide current data but cost credits
-- Historical data available with paid plans
 
 ### Legal Requirements
 - Only perform reconnaissance on authorized targets
@@ -497,7 +481,6 @@ shodan download network_scan.json.gz 'net:192.168.1.0/24'
 | Issue | Cause | Solution |
 |-------|-------|----------|
 | No API Key Configured | Key not initialized | Run `shodan init YOUR_API_KEY` then verify with `shodan info` |
-| Query Credits Exhausted | Monthly credits consumed | Use credit-free queries (no filters), wait for reset, or upgrade |
 | Host Recently Crawled | Cannot re-scan IP within 24h | Use `shodan host IP` for existing data, or wait 24 hours |
 | Rate Limit Exceeded | >1 request/second | Add `time.sleep(1)` between API requests |
 | Empty Search Results | Too specific or syntax error | Use quotes for phrases: `'org:"Company Name"'`; broaden criteria |

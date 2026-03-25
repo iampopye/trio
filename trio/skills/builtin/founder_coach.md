@@ -4,7 +4,6 @@ description: "Personal leadership development for founders and first-time CEOs. 
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: founder-development
   updated: 2026-03-05

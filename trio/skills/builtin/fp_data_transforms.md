@@ -2,9 +2,8 @@
 name: fp-data-transforms
 description: Everyday data transformations using functional patterns - arrays, objects, grouping, aggregation, and null-safe access
 risk: unknown
-source: community
+source: builtin
 version: 1.0.0
-author: Trio
 tags:
   - functional-programming
   - typescript

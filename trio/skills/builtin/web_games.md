@@ -2,7 +2,7 @@
 name: web-games
 description: "Web browser game development principles. Framework selection, WebGPU, optimization, PWA."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

@@ -2,7 +2,7 @@
 name: swiftui-performance-audit
 description: Audit SwiftUI performance issues from code review and profiling evidence.
 risk: safe
-source: "Dimillian/Skills (MIT)"
+source: builtin
 date_added: "2026-03-25"
 ---
 

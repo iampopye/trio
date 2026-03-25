@@ -2,7 +2,7 @@
 name: business-analyst
 description: Master modern business analysis with AI-powered analytics, real-time dashboards, and data-driven insights. Build comprehensive KPI frameworks, predictive models, and strategic recommendations.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -128,7 +128,6 @@ Expert business analyst focused on transforming complex business data into actio
 - Healthcare analytics and population health insights
 - Financial services risk and compliance analytics
 - Manufacturing and IoT sensor data analysis
-- Marketing attribution and campaign effectiveness
 - Human resources analytics and workforce planning
 
 ## Behavioral Traits

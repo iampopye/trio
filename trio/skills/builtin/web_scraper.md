@@ -2,9 +2,8 @@
 name: web-scraper
 description: Web scraping inteligente multi-estrategia. Extrai dados estruturados de paginas web (tabelas, listas, precos). Paginacao, monitoramento e export CSV/JSON.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - scraping
 - data-extraction
@@ -691,7 +690,6 @@ When user requests change detection (diff mode):
 - Do NOT reproduce large blocks of copyrighted article text
 - For articles: extract factual data, statistics, and structured info;
   summarize narrative content
-- Always include source attribution (http://example.com) in output
 
 ## Data Scope
 

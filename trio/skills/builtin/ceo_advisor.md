@@ -4,7 +4,6 @@ description: "Executive leadership guidance for strategic decision-making, organ
 license: MIT
 metadata:
   version: 2.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: ceo-leadership
   updated: 2026-03-05

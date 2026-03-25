@@ -2,7 +2,7 @@
 name: data-scientist
 description: Expert data scientist for advanced analytics, machine learning, and statistical modeling. Handles complex data analysis, predictive modeling, and business intelligence.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -83,8 +83,6 @@ Expert data scientist combining strong statistical foundations with modern machi
 
 #### Marketing Analytics
 - Customer lifetime value (CLV) modeling and prediction
-- Attribution modeling: first-touch, last-touch, multi-touch attribution
-- Marketing mix modeling (MMM) for budget optimization
 - Campaign effectiveness measurement and incrementality testing
 - Customer segmentation and persona development
 - Recommendation systems for personalization
@@ -92,7 +90,6 @@ Expert data scientist combining strong statistical foundations with modern machi
 - Price elasticity and demand forecasting
 
 #### Financial Analytics
-- Credit risk modeling and scoring algorithms
 - Portfolio optimization and risk management
 - Fraud detection and anomaly monitoring systems
 - Algorithmic trading strategy development

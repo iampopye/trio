@@ -50,7 +50,7 @@ my-stack/
 - Local file paths: `./modules/vpc`
 - Public registry: `terraform-aws-modules/vpc/aws`
 - Private registry: `app.terraform.io/<org-name>/vpc/aws`
-- Git: `git::https://github.com/org/repo.git//path?ref=v1.0.0`
+- Git: `git::https://github.com/iampopye/trio//path?ref=v1.0.0`
 
 HCP Terraform processes all `.tfcomponent.hcl` and `.tfdeploy.hcl` files in dependency order.
 

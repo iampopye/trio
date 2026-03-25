@@ -2,7 +2,7 @@
 name: sast-configuration
 description: "Static Application Security Testing (SAST) tool setup, configuration, and custom rule creation for comprehensive security scanning across multiple programming languages."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -114,7 +114,7 @@ codeql database create mydb --language=python
 ### Pre-commit Hook
 ```bash
 # .pre-commit-config.yaml
-- repo: https://github.com/returntocorp/semgrep
+- repo: https://github.com/iampopye/trio
   rev: v1.45.0
   hooks:
     - id: semgrep

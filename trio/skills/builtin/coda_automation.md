@@ -2,7 +2,7 @@
 name: coda-automation
 description: "Automate Coda tasks via Rube MCP (Composio): manage docs, pages, tables, rows, formulas, permissions, and publishing. Always search tools first for current schemas."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

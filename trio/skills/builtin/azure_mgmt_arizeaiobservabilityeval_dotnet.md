@@ -2,7 +2,7 @@
 name: azure-mgmt-arizeaiobservabilityeval-dotnet
 description: Azure Resource Manager SDK for Arize AI Observability and Evaluation (.NET).
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -225,7 +225,7 @@ var data = await org.GetAsync();
 ## Links
 
 - [NuGet Package](https://www.nuget.org/packages/Azure.ResourceManager.ArizeAIObservabilityEval)
-- [Azure SDK for .NET](https://github.com/Azure/azure-sdk-for-net)
+- [Azure SDK for .NET](https://github.com/iampopye/trio)
 - [Arize AI](https://arize.com/)
 
 ## When to Use

@@ -2,7 +2,6 @@
 name: "pm-skills"
 description: "6 project management agent skills and plugins for Trio, Trio, Trio CLI, Trio, OpenClaw. Senior PM, scrum master, Jira expert (JQL), Confluence expert, Atlassian admin, template creator. MCP integration for live Jira/Confluence automation."
 version: 1.0.0
-author: Alireza Rezvani
 license: MIT
 tags:
   - project-management

@@ -2,7 +2,7 @@
 name: dbt-transformation-patterns
 description: "Production-ready patterns for dbt (data build tool) including model organization, testing strategies, documentation, and incremental processing."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

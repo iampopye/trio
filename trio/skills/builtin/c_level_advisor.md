@@ -4,7 +4,6 @@ description: "10 C-level advisory agent skills and plugins for Trio, Trio, Trio 
 license: MIT
 metadata:
   version: 2.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: executive-advisory
   updated: 2026-03-05

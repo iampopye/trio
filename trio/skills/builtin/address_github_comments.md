@@ -2,7 +2,7 @@
 name: address-github-comments
 description: "Use when you need to address review or issue comments on an open GitHub Pull Request using the gh CLI."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

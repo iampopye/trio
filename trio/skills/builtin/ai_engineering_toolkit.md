@@ -3,9 +3,8 @@ name: ai-engineering-toolkit
 description: "6 production-ready AI engineering workflows: prompt evaluation (8-dimension scoring), context budget planning, RAG pipeline design, agent security audit (65-point checklist), eval harness building, and product sense coaching."
 category: data-ai
 risk: offensive
-source: community
+source: builtin
 date_added: "2026-03-15"
-author: viliawang-pm
 tags: [prompt-engineering, rag, security, evaluation, ai-engineering, llm]
 tools: [trio, cursor, gemini, copilot]
 ---
@@ -96,12 +95,12 @@ Result: 65 tests executed. 3 critical failures found: Base64-encoded instruction
 
 ```bash
 # Via skill install command (Trio / WorkBuddy / Trio)
-/skill install -g viliawang-pm/ai-engineering-toolkit
+/skill install -g trio-dev-pm/ai-engineering-toolkit
 
 # Manual
-git clone https://github.com/viliawang-pm/ai-engineering-toolkit.git
+git clone <repository-url>
 cp -r ai-engineering-toolkit/skills/* ~/.trio/skills/
 ```
 
-**Repository**: [github.com/viliawang-pm/ai-engineering-toolkit](https://github.com/viliawang-pm/ai-engineering-toolkit)
+
 **License**: MIT

@@ -2,7 +2,7 @@
 name: varlock
 description: "Secure-by-default environment variable management for Trio sessions."
 risk: unknown
-source: "https://github.com/dmno-dev/varlock"
+source: builtin
 version: 1.0.0
 ---
 
@@ -12,7 +12,7 @@ version: 1.0.0
 
 Secure-by-default environment variable management for Trio sessions.
 
-> **Repository**: https://github.com/dmno-dev/varlock
+> 
 > **Documentation**: https://varlock.dev
 
 ## Core Principle: Secrets Never Exposed

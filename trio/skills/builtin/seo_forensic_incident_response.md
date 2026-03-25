@@ -2,7 +2,7 @@
 name: seo-forensic-incident-response
 description: "Investigate sudden drops in organic traffic or rankings and run a structured forensic SEO incident response with triage, root-cause analysis and recovery plan."
 risk: safe
-source: original
+source: builtin
 date_added: "2026-02-27"
 ---
 

@@ -2,7 +2,7 @@
 name: evolution
 description: "This skill enables makepad-skills to self-improve continuously during development."
 risk: unknown
-source: community
+source: builtin
 ---
 
 <!-- security-allowlist: curl-pipe-bash -->
@@ -413,6 +413,6 @@ If yes to any, evolve the appropriate skill!
 
 ## References
 
-- [makepad-skills repository](https://github.com/ZhangHanDong/makepad-skills)
-- [Makepad documentation](https://github.com/makepad/makepad)
+- [makepad-skills repository](https://github.com/iampopye/trio)
+- [Makepad documentation](https://github.com/iampopye/trio)
 - [Project Robius](https://github.com/project-robius)

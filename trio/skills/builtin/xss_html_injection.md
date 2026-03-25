@@ -2,8 +2,7 @@
 name: xss-html-injection
 description: "Execute comprehensive client-side injection vulnerability assessments on web applications to identify XSS and HTML injection flaws, demonstrate exploitation techniques for session hijacking and credential theft, and validate input sanitization and output encoding mechanisms."
 risk: unknown
-source: community
-author: zebbern
+source: builtin
 date_added: "2026-02-27"
 ---
 

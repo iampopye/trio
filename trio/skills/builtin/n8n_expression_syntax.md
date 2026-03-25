@@ -2,7 +2,7 @@
 name: n8n-expression-syntax
 description: Validate n8n expression syntax and fix common errors. Use when writing n8n expressions, using {{}} syntax, accessing $json/$node variables, troubleshooting expression errors, or working with webhook data in workflows.
 risk: unknown
-source: community
+source: builtin
 ---
 
 # n8n Expression Syntax
@@ -276,7 +276,7 @@ For real workflow examples, see EXAMPLES.md
 ```json
 {
   "body": {
-    "name": "John Doe",
+    "name": "trio-dev",
     "email": "john@example.com",
     "message": "Hello!"
   }

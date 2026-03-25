@@ -2,7 +2,7 @@
 name: azure-appconfiguration-ts
 description: "Centralized configuration management with feature flags and dynamic refresh."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

@@ -3,9 +3,8 @@ name: lex
 description: "Centralized 'Truth Engine' for cross-jurisdictional legal context (US, EU, CA) and contract scaffolding."
 category: business
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-10"
-author: Svobikl
 tags: [legal, context, cross-jurisdictional, compliance, scaffolding]
 tools: [trio, cursor, gemini]
 ---

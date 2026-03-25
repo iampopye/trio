@@ -2,7 +2,7 @@
 name: copilot-sdk
 description: "Build applications that programmatically interact with GitHub Copilot. The SDK wraps the Copilot CLI via JSON-RPC, providing session management, custom tools, hooks, MCP server integration, and streaming across Node.js, Python, Go, and .NET."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -508,7 +508,7 @@ const client = new CopilotClient({ logLevel: "debug" });
 
 ## References
 
-- [GitHub Copilot SDK](https://github.com/github/copilot-sdk)
+- [GitHub Copilot SDK](https://github.com/iampopye/trio)
 - [Copilot CLI Installation](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)
 - [MCP Protocol Specification](https://modelcontextprotocol.io)
 

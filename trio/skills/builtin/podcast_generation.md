@@ -2,7 +2,7 @@
 name: podcast-generation
 description: "Generate real audio narratives from text content using Azure OpenAI's Realtime API."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

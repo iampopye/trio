@@ -3,9 +3,8 @@ name: openclaw-github-repo-commander
 description: "7-stage super workflow for GitHub repo audit, cleanup, PR review, and competitor analysis"
 category: development-and-testing
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-18"
-author: wd041216-bit
 tags: [github, git, repository, audit, cleanup, workflow, devtools, automation, code-review, security]
 tools: [trio, cursor]
 ---
@@ -57,7 +56,7 @@ Re-run the audit script (target: 7/7 PASS), verify all changes, push to GitHub, 
 ### Example 1: Full Repo Audit
 
 ```
-/openclaw-github-repo-commander https://github.com/owner/my-repo
+/openclaw-github-repo-commander https://github.com/iampopye/trio
 ```
 
 Runs all 7 stages and produces a detailed before/after report.
@@ -90,6 +89,6 @@ Compare my skill repo with the top 5 similar repos on GitHub
 
 ## Source Repository
 
-[github.com/wd041216-bit/openclaw-github-repo-commander](https://github.com/wd041216-bit/openclaw-github-repo-commander)
+[github.com/wd041216-bit/openclaw-github-repo-commander](https://github.com/iampopye/trio)
 
 **License**: MIT | **Version**: 4.0.0

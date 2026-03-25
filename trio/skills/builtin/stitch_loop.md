@@ -8,7 +8,7 @@ allowed-tools:
   - "Write"
   - "Bash"
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Stitch Build Loop

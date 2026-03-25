@@ -2,7 +2,7 @@
 name: database-admin
 description: Expert database administrator specializing in modern cloud databases, automation, and reliability engineering.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

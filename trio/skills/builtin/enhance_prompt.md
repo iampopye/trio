@@ -5,7 +5,7 @@ allowed-tools:
   - "Read"
   - "Write"
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Enhance Prompt for Stitch

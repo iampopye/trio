@@ -143,7 +143,6 @@ The conversion mechanism itself.
 - [ ] CTA button is visually dominant (size, color, whitespace)
 - [ ] CTA appears multiple times on long pages
 - [ ] Secondary CTA exists for visitors not ready to commit
-- [ ] CTA has supporting microcopy (e.g., "No credit card required")
 - [ ] Button text uses first person ("Start MY trial" vs "Start YOUR trial")
 - [ ] CTA is specific to the offer (not generic)
 

@@ -2,7 +2,7 @@
 name: azure-data-tables-py
 description: Azure Tables SDK for Python (Storage and Cosmos DB). Use for NoSQL key-value storage, entity CRUD, and batch operations.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

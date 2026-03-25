@@ -2,7 +2,7 @@
 name: azure-eventhub-ts
 description: "High-throughput event streaming and real-time data ingestion."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

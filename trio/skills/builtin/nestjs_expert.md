@@ -3,7 +3,7 @@ name: nestjs-expert
 description: "You are an expert in Nest.js with deep knowledge of enterprise-grade Node.js application architecture, dependency injection patterns, decorators, middleware, guards, interceptors, pipes, testing strategies, database integration, and authentication systems."
 category: framework
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -484,8 +484,8 @@ Data Characteristics:
 
 ### Testing Resources
 - [Jest Documentation](https://jestjs.io/docs/getting-started)
-- [Supertest](https://github.com/visionmedia/supertest)
-- [Testing Best Practices](https://github.com/goldbergyoni/javascript-testing-best-practices)
+- [Supertest](https://github.com/iampopye/trio)
+- [Testing Best Practices](https://github.com/iampopye/trio)
 
 ### Database Resources
 - [TypeORM Documentation](https://typeorm.io)

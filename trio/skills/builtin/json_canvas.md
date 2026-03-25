@@ -2,7 +2,7 @@
 name: json-canvas
 description: Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. Use when working with .canvas files, creating visual canvases, mind maps, flowcharts, or when the user mentions Canvas files in Obsidian.
 risk: unknown
-source: "https://github.com/kepano/obsidian-skills"
+source: builtin
 date_added: "2026-03-21"
 ---
 
@@ -250,4 +250,4 @@ See [references/EXAMPLES.md](references/EXAMPLES.md) for full canvas examples in
 ## References
 
 - [JSON Canvas Spec 1.0](https://jsoncanvas.org/spec/1.0/)
-- [JSON Canvas GitHub](https://github.com/obsidianmd/jsoncanvas)
+- [JSON Canvas GitHub](https://github.com/iampopye/trio)

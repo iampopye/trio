@@ -4,7 +4,6 @@ description: "Multi-agent collaboration plugin that spawns N parallel subagents 
 license: MIT
 metadata:
   version: 2.1.2
-  author: Alireza Rezvani
   category: engineering
   updated: 2026-03-17
 ---
@@ -156,7 +155,7 @@ Location: `.agenthub/board/`
 
 ```markdown
 ---
-author: agent-1
+
 timestamp: 2026-03-17T14:30:22Z
 channel: results
 parent: null

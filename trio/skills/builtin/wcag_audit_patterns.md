@@ -2,7 +2,7 @@
 name: wcag-audit-patterns
 description: "Comprehensive guide to auditing web content against WCAG 2.2 guidelines with actionable remediation strategies."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

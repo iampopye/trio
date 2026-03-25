@@ -2,7 +2,7 @@
 name: n8n-node-configuration
 description: Operation-aware node configuration guidance. Use when configuring nodes, understanding property dependencies, determining required fields, choosing between get_node detail levels, or learning common configuration patterns by node type.
 risk: unknown
-source: community
+source: builtin
 ---
 
 # n8n Node Configuration
@@ -525,7 +525,7 @@ get_node({
   "body": {                             // Required when sendBody=true
     "contentType": "json",
     "content": {
-      "name": "John Doe",
+      "name": "trio-dev",
       "email": "john@example.com"
     }
   }

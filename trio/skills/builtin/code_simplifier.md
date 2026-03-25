@@ -2,12 +2,12 @@
 name: code-simplifier
 description: Simplifies and refines code for clarity, consistency, and maintainability while preserving all functionality. Use when asked to "simplify code", "clean up code", "refactor for clarity", "improve readability", or review recently modified code for elegance. Focuses on project-specific best practices.
 risk: unknown
-source: community
+source: builtin
 ---
 
 <!--
 Based on Trio AI's code-simplifier agent:
-https://github.com/anthropics/trio-plugins-official/blob/main/plugins/code-simplifier/agents/code-simplifier.md
+https://github.com/iampopye/trio/blob/main/plugins/code-simplifier/agents/code-simplifier.md
 -->
 
 # Code Simplifier

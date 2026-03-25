@@ -4,7 +4,6 @@ description: "Optimize content to get cited by AI search engines — ChatGPT, Pe
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
 ---
@@ -80,7 +79,6 @@ Your content needs to be structured so that answers are self-contained and extra
 - Numbered steps for "how to do X"
 - Comparison table for "X vs Y"
 - FAQ block for "questions about X"
-- Statistics with attribution for "data on X"
 
 Content that buries the answer in page 3 of a 4,000-word essay is not extractable. The AI won't find it.
 
@@ -208,7 +206,6 @@ For process queries ("how do I X"), AI systems pull numbered steps almost univer
 Explicit Q&A pairs signal to AI: "this is the question, this is the answer." Mark up with FAQPage schema. Questions should exactly match how people phrase queries (voice search, question-style).
 
 **Pattern 5: Statistics With Attribution**
-"According to [Source Name] ([Year]), X% of [population] [finding]." This format is extractable because it has a complete citation. Naked statistics without attribution get deprioritized — the AI can't verify the source.
 
 **Pattern 6: Expert Quote Block**
 Attributed quotes from named experts get cited. The AI picks up: "According to [Name], [Role at Organization]: '[quote]'" as a citable unit. Build in a few of these per key piece.

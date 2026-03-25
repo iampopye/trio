@@ -2,8 +2,7 @@
 name: smtp-penetration-testing
 description: "Conduct comprehensive security assessments of SMTP (Simple Mail Transfer Protocol) servers to identify vulnerabilities including open relays, user enumeration, weak authentication, and misconfiguration."
 risk: unknown
-source: community
-author: zebbern
+source: builtin
 date_added: "2026-02-27"
 ---
 

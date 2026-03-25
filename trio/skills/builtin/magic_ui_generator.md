@@ -2,7 +2,7 @@
 name: magic-ui-generator
 description: Utilizes Magic by 21st.dev to generate, compare, and integrate multiple production-ready UI component variations.
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-07"
 ---
 

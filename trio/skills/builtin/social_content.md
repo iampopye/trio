@@ -4,7 +4,6 @@ description: "When the user wants help creating, scheduling, or optimizing socia
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
 ---
@@ -176,8 +175,6 @@ Turn one piece of content into many:
 
 - Identify 20-50 accounts in your space
 - Consistently engage with their content
-- Share their content with credit
-- Eventually collaborate (podcasts, co-created content)
 
 ---
 

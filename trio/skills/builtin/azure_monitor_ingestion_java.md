@@ -2,7 +2,7 @@
 name: azure-monitor-ingestion-java
 description: Azure Monitor Ingestion SDK for Java. Send custom logs to Azure Monitor via Data Collection Rules (DCR) and Data Collection Endpoints (DCE).
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -223,11 +223,11 @@ String query = "MyTable_CL | where TimeGenerated > ago(1h) | limit 10";
 | Resource | URL |
 |----------|-----|
 | Maven Package | https://central.sonatype.com/artifact/com.azure/azure-monitor-ingestion |
-| GitHub | https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/monitor/azure-monitor-ingestion |
+| GitHub | https://github.com/iampopye/trio/tree/main/sdk/monitor/azure-monitor-ingestion |
 | Product Docs | https://learn.microsoft.com/azure/azure-monitor/logs/logs-ingestion-api-overview |
 | DCE Overview | https://learn.microsoft.com/azure/azure-monitor/essentials/data-collection-endpoint-overview |
 | DCR Overview | https://learn.microsoft.com/azure/azure-monitor/essentials/data-collection-rule-overview |
-| Troubleshooting | https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/monitor/azure-monitor-ingestion/TROUBLESHOOTING.md |
+| Troubleshooting | https://github.com/iampopye/trio/blob/main/sdk/monitor/azure-monitor-ingestion/TROUBLESHOOTING.md |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

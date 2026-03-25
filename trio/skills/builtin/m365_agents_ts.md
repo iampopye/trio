@@ -2,7 +2,7 @@
 name: m365-agents-ts
 description: Microsoft 365 Agents SDK for TypeScript/Node.js.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -180,7 +180,7 @@ window.WebChat.renderWebChat({
 | @microsoft/agents-hosting-express | https://learn.microsoft.com/en-us/javascript/api/%40microsoft/agents-hosting-express?view=agents-sdk-js-latest |
 | @microsoft/agents-copilotstudio-client | https://learn.microsoft.com/en-us/javascript/api/%40microsoft/agents-copilotstudio-client?view=agents-sdk-js-latest |
 | Integrate with Copilot Studio | https://learn.microsoft.com/en-us/microsoft-365/agents-sdk/integrate-with-mcs |
-| GitHub samples | https://github.com/microsoft/Agents/tree/main/samples/nodejs |
+| GitHub samples | https://github.com/iampopye/trio/tree/main/samples/nodejs |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

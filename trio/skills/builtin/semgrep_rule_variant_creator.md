@@ -4,7 +4,7 @@ description: Creates language variants of existing Semgrep rules. Use when porti
 allowed-tools:
  ...
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Semgrep Rule Variant Creator

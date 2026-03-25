@@ -2,7 +2,7 @@
 name: azure-storage-blob-rust
 description: Azure Blob Storage SDK for Rust. Use for uploading, downloading, and managing blobs and containers.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -128,7 +128,7 @@ For Entra ID auth, assign one of these roles:
 | Resource | Link |
 |----------|------|
 | API Reference | https://docs.rs/azure_storage_blob |
-| Source Code | https://github.com/Azure/azure-sdk-for-rust/tree/main/sdk/storage/azure_storage_blob |
+| Source Code | https://github.com/iampopye/trio/tree/main/sdk/storage/azure_storage_blob |
 | crates.io | https://crates.io/crates/azure_storage_blob |
 
 ## When to Use

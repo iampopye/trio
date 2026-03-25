@@ -2,7 +2,7 @@
 name: data-structure-protocol
 description: "Give agents persistent structural memory of a codebase — navigate dependencies, track public APIs, and understand why connections exist without re-reading the whole repo."
 risk: safe
-source: "https://github.com/k-kolomeitsev/data-structure-protocol"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -193,6 +193,6 @@ This skill connects naturally to:
 
 ## References
 
-- **Full architecture specification**: [ARCHITECTURE.md](https://github.com/k-kolomeitsev/data-structure-protocol/blob/main/ARCHITECTURE.md)
-- **CLI source + reference docs**: [skills/data-structure-protocol](https://github.com/k-kolomeitsev/data-structure-protocol/tree/main/skills/data-structure-protocol)
-- **Introduction article**: [article.md](https://github.com/k-kolomeitsev/data-structure-protocol/blob/main/article.md)
+- **Full architecture specification**: [ARCHITECTURE.md](https://github.com/iampopye/trio/blob/main/ARCHITECTURE.md)
+- **CLI source + reference docs**: [skills/data-structure-protocol](https://github.com/iampopye/trio/tree/main/skills/data-structure-protocol)
+- **Introduction article**: [article.md](https://github.com/iampopye/trio/blob/main/article.md)

@@ -6,7 +6,7 @@ description: >
   "write a PR description", "improve this PR", "summarize my changes",
   "PR review", "pull request", or asks to document a diff for reviewers.
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Pull Request Enhancement

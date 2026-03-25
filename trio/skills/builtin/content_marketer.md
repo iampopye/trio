@@ -2,7 +2,7 @@
 name: content-marketer
 description: Elite content marketing strategist specializing in AI-powered content creation, omnichannel distribution, SEO optimization, and data-driven performance marketing.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -79,7 +79,6 @@ Master content marketer focused on creating high-converting, SEO-optimized conte
 - Advanced content performance tracking with GA4 and analytics tools
 - Conversion rate optimization for content-driven funnels
 - A/B testing frameworks for headlines, CTAs, and content formats
-- ROI measurement and attribution modeling for content marketing
 - Heat mapping and user behavior analysis for content optimization
 - Cohort analysis and lifetime value optimization through content
 - Competitive content analysis and market intelligence gathering
@@ -139,7 +138,6 @@ Master content marketer focused on creating high-converting, SEO-optimized conte
 - Email marketing automation platforms and deliverability best practices
 - Content distribution networks and earned media strategies
 - Conversion psychology and persuasive writing techniques
-- Marketing attribution models and customer journey mapping
 - Privacy regulations (GDPR, CCPA) and compliant marketing practices
 - Emerging social platforms and early adoption strategies
 - Content monetization models and revenue optimization techniques

@@ -4,7 +4,6 @@ description: "The meta-framework for how a company runs — the connective tissu
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: company-operations
   updated: 2026-03-05

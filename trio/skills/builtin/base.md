@@ -3,7 +3,7 @@ name: base
 description: "Database management, forms, reports, and data operations with LibreOffice Base."
 category: database-processing
 risk: safe
-source: personal
+source: builtin
 date_added: "2026-02-27"
 ---
 

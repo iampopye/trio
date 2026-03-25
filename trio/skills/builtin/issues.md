@@ -3,9 +3,8 @@ name: issues
 description: Interact with GitHub issues - create, list, and view issues.
 allowed-tools: Bash(gh *)
 risk: unknown
-source: community
+source: builtin
 metadata:
-  author: Shpigford
   version: "1.0"
 ---
 
@@ -185,7 +184,6 @@ Use AskUserQuestion to determine filtering:
     description: "Show all open issues"
   - label: "Assigned to me"
     description: "Issues assigned to the current user"
-  - label: "Created by me"
     description: "Issues I created"
   - label: "With specific label"
     description: "Filter by a label"
@@ -208,7 +206,6 @@ If "With specific label" selected, use AskUserQuestion:
 Run the appropriate gh command:
 - All open: `gh issue list`
 - Assigned to me: `gh issue list --assignee @me`
-- Created by me: `gh issue list --author @me`
 - With label: `gh issue list --label "[label]"`
 
 Display the results in a clean format.

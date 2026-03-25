@@ -2,7 +2,6 @@
 name: "product-skills"
 description: "10 product agent skills and plugins for Trio, Trio, Trio CLI, Trio, OpenClaw. PM toolkit (RICE), agile PO, product strategist (OKR), UX researcher, UI design system, competitive teardown, landing page generator, SaaS scaffolder, research summarizer. Python tools (stdlib-only)."
 version: 1.1.0
-author: Alireza Rezvani
 license: MIT
 tags:
   - product

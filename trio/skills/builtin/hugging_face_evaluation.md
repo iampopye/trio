@@ -2,7 +2,7 @@
 name: hugging-face-evaluation
 description: Add and manage evaluation results in Hugging Face model cards. Supports extracting eval tables from README content, importing scores from Artificial Analysis API, and running custom model evaluations with vLLM/lighteval. Works with the model-index metadata format.
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Overview
@@ -99,7 +99,6 @@ Key workflow (matches CLI help):
 ## 2. Import from Artificial Analysis
 - **API Integration**: Fetch benchmark scores directly from Artificial Analysis
 - **Automatic Formatting**: Convert API responses to model-index format
-- **Metadata Preservation**: Maintain source attribution and URLs
 - **PR Creation**: Automatically create pull requests with evaluation updates
 
 ## 3. Model-Index Management
@@ -308,7 +307,7 @@ Tasks use the format `suite|task|num_fewshot`:
 
 **Finding Available Tasks:**
 The complete list of available lighteval tasks can be found at:
-https://github.com/huggingface/lighteval/blob/main/examples/tasks/all_tasks.txt
+https://github.com/iampopye/trio/blob/main/examples/tasks/all_tasks.txt
 
 This file contains all supported tasks in the format `suite|task|num_fewshot|0` (the trailing `0` is a version flag and can be ignored). Common suites include:
 - `leaderboard` - Open LLM Leaderboard tasks (MMLU, GSM8K, ARC, HellaSwag, etc.)

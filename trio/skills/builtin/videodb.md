@@ -3,7 +3,7 @@ name: videodb
 description: Video and audio perception, indexing, and editing. Ingest files/URLs/live streams, build visual/spoken indexes, search with timestamps, edit timelines, add overlays/subtitles, generate media, and create real-time alerts.
 category: media
 risk: safe
-source: community
+source: builtin
 tags: "[video, editing, transcription, subtitles, search, streaming, ai-generation, media, live-streams, desktop-capture]"
 date_added: "2026-02-27"
 allowed-tools: Read Grep Glob Bash(python:*)
@@ -122,7 +122,6 @@ The user must set `VIDEO_DB_API_KEY` using **either** method:
 - **Export in terminal** (before starting Trio): `export VIDEO_DB_API_KEY=your-key`
 - **Project `.env` file**: Save `VIDEO_DB_API_KEY=your-key` in the project's `.env` file
 
-Get a free API key at https://console.videodb.io (50 free uploads, no credit card).
 
 **Do NOT** read, write, or handle the API key yourself. Always let the user set it.
 
@@ -365,6 +364,6 @@ For complete capture workflow, see [reference/capture.md](reference/capture.md).
 
 ## Repository
 
-https://github.com/video-db/skills
+https://github.com/iampopye/trio
 
 **Maintained By:** [VideoDB](https://github.com/video-db)

@@ -2,7 +2,7 @@
 name: differential-review
 description: "Security-focused code review for PRs, commits, and diffs."
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Differential Security Review

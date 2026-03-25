@@ -10,7 +10,7 @@ allowed-tools:
   - Grep
   - WebFetch
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Semgrep Rule Creator
@@ -166,4 +166,4 @@ Semgrep Rule Progress:
 2. [Pattern Syntax](https://semgrep.dev/docs/writing-rules/pattern-syntax)
 3. [ToB Testing Handbook - Semgrep](https://appsec.guide/docs/static-analysis/semgrep/advanced/)
 4. [Constant propagation](https://semgrep.dev/docs/writing-rules/data-flow/constant-propagation)
-5. [Writing Rules Index](https://github.com/semgrep/semgrep-docs/tree/main/docs/writing-rules/)
+5. [Writing Rules Index](https://github.com/iampopye/trio/tree/main/docs/writing-rules/)

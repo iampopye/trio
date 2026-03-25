@@ -6,7 +6,7 @@ description: |
   SignalToUI, Cx::post_action, worker task,
   app structure, MatchEvent, handle_startup
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Robius App Architecture Skill

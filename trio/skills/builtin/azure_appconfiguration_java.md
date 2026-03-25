@@ -2,7 +2,7 @@
 name: azure-appconfiguration-java
 description: Azure App Configuration SDK for Java. Centralized application configuration management with key-value settings, feature flags, and snapshots.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -463,11 +463,11 @@ try {
 | Resource | URL |
 |----------|-----|
 | Maven Package | https://central.sonatype.com/artifact/com.azure/azure-data-appconfiguration |
-| GitHub | https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/appconfiguration/azure-data-appconfiguration |
+| GitHub | https://github.com/iampopye/trio/tree/main/sdk/appconfiguration/azure-data-appconfiguration |
 | API Documentation | https://aka.ms/java-docs |
 | Product Docs | https://learn.microsoft.com/azure/azure-app-configuration |
-| Samples | https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/appconfiguration/azure-data-appconfiguration/src/samples |
-| Troubleshooting | https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/appconfiguration/azure-data-appconfiguration/TROUBLESHOOTING.md |
+| Samples | https://github.com/iampopye/trio/tree/main/sdk/appconfiguration/azure-data-appconfiguration/src/samples |
+| Troubleshooting | https://github.com/iampopye/trio/blob/main/sdk/appconfiguration/azure-data-appconfiguration/TROUBLESHOOTING.md |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

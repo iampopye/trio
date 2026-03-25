@@ -2,7 +2,7 @@
 name: azure-maps-search-dotnet
 description: Azure Maps SDK for .NET. Location-based services including geocoding, routing, rendering, geolocation, and weather. Use for address search, directions, map tiles, IP geolocation, and weather data.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -491,7 +491,7 @@ catch (RequestFailedException ex)
 | Azure Maps Documentation | https://learn.microsoft.com/azure/azure-maps/ |
 | Search API Reference | https://learn.microsoft.com/dotnet/api/azure.maps.search |
 | Routing API Reference | https://learn.microsoft.com/dotnet/api/azure.maps.routing |
-| GitHub Source | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/maps |
+| GitHub Source | https://github.com/iampopye/trio/tree/main/sdk/maps |
 | Pricing | https://azure.microsoft.com/pricing/details/azure-maps/ |
 
 ## When to Use

@@ -2,7 +2,7 @@
 name: azure-ai-projects-java
 description: Azure AI Projects SDK for Java. High-level SDK for Azure AI Foundry project management including connections, datasets, indexes, and evaluations.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -148,8 +148,8 @@ try {
 |----------|-----|
 | Product Docs | https://learn.microsoft.com/azure/ai-studio/ |
 | API Reference | https://learn.microsoft.com/rest/api/aifoundry/aiprojects/ |
-| GitHub Source | https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/ai/azure-ai-projects |
-| Samples | https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/ai/azure-ai-projects/src/samples |
+| GitHub Source | https://github.com/iampopye/trio/tree/main/sdk/ai/azure-ai-projects |
+| Samples | https://github.com/iampopye/trio/tree/main/sdk/ai/azure-ai-projects/src/samples |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

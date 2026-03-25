@@ -4,7 +4,6 @@ description: "When the user wants to edit, review, or improve existing marketing
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
 ---
@@ -238,7 +237,6 @@ For every statement, ask "Okay, so what?" If the copy doesn't answer that questi
 **Risk reducers to look for:**
 - Money-back guarantees
 - Free trials
-- "No credit card required"
 - "Cancel anytime"
 - Social proof near CTA
 - Clear expectations of what happens next

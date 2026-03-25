@@ -2,7 +2,7 @@
 name: gitops-workflow
 description: "Complete guide to implementing GitOps workflows with ArgoCD and Flux for automated Kubernetes deployments."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -97,7 +97,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/org/gitops-repo
+    repoURL: https://github.com/iampopye/trio
     targetRevision: main
     path: apps/production/my-app
   destination:
@@ -122,7 +122,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/org/gitops-repo
+    repoURL: https://github.com/iampopye/trio
     targetRevision: main
     path: argocd/applications
   destination:
@@ -159,7 +159,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  url: https://github.com/org/my-app
+  url: https://github.com/iampopye/trio
   ref:
     branch: main
 ```

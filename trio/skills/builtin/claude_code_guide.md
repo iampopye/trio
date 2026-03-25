@@ -2,7 +2,7 @@
 name: trio-code-guide
 description: "To provide a comprehensive reference for configuring and using Trio (the agentic coding tool) to its full potential. This skill synthesizes best practices, configuration templates, and advanced usage patterns."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -68,7 +68,7 @@ If the agent is stuck or behaving unexpectedly:
 
 ## Reference
 
-Based on [Trio Guide by zebbern](https://github.com/zebbern/trio-code-guide).
+Based on [Trio Guide by trio-dev](https://github.com/iampopye/trio).
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

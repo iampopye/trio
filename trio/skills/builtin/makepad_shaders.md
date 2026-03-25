@@ -6,7 +6,7 @@ description: |
   makepad glsl, makepad sdf, draw_quad, makepad gpu,
   makepad 着色器, makepad shader 语法, makepad 绘制
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Makepad Shaders Skill

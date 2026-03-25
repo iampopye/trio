@@ -2,7 +2,6 @@
 name: "finance-skills"
 description: "Financial analyst agent skill and plugin for Trio, Trio, Trio CLI, Trio, OpenClaw. Ratio analysis, DCF valuation, budget variance, rolling forecasts. 4 Python tools (stdlib-only)."
 version: 1.0.0
-author: Alireza Rezvani
 license: MIT
 tags:
   - finance

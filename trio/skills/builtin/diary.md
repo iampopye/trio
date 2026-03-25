@@ -2,7 +2,7 @@
 name: diary
 description: "Unified Diary System: A context-preserving automated logger for multi-project development."
 risk: safe
-source: self
+source: builtin
 ---
 
 # 📔 Unified Diary System

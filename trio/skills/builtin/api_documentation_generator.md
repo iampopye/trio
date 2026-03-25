@@ -2,7 +2,7 @@
 name: api-documentation-generator
 description: "Generate comprehensive, developer-friendly API documentation from code, including endpoints, parameters, examples, and best practices"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -107,7 +107,7 @@ Creates a new user account.
 {
   "email": "user@example.com",      // Required: Valid email address
   "password": "SecurePass123!",     // Required: Min 8 chars, 1 uppercase, 1 number
-  "name": "John Doe",               // Required: 2-50 characters
+  "name": "trio-dev",               // Required: 2-50 characters
   "role": "user"                    // Optional: "user" or "admin" (default: "user")
 }
 \`\`\`
@@ -117,7 +117,7 @@ Creates a new user account.
 {
   "id": "usr_1234567890",
   "email": "user@example.com",
-  "name": "John Doe",
+  "name": "trio-dev",
   "role": "user",
   "createdAt": "2026-01-20T10:30:00Z",
   "emailVerified": false
@@ -153,7 +153,7 @@ curl -X POST https://api.example.com/api/v1/users \
   -d '{
     "email": "user@example.com",
     "password": "SecurePass123!",
-    "name": "John Doe"
+    "name": "trio-dev"
   }'
 \`\`\`
 
@@ -168,7 +168,7 @@ const response = await fetch('https://api.example.com/api/v1/users', {
   body: JSON.stringify({
     email: 'user@example.com',
     password: 'SecurePass123!',
-    name: 'John Doe'
+    name: 'trio-dev'
   })
 });
 
@@ -189,7 +189,7 @@ response = requests.post(
     json={
         'email': 'user@example.com',
         'password': 'SecurePass123!',
-        'name': 'John Doe'
+        'name': 'trio-dev'
     }
 )
 
@@ -237,7 +237,7 @@ query GetUser($id: ID!) {
     "user": {
       "id": "usr_1234567890",
       "email": "user@example.com",
-      "name": "John Doe",
+      "name": "trio-dev",
       "role": "user",
       "createdAt": "2026-01-20T10:30:00Z",
       "posts": [

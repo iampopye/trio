@@ -3,7 +3,7 @@ name: ai-agent-development
 description: "AI agent development workflow for building autonomous agents, multi-agent systems, and agent orchestration with CrewAI, LangGraph, and custom agents."
 category: granular-workflow-bundle
 risk: safe
-source: personal
+source: builtin
 date_added: "2026-02-27"
 ---
 

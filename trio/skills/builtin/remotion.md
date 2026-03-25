@@ -9,7 +9,7 @@ allowed-tools:
   - "Write"
   - "web_fetch"
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Stitch to Remotion Walkthrough Videos
@@ -305,7 +305,7 @@ project/
 
 Remotion maintains its own Agent Skills that define best practices. Review these for advanced techniques:
 
-- **Repository**: https://github.com/remotion-dev/remotion/tree/main/packages/skills
+- 
 - **Installation**: `npx skills add remotion-dev/skills`
 
 Key Remotion skills to leverage:

@@ -107,7 +107,6 @@ Evaluate based on ad account audit (if applicable).
 | Targeting quality | 25 | Precise and layered = 25, Good = 17, Broad = 10, Wasteful = 3 |
 | Ad creative quality | 25 | Compelling and varied = 25, Adequate = 17, Weak = 10, Poor = 3 |
 | Landing page alignment | 15 | Perfect match = 15, Good = 10, Misaligned = 5, Broken = 0 |
-| Tracking & attribution | 15 | Comprehensive = 15, Basic = 10, Minimal = 5, Missing = 0 |
 
 #### Overall Score Calculation
 ```

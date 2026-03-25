@@ -2,7 +2,7 @@
 name: jobgpt
 description: "Job search automation, auto apply, resume generation, application tracking, salary intelligence, and recruiter outreach using the JobGPT MCP server."
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-23"
 ---
 
@@ -12,7 +12,6 @@ date_added: "2026-03-23"
 
 JobGPT connects your AI assistant to a complete job search automation platform via the JobGPT MCP server. It provides 34 tools covering job search, auto-apply, resume generation, application tracking, salary intelligence, and recruiter outreach so you can manage your entire job hunt from your AI coding assistant.
 
-Built by [6figr.com](https://6figr.com/jobgpt-ai), the platform supports 150+ countries with salary data, job matching, and automated applications.
 
 ## When to Use This Skill
 
@@ -76,7 +75,6 @@ The skill uses `get_application_stats` for an aggregated overview - total counts
 
 ## Best Practices
 
-- **Check credits first** - Auto-apply and resume generation consume credits. Use `get_credits` before batch operations.
 - **Complete your profile** - Run `get_profile` first and fill in missing fields with `update_profile` for better job matches.
 - **Upload a resume before applying** - Use `list_resumes` to check, and `upload_resume` if needed.
 - **Use job hunts for ongoing searches** - Create a job hunt with `create_job_hunt` to save filters and get continuous matches.
@@ -95,6 +93,6 @@ The skill uses `get_application_stats` for an aggregated overview - total counts
 ## Additional Resources
 
 - [JobGPT Platform](https://6figr.com/jobgpt-ai) - Sign up and manage your account
-- [MCP Server Repo](https://github.com/6figr-com/jobgpt-mcp-server) - Source code and setup guides
-- [Skills Repo](https://github.com/6figr-com/skills) - This skill's source
+- [MCP Server Repo](https://github.com/iampopye/trio) - Source code and setup guides
+- [Skills Repo](https://github.com/iampopye/trio) - This skill's source
 - [npm Package](https://www.npmjs.com/package/jobgpt-mcp-server) - Install via npm

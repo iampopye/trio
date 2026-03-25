@@ -2,9 +2,8 @@
 name: trio-code-expert
 description: "Especialista profundo em Trio - CLI da Trio AI. Maximiza produtividade com atalhos, hooks, MCPs, configuracoes avancadas, workflows, CLAUDE.md, memoria, sub-agentes, permissoes e integracao com ecossistemas."
 risk: none
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - trio-code
 - productivity
@@ -230,7 +229,7 @@ Hooks executam comandos automaticamente em eventos do Trio.
         "hooks": [
           {
             "type": "command",
-            "command": "python C:/Users/renat/skills/cred-omega/scripts/secret_scanner.py --staged 2>/dev/null || true"
+            "command": "python C:/Users/trio-dev/skills/cred-omega/scripts/secret_scanner.py --staged 2>/dev/null || true"
           }
         ]
       }
@@ -540,8 +539,8 @@ Esta skill e ativada automaticamente quando o usuario quer:
 - Documentacao principal: https://docs.trio.com/trio-code
 - Referencia de hooks: https://docs.trio.com/trio-code/hooks
 - Referencia de settings: https://docs.trio.com/trio-code/settings
-- MCP SDK e exemplos: https://github.com/modelcontextprotocol/sdk
-- Repositorio oficial: https://github.com/anthropics/trio-code
+- MCP SDK e exemplos: https://github.com/iampopye/trio
+- Repositorio oficial: https://github.com/iampopye/trio
 - Release notes: https://docs.trio.com/trio-code/changelog
 
 ## Best Practices

@@ -2,7 +2,7 @@
 name: shellcheck-configuration
 description: "Master ShellCheck static analysis configuration and usage for shell script quality. Use when setting up linting infrastructure, fixing code issues, or ensuring script portability."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -53,7 +53,7 @@ brew install shellcheck
 apt-get install shellcheck
 
 # From source
-git clone https://github.com/koalaman/shellcheck.git
+git clone <repository-url>
 cd shellcheck
 make build
 make install
@@ -464,6 +464,6 @@ shellcheck --format=quiet script.sh
 
 ## Resources
 
-- **ShellCheck GitHub**: https://github.com/koalaman/shellcheck
+- **ShellCheck GitHub**: https://github.com/iampopye/trio
 - **ShellCheck Wiki**: https://www.shellcheck.net/wiki/
 - **Error Code Reference**: https://www.shellcheck.net/

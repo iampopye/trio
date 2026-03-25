@@ -2,7 +2,7 @@
 name: agent-manager-skill
 description: "Manage multiple local CLI agents via tmux sessions (start/stop/monitor/assign) with cron-friendly scheduling."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -21,7 +21,7 @@ Use this skill when you need to:
 Install `agent-manager-skill` in your workspace:
 
 ```bash
-git clone https://github.com/fractalmind-ai/agent-manager-skill.git
+git clone <repository-url>
 ```
 
 ## Common commands
@@ -32,7 +32,7 @@ python3 agent-manager/scripts/main.py list
 python3 agent-manager/scripts/main.py start EMP_0001
 python3 agent-manager/scripts/main.py monitor EMP_0001 --follow
 python3 agent-manager/scripts/main.py assign EMP_0002 <<'EOF'
-Follow teams/fractalmind-ai-maintenance.md Workflow
+Follow teams/trio-dev-ai-maintenance.md Workflow
 EOF
 ```
 

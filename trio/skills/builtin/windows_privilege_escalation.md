@@ -2,8 +2,7 @@
 name: windows-privilege-escalation
 description: "Provide systematic methodologies for discovering and exploiting privilege escalation vulnerabilities on Windows systems during penetration testing engagements."
 risk: unknown
-source: community
-author: zebbern
+source: builtin
 date_added: "2026-02-27"
 ---
 

@@ -5,7 +5,7 @@ description: >
   technical meta tags, schema, images, and performance. Use when user says
   "analyze this page", "check page SEO", or provides a single URL for review.
 risk: unknown
-source: "https://github.com/AgriciDaniel/trio-seo"
+source: builtin
 date_added: "2026-03-21"
 user-invokable: true
 argument-hint: "[url]"

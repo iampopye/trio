@@ -4,9 +4,8 @@ description: Configure a Rails project to work with Conductor (parallel coding a
 allowed-tools: Bash(chmod *), Bash(bundle *), Bash(npm *), Bash(script/server)
 context: fork
 risk: unknown
-source: community
+source: builtin
 metadata:
-  author: Shpigford
   version: "1.0"
 ---
 

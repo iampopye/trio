@@ -2,7 +2,7 @@
 name: azure-resource-manager-mysql-dotnet
 description: Azure MySQL Flexible Server SDK for .NET. Database management for MySQL Flexible Server deployments.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -390,7 +390,7 @@ string connectionString = $"Server={server.Data.FullyQualifiedDomainName};" +
 | NuGet Package | https://www.nuget.org/packages/Azure.ResourceManager.MySql |
 | API Reference | https://learn.microsoft.com/dotnet/api/azure.resourcemanager.mysql |
 | Product Documentation | https://learn.microsoft.com/azure/mysql/flexible-server/ |
-| GitHub Source | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/mysql/Azure.ResourceManager.MySql |
+| GitHub Source | https://github.com/iampopye/trio/tree/main/sdk/mysql/Azure.ResourceManager.MySql |
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

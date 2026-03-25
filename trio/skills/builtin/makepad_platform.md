@@ -7,7 +7,7 @@ description: |
   makepad d3d11, makepad opengl, makepad webgl, OsType, CxOs,
   makepad 跨平台, makepad 平台支持
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Makepad Platform Skill

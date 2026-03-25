@@ -2,7 +2,7 @@
 name: azure-storage-blob-java
 description: "Build blob storage applications using the Azure Storage Blob SDK for Java."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

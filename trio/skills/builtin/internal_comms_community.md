@@ -2,7 +2,7 @@
 name: internal-comms-community
 description: "To write internal communications, use this skill for:"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

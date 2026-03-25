@@ -3,9 +3,8 @@ name: progressive-estimation
 description: "Estimate AI-assisted and hybrid human+agent development work with research-backed PERT statistics and calibration feedback loops"
 category: project-management
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-10"
-author: Enreign
 tags:
   - estimation
   - project-management
@@ -79,6 +78,6 @@ Progressive Estimation adapts to your team's working mode — human-only, hybrid
 
 ## Additional Resources
 
-- [Source Repository](https://github.com/Enreign/progressive-estimation)
-- [Installation Guide](https://github.com/Enreign/progressive-estimation/blob/main/INSTALLATION.md)
-- [Research References](https://github.com/Enreign/progressive-estimation/tree/main/references)
+- [Source Repository](https://github.com/iampopye/trio)
+- [Installation Guide](https://github.com/iampopye/trio/blob/main/INSTALLATION.md)
+- [Research References](https://github.com/iampopye/trio/tree/main/references)

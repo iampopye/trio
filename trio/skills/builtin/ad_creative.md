@@ -4,7 +4,6 @@ description: "When the user needs to generate, iterate, or scale ad creative for
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
 ---
@@ -116,7 +115,6 @@ They're close. Remove the last objection.
 
 **Frame:** Proof → Risk Removal → Urgency
 - Testimonials, case studies, results with numbers
-- Remove risk: free trial, money-back, no credit card
 - Urgency if you have it — but only real urgency, not fake countdown timers
 
 **Works well:** Social proof headlines, guarantee-first, before/after

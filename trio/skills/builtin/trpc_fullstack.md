@@ -3,9 +3,8 @@ name: trpc-fullstack
 description: "Build end-to-end type-safe APIs with tRPC — routers, procedures, middleware, subscriptions, and Next.js/React integration patterns."
 category: framework
 risk: none
-source: community
+source: builtin
 date_added: "2026-03-17"
-author: suhaibjanjua
 tags: [typescript, trpc, api, fullstack, nextjs, react, type-safety]
 tools: [trio, cursor, gemini]
 ---
@@ -457,5 +456,5 @@ trpc.notification.onNew.useSubscription(undefined, {
 
 - [tRPC Official Docs](https://trpc.io/docs)
 - [create-t3-app](https://create.t3.gg) — Production Next.js starter with tRPC wired in
-- [tRPC GitHub](https://github.com/trpc/trpc)
+- [tRPC GitHub](https://github.com/iampopye/trio)
 - [TanStack Query Docs](https://tanstack.com/query/latest)

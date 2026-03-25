@@ -4,7 +4,6 @@ description: "Helm chart development agent skill and plugin for Trio, Trio, Trio
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: engineering
   updated: 2026-03-15
 ---
@@ -425,7 +424,7 @@ Flag these without being asked:
 
 ### One-liner (any tool)
 ```bash
-git clone https://github.com/alirezarezvani/trio-skills.git
+git clone <repository-url>
 cp -r trio-skills/engineering/helm-chart-builder ~/.trio/skills/
 ```
 

@@ -2,9 +2,8 @@
 name: skill-installer
 description: Instala, valida, registra e verifica novas skills no ecossistema. 10 checks de seguranca, copia, registro no orchestrator e verificacao pos-instalacao.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - skill-management
 - deployment
@@ -63,7 +62,7 @@ Seis camadas de validacao garantem que nenhuma skill fique mal-instalada:
 ## Localizacao
 
 ```
-C:\Users\renat\skills\skill-installer\
+C:\Users\trio-dev\skills\skill-installer\
 ├── SKILL.md              <- este arquivo
 ├── scripts/
 │   ├── install_skill.py  <- instalador principal (11 passos) + todos os comandos
@@ -90,7 +89,7 @@ Quando esta skill for ativada, siga estes passos na ordem:
 O skill-creator acabou de criar uma skill em algum diretorio. Execute:
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --source "<caminho-da-skill-criada>" --force
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --source "<caminho-da-skill-criada>" --force
 ```
 
 Substitua `<caminho-da-skill-criada>` pelo diretorio onde o skill-creator salvou a skill.
@@ -98,13 +97,13 @@ Substitua `<caminho-da-skill-criada>` pelo diretorio onde o skill-creator salvou
 ## Cenario 2: Usuario Pede Para Instalar Uma Skill Especifica
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --source "<caminho>" [--name "nome-override"] [--force]
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --source "<caminho>" [--name "nome-override"] [--force]
 ```
 
 ## Cenario 3: Simular Instalacao Sem Fazer Nada (Dry-Run)
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --source "<caminho>" --dry-run
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --source "<caminho>" --dry-run
 ```
 
 Mostra exatamente o que seria feito em cada um dos 11 passos, sem alterar nenhum arquivo.
@@ -112,8 +111,8 @@ Mostra exatamente o que seria feito em cada um dos 11 passos, sem alterar nenhum
 ## Cenario 4: Detectar E Instalar Skills Pendentes
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --detect
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --detect --auto
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --detect
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --detect --auto
 ```
 
 Escaneia locais conhecidos (Desktop, Downloads, Temp, workspaces) e apresenta
@@ -122,7 +121,7 @@ candidatos com timestamps e tamanho. Com --auto instala todos automaticamente.
 ## Cenario 5: Desinstalar Uma Skill
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --uninstall "nome-da-skill"
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --uninstall "nome-da-skill"
 ```
 
 Remove de `skills/`, `.trio/skills/`, atualiza o registry e remove ZIP do Desktop.
@@ -131,8 +130,8 @@ Backup automatico e feito antes da remocao.
 ## Cenario 6: Health Check + Auto-Repair
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --health
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --health --repair
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --health
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --health --repair
 ```
 
 `--health` verifica TODAS as skills: frontmatter, registro, registry, duplicatas.
@@ -144,7 +143,7 @@ python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --health -
 ## Cenario 7: Rollback (Restaurar De Backup)
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --rollback "nome-da-skill"
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --rollback "nome-da-skill"
 ```
 
 Encontra o backup mais recente da skill e restaura para o estado anterior.
@@ -153,7 +152,7 @@ Re-registra e atualiza o registry automaticamente.
 ## Cenario 8: Reinstalar Todas As Skills
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --reinstall-all
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --reinstall-all
 ```
 
 Re-registra TODAS as skills em `.trio/skills/`, re-empacota todos os ZIPs,
@@ -162,7 +161,7 @@ e atualiza o registry. Util apos mudancas em massa ou migracao.
 ## Cenario 9: Dashboard De Status
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --status
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --status
 ```
 
 Exibe dashboard rico com: nome, versao, saude, registro, backups de cada skill,
@@ -171,8 +170,8 @@ estatisticas de operacoes (installs, uninstalls, rollbacks).
 ## Cenario 10: Ver Historico De Operacoes
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --log
-python C:\Users\renat\skills\skill-installer\scripts\install_skill.py --log 50
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --log
+python C:\Users\trio-dev\skills\skill-installer\scripts\install_skill.py --log 50
 ```
 
 Mostra as ultimas N operacoes com timestamp, tipo, skill e resultado.
@@ -182,8 +181,8 @@ Mostra as ultimas N operacoes com timestamp, tipo, skill e resultado.
 ## Validar Uma Skill
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\validate_skill.py "C:\caminho\para\skill"
-python C:\Users\renat\skills\skill-installer\scripts\validate_skill.py "C:\caminho\para\skill" --strict
+python C:\Users\trio-dev\skills\skill-installer\scripts\validate_skill.py "C:\caminho\para\skill"
+python C:\Users\trio-dev\skills\skill-installer\scripts\validate_skill.py "C:\caminho\para\skill" --strict
 ```
 
 Retorna JSON com `valid` (bool), `checks`, `warnings`, `errors`.
@@ -191,9 +190,9 @@ Retorna JSON com `valid` (bool), `checks`, `warnings`, `errors`.
 ## Detectar Skills Nao-Instaladas
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\detect_skills.py
-python C:\Users\renat\skills\skill-installer\scripts\detect_skills.py --path "C:\diretorio\especifico"
-python C:\Users\renat\skills\skill-installer\scripts\detect_skills.py --all
+python C:\Users\trio-dev\skills\skill-installer\scripts\detect_skills.py
+python C:\Users\trio-dev\skills\skill-installer\scripts\detect_skills.py --path "C:\diretorio\especifico"
+python C:\Users\trio-dev\skills\skill-installer\scripts\detect_skills.py --all
 ```
 
 Retorna JSON com candidatos incluindo: `name`, `source_path`, `already_installed`,
@@ -202,16 +201,16 @@ Retorna JSON com candidatos incluindo: `name`, `source_path`, `already_installed
 ## Empacotar Zip Para Trio.Ai
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\package_skill.py --source "C:\caminho"
-python C:\Users\renat\skills\skill-installer\scripts\package_skill.py --all
-python C:\Users\renat\skills\skill-installer\scripts\package_skill.py --all --output "C:\Users\renat\Desktop"
+python C:\Users\trio-dev\skills\skill-installer\scripts\package_skill.py --source "C:\caminho"
+python C:\Users\trio-dev\skills\skill-installer\scripts\package_skill.py --all
+python C:\Users\trio-dev\skills\skill-installer\scripts\package_skill.py --all --output "C:\Users\trio-dev\Desktop"
 ```
 
 ## Verificar Integridade De Zips Existentes
 
 ```bash
-python C:\Users\renat\skills\skill-installer\scripts\package_skill.py --verify
-python C:\Users\renat\skills\skill-installer\scripts\package_skill.py --verify --output "C:\Users\renat\Desktop"
+python C:\Users\trio-dev\skills\skill-installer\scripts\package_skill.py --verify
+python C:\Users\trio-dev\skills\skill-installer\scripts\package_skill.py --verify --output "C:\Users\trio-dev\Desktop"
 ```
 
 ---

@@ -2,7 +2,7 @@
 name: odoo-accounting-setup
 description: "Expert guide for configuring Odoo Accounting: chart of accounts, journals, fiscal positions, taxes, payment terms, and bank reconciliation."
 risk: safe
-source: "self"
+source: builtin
 ---
 
 # Odoo Accounting Setup
@@ -93,7 +93,6 @@ Action:
 - ✅ **Do:** Use **Fiscal Positions** to automate B2B vs B2C tax switching — never change taxes manually on individual invoices.
 - ✅ **Do:** Lock accounting periods (Accounting → Actions → Lock Dates) after month-end closing to prevent retroactive edits.
 - ✅ **Do:** Use the **Early Payment Discount** feature (v16+) instead of splitting payment term lines for discount modelling.
-- ❌ **Don't:** Delete journal entries — always reverse them with a credit note or the built-in reversal function.
 - ❌ **Don't:** Mix personal and business transactions in the same journal.
 - ❌ **Don't:** Create manual journal entries to fix bank reconciliation mismatches — use the reconciliation model workflow instead.
 

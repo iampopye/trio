@@ -2,7 +2,7 @@
 name: seo-programmatic
 description: "Plan and audit programmatic SEO pages generated at scale from structured data. Use when designing templates, URL systems, internal linking, quality gates, and index-bloat safeguards for pages at scale."
 risk: unknown
-source: "https://github.com/AgriciDaniel/trio-seo"
+source: builtin
 date_added: "2026-03-21"
 user-invokable: true
 argument-hint: "[url or plan]"

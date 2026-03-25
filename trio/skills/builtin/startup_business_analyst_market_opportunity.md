@@ -6,7 +6,7 @@ description: 'Generate comprehensive market opportunity analysis with TAM/SAM/SO
 
   '
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

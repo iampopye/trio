@@ -4,7 +4,6 @@ description: "C-suite orchestration layer. Routes founder questions to the right
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: orchestration
   updated: 2026-03-05

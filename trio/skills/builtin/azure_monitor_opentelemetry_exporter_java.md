@@ -2,7 +2,7 @@
 name: azure-monitor-opentelemetry-exporter-java
 description: Azure Monitor OpenTelemetry Exporter for Java. Export OpenTelemetry traces, metrics, and logs to Azure Monitor/Application Insights.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -10,7 +10,7 @@ date_added: '2026-02-27'
 
 > **⚠️ DEPRECATION NOTICE**: This package is deprecated. Migrate to `azure-monitor-opentelemetry-autoconfigure`.
 >
-> See [Migration Guide](https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/monitor/azure-monitor-opentelemetry-exporter/MIGRATION.md) for detailed instructions.
+> See [Migration Guide](https://github.com/iampopye/trio/blob/main/sdk/monitor/azure-monitor-opentelemetry-exporter/MIGRATION.md) for detailed instructions.
 
 Export OpenTelemetry telemetry data to Azure Monitor / Application Insights.
 
@@ -259,7 +259,7 @@ The `azure-monitor-opentelemetry-autoconfigure` package provides:
    </dependency>
    ```
 
-2. Update initialization code per [Migration Guide](https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/monitor/azure-monitor-opentelemetry-exporter/MIGRATION.md)
+2. Update initialization code per [Migration Guide](https://github.com/iampopye/trio/blob/main/sdk/monitor/azure-monitor-opentelemetry-exporter/MIGRATION.md)
 
 ## Best Practices
 
@@ -276,8 +276,8 @@ The `azure-monitor-opentelemetry-autoconfigure` package provides:
 | Resource | URL |
 |----------|-----|
 | Maven Package | https://central.sonatype.com/artifact/com.azure/azure-monitor-opentelemetry-exporter |
-| GitHub | https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/monitor/azure-monitor-opentelemetry-exporter |
-| Migration Guide | https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/monitor/azure-monitor-opentelemetry-exporter/MIGRATION.md |
+| GitHub | https://github.com/iampopye/trio/tree/main/sdk/monitor/azure-monitor-opentelemetry-exporter |
+| Migration Guide | https://github.com/iampopye/trio/blob/main/sdk/monitor/azure-monitor-opentelemetry-exporter/MIGRATION.md |
 | Autoconfigure Package | https://central.sonatype.com/artifact/com.azure/azure-monitor-opentelemetry-autoconfigure |
 | OpenTelemetry Java | https://opentelemetry.io/docs/languages/java/ |
 | Application Insights | https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview |

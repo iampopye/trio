@@ -3,7 +3,7 @@ name: videodb-skills
 description: "Upload, stream, search, edit, transcribe, and generate AI video and audio using the VideoDB SDK."
 category: media
 risk: safe
-source: community
+source: builtin
 tags: "[video, editing, transcription, subtitles, search, streaming, ai-generation, media]"
 date_added: "2026-02-27"
 ---
@@ -39,7 +39,6 @@ npx skills add video-db/skills
 /videodb setup
 ```
 
-The agent guides API key setup ($20 free credits, no credit card), installs the SDK, and verifies the connection.
 
 Alternatively, set the API key manually:
 
@@ -113,7 +112,7 @@ pip install "videodb[capture]" python-dotenv
 
 ## Repository
 
-https://github.com/video-db/skills
+https://github.com/iampopye/trio
 
 **Version:** 1.1.0
 **Maintained By:** [VideoDB](https://github.com/video-db)

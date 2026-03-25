@@ -3,7 +3,7 @@ name: explain-like-socrates
 description: >
   Explains concepts using Socratic-style dialogue. Use when the user asks to explain, teach or help understand a concept like socrates.
 risk: safe
-source: original
+source: builtin
 date_added: "2026-03-11"
 ---
 

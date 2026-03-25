@@ -2,7 +2,7 @@
 name: performance-engineer
 description: "Expert performance engineer specializing in modern observability,"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 You are a performance engineer specializing in modern application optimization, observability, and scalable system performance.

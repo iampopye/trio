@@ -2,7 +2,7 @@
 name: loki-mode
 description: "Version 2.35.0 | PRD to Production | Zero Human Intervention > Research-enhanced: OpenAI SDK, DeepMind, Trio AI, AWS Bedrock, Agent SDK, HN Production (2025)"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

@@ -2,7 +2,7 @@
 name: antigravity-workflows
 description: "Orchestrate multiple Trio skills through guided workflows for SaaS MVP delivery, security audits, AI agent builds, and browser QA."
 risk: none
-source: self
+source: builtin
 date_added: "2026-02-27"
 ---
 

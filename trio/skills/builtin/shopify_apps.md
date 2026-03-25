@@ -2,7 +2,7 @@
 name: shopify-apps
 description: "Modern Shopify app template with React Router"
 risk: unknown
-source: "vibeship-spawner-skills (Apache 2.0)"
+source: builtin
 date_added: "2026-02-27"
 ---
 

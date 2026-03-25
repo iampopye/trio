@@ -2,7 +2,7 @@
 name: memory-systems
 description: "Design short-term, long-term, and graph-based memory architectures. Use when building agents that must persist across sessions, needing to maintain entity consistency across conversations, or implementing reasoning over accumulated knowledge."
 risk: safe
-source: "https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/memory-systems"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -92,7 +92,7 @@ Long-term memory use cases include learning user preferences across sessions, bu
 **Layer 4: Entity Memory**
 Entity memory specifically tracks information about entities (people, places, concepts, objects) to maintain consistency. This creates a rudimentary knowledge graph where entities are recognized across multiple interactions.
 
-Entity memory maintains entity identity by tracking that "John Doe" mentioned in one conversation is the same person in another. It maintains entity properties by storing facts discovered about entities over time. It maintains entity relationships by tracking relationships between entities as they are discovered.
+Entity memory maintains entity identity by tracking that "trio-dev" mentioned in one conversation is the same person in another. It maintains entity properties by storing facts discovered about entities over time. It maintains entity relationships by tracking relationships between entities as they are discovered.
 
 **Layer 5: Temporal Knowledge Graphs**
 Temporal knowledge graphs extend entity memory with explicit validity periods. Facts are not just true or false but true during specific time ranges.

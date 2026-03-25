@@ -4,7 +4,6 @@ description: When the user wants to create or optimize an email sequence, drip c
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
 ---
@@ -103,7 +102,6 @@ For implementation, see the [tools registry](../../tools/REGISTRY.md). Key email
 - **cold-email** — WHEN the sequence targets people who have NOT opted in (outbound prospecting). NOT for warm leads or subscribers who have expressed interest.
 - **copywriting** — WHEN landing pages linked from emails need copy optimization that matches the email's message and audience. NOT for the email copy itself.
 - **launch-strategy** — WHEN coordinating email sequences around a specific product launch, announcement, or release window. NOT for evergreen nurture or onboarding sequences.
-- **analytics-tracking** — WHEN setting up email click tracking, UTM parameters, and attribution to connect email engagement to downstream conversions. NOT for writing or designing the sequence.
 - **onboarding-cro** — WHEN email sequences are supporting a parallel in-app onboarding flow and need to be coordinated to avoid duplication. NOT as a replacement for in-app onboarding experience.
 
 ---

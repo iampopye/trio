@@ -3,7 +3,7 @@ Name: a11y-audit
 Tier: STANDARD
 Category: engineering
 Dependencies: none
-Author: Alireza Rezvani
+Author: trio-dev trio-dev
 Version: 2.1.2
 name: "a11y-audit"
 description: "Accessibility audit skill for scanning, fixing, and verifying WCAG 2.2 Level A and AA compliance across React, Next.js, Vue, Angular, Svelte, and plain HTML codebases. Use when auditing accessibility, fixing a11y violations, checking color contrast, generating compliance reports, or integrating accessibility checks into CI/CD pipelines."
@@ -20,7 +20,7 @@ metadata:
 **Tier**: STANDARD
 **Category**: Engineering - Frontend Quality
 **Dependencies**: Python 3.8+ (Standard Library Only)
-**Author**: Alireza Rezvani
+**Author**: trio-dev trio-dev
 **Version**: 2.1.2
 **Last Updated**: 2026-03-18
 **License**: MIT
@@ -1362,13 +1362,13 @@ Authentication must not require cognitive function tests (e.g., remembering a pa
 
 - [WCAG 2.2 Specification](https://www.w3.org/TR/WCAG22/)
 - [WAI-ARIA Authoring Practices 1.2](https://www.w3.org/WAI/ARIA/apg/)
-- [Deque axe-core Rules](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
-- [eslint-plugin-jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
+- [Deque axe-core Rules](https://github.com/iampopye/trio/blob/develop/doc/rule-descriptions.md)
+- [eslint-plugin-jsx-a11y](https://github.com/iampopye/trio)
 - [vue-a11y](https://vue-a11y.com/)
-- [@angular-eslint/template-accessibility](https://github.com/angular-eslint/angular-eslint)
+- [@angular-eslint/template-accessibility](https://github.com/iampopye/trio)
 
 ---
 
 **License:** MIT
-**Author:** Alireza Rezvani
+**Author:** trio-dev trio-dev
 **Version:** 2.1.2

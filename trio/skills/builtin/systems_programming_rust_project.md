@@ -2,7 +2,7 @@
 name: systems-programming-rust-project
 description: "You are a Rust project architecture expert specializing in scaffolding production-ready Rust applications. Generate complete project structures with cargo tooling, proper module organization, testing"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -91,7 +91,7 @@ rust-version = "1.75"
 authors = ["Your Name <email@example.com>"]
 description = "Project description"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/user/project-name"
+repository = "https://github.com/iampopye/trio"
 
 [dependencies]
 clap = { version = "4.5", features = ["derive"] }

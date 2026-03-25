@@ -2,7 +2,7 @@
 name: azure-mgmt-botservice-dotnet
 description: Azure Resource Manager SDK for Bot Service in .NET. Management plane operations for creating and managing Azure Bot resources, channels (Teams, DirectLine, Slack), and connection settings.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -331,7 +331,7 @@ catch (RequestFailedException ex)
 |----------|-----|
 | NuGet Package | https://www.nuget.org/packages/Azure.ResourceManager.BotService |
 | API Reference | https://learn.microsoft.com/dotnet/api/azure.resourcemanager.botservice |
-| GitHub Source | https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/botservice/Azure.ResourceManager.BotService |
+| GitHub Source | https://github.com/iampopye/trio/tree/main/sdk/botservice/Azure.ResourceManager.BotService |
 | Azure Bot Service Docs | https://learn.microsoft.com/azure/bot-service/ |
 
 ## When to Use

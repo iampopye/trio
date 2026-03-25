@@ -2,7 +2,7 @@
 name: full-stack-orchestration-full-stack-feature
 description: "Use when working with full stack orchestration full stack feature"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

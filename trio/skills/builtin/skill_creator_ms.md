@@ -2,7 +2,7 @@
 name: skill-creator-ms
 description: "Guide for creating effective skills for AI coding agents working with Azure SDKs and Microsoft Foundry services. Use when creating new skills or updating existing skills."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -382,7 +382,7 @@ ls -la skills/python/foundry/agents
 # Acceptance Criteria: <skill-name>
 
 **SDK**: `package-name`
-**Repository**: https://github.com/Azure/azure-sdk-for-<language>
+
 **Purpose**: Skill testing acceptance criteria
 
 ---

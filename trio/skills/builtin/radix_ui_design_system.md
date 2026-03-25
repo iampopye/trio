@@ -2,7 +2,7 @@
 name: radix-ui-design-system
 description: "Build accessible design systems with Radix UI primitives. Headless component customization, theming strategies, and compound component patterns for production-grade UI libraries."
 risk: safe
-source: self
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -815,7 +815,7 @@ function App() {
 
 ### Examples
 - [Radix Playground](https://www.radix-ui.com/primitives/docs/overview/introduction#try-it-out)
-- [shadcn/ui Source](https://github.com/shadcn-ui/ui) - Production examples
+- [shadcn/ui Source](https://github.com/iampopye/trio) - Production examples
 
 ---
 

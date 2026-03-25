@@ -4,7 +4,6 @@ description: "Multi-agent board meeting protocol for strategic decisions. Runs a
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: board-protocol
   updated: 2026-03-05

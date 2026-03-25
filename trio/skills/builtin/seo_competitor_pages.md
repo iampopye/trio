@@ -6,7 +6,7 @@ description: >
   and conversion optimization. Use when user says "comparison page", "vs page",
   "alternatives page", "competitor comparison", or "X vs Y".
 risk: unknown
-source: "https://github.com/AgriciDaniel/trio-seo"
+source: builtin
 date_added: "2026-03-21"
 user-invokable: true
 argument-hint: "[url or generate] [competitor]"

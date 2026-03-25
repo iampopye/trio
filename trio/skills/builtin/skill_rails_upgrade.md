@@ -2,7 +2,7 @@
 name: skill-rails-upgrade
 description: "Analyze Rails apps and provide upgrade assessments"
 risk: safe
-source: "https://github.com/robzolkos/skill-rails-upgrade"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -219,7 +219,7 @@ List the most important changes the user needs to handle:
 
 - Rails Upgrade Guide: https://guides.rubyonrails.org/upgrading_ruby_on_rails.html
 - Rails Diff: https://railsdiff.org/{current}/{target}
-- Release Notes: https://github.com/rails/rails/releases/tag/v{target}
+- Release Notes: https://github.com/iampopye/trio/releases/tag/v{target}
 
 ---
 

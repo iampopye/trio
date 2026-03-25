@@ -2,7 +2,7 @@
 name: testing-patterns
 description: "Jest testing patterns, factory functions, mocking strategies, and TDD workflow. Use when writing unit tests, creating test factories, or following TDD red-green-refactor cycle."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -97,7 +97,7 @@ interface User {
 const getMockUser = (overrides?: Partial<User>): User => {
   return {
     id: '123',
-    name: 'John Doe',
+    name: 'trio-dev',
     email: 'john@example.com',
     role: 'user',
     ...overrides,
@@ -216,7 +216,7 @@ it('should submit form on button click', async () => {
 expect(mockFetchData).toHaveBeenCalled();
 
 // Good - testing actual behavior
-expect(screen.getByText('John Doe')).toBeTruthy();
+expect(screen.getByText('trio-dev')).toBeTruthy();
 ```
 
 ### Not Using Factories

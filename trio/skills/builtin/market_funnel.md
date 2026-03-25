@@ -131,7 +131,6 @@ For each page in the funnel, score these dimensions:
 |----------------|-----------------|-----|
 | Surprise shipping costs | Shipping shown only at checkout | Show shipping early or offer free shipping |
 | Required account creation | Must register before purchasing | Guest checkout option |
-| Limited payment options | Only credit card | Add PayPal, Apple Pay, Google Pay |
 | No urgency | No reason to buy now | Add limited stock, countdown, or bonus |
 | No guarantee | No return policy visible | Add money-back guarantee near CTA |
 

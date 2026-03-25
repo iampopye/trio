@@ -2,7 +2,7 @@
 name: blockrun
 description: "BlockRun works with Trio and Google Trio."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

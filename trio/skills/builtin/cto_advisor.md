@@ -4,7 +4,6 @@ description: "Technical leadership guidance for engineering teams, architecture 
 license: MIT
 metadata:
   version: 2.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: cto-leadership
   updated: 2026-03-05

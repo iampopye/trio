@@ -2,7 +2,7 @@
 name: angular
 description: Modern Angular (v20+) expert with deep knowledge of Signals, Standalone Components, Zoneless applications, SSR/Hydration, and reactive patterns.
 risk: safe
-source: self
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -769,14 +769,14 @@ describe("UserCardComponent", () => {
 
     // Set signal inputs via setInput
     componentRef.setInput("id", "123");
-    componentRef.setInput("name", "John Doe");
+    componentRef.setInput("name", "trio-dev");
 
     fixture.detectChanges();
   });
 
   it("should display user name", () => {
     const el = fixture.nativeElement.querySelector("h3");
-    expect(el.textContent).toContain("John Doe");
+    expect(el.textContent).toContain("trio-dev");
   });
 });
 ```

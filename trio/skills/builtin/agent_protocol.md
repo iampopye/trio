@@ -4,7 +4,6 @@ description: "Inter-agent communication protocol for C-suite agent teams. Define
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: agent-orchestration
   updated: 2026-03-05
@@ -182,7 +181,6 @@ Before presenting, every role runs this internal checklist:
 
 ```
 SELF-VERIFY CHECKLIST:
-□ Source Attribution — Where did each data point come from?
   ✅ "ARR is $2.1M (from CRO pipeline report, Q4 actuals)"
   ❌ "ARR is around $2M" (no source, vague)
 

@@ -21,7 +21,6 @@ Distribute content across multiple social platforms with platform-native adaptat
 2. **Primary platform first.** Post to the main platform, then adapt for others.
 3. **Respect platform conventions.** Length limits, formatting, link handling all differ.
 4. **One idea per post.** If the source content has multiple ideas, split across posts.
-5. **Attribution matters.** If crossposting someone else's content, credit the source.
 
 ## Platform Specifications
 

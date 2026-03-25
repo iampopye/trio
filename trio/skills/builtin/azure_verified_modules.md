@@ -476,7 +476,7 @@ For robust testing, `prevent_deletion_if_contains_resources` **SHOULD** be expli
 
 **Severity:** MUST | **Requirement:** TFNFR2
 
-- Documentation **MUST** be automatically generated via [Terraform Docs](https://github.com/terraform-docs/terraform-docs)
+- Documentation **MUST** be automatically generated via [Terraform Docs](https://github.com/iampopye/trio)
 - A `.terraform-docs.yml` file **MUST** be present in the module root
 
 ---

@@ -2,9 +2,8 @@
 name: skill-sentinel
 description: Auditoria e evolucao do ecossistema de skills. Qualidade de codigo, seguranca, custos, gaps, duplicacoes, dependencias e relatorios de saude.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - governance
 - audit
@@ -65,7 +64,7 @@ e recomenda novas skills especialistas.
 ## Localizacao
 
 ```
-C:\Users\renat\skills\skill-sentinel\
+C:\Users\trio-dev\skills\skill-sentinel\
 ├── SKILL.md
 ├── scripts/
 │   ├── requirements.txt
@@ -98,7 +97,7 @@ C:\Users\renat\skills\skill-sentinel\
 ## Instalacao
 
 ```bash
-pip install -r C:\Users\renat\skills\skill-sentinel\scripts\requirements.txt
+pip install -r C:\Users\trio-dev\skills\skill-sentinel\scripts\requirements.txt
 ```
 
 ## Comandos Principais
@@ -107,39 +106,39 @@ pip install -r C:\Users\renat\skills\skill-sentinel\scripts\requirements.txt
 
 ## Auditoria Completa De Todas As Skills
 
-python C:\Users\renat\skills\skill-sentinel\scripts\run_audit.py
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\run_audit.py
 
 ## Auditar Apenas Uma Skill
 
-python C:\Users\renat\skills\skill-sentinel\scripts\run_audit.py --skill instagram
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\run_audit.py --skill instagram
 
 ## Apenas Recomendacoes De Novas Skills
 
-python C:\Users\renat\skills\skill-sentinel\scripts\run_audit.py --recommend
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\run_audit.py --recommend
 
 ## Comparar Com Auditoria Anterior (Tendencias)
 
-python C:\Users\renat\skills\skill-sentinel\scripts\run_audit.py --compare
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\run_audit.py --compare
 
 ## Output Em Json (Para Processamento)
 
-python C:\Users\renat\skills\skill-sentinel\scripts\run_audit.py --format json
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\run_audit.py --format json
 
 ## Ver Historico De Auditorias
 
-python C:\Users\renat\skills\skill-sentinel\scripts\run_audit.py --history
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\run_audit.py --history
 
 ## Descobrir Skills Disponiveis
 
-python C:\Users\renat\skills\skill-sentinel\scripts\scanner.py
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\scanner.py
 
 ## Ver Audit Log Do Sentinel
 
-python C:\Users\renat\skills\skill-sentinel\scripts\governance.py
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\governance.py
 
 ## Verificar Banco De Dados
 
-python C:\Users\renat\skills\skill-sentinel\scripts\db.py
+python C:\Users\trio-dev\skills\skill-sentinel\scripts\db.py
 ```
 
 ## 1. Qualidade De Codigo (Peso: 20%)

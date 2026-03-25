@@ -3,9 +3,8 @@ name: networkx
 description: "NetworkX is a Python package for creating, manipulating, and analyzing complex networks and graphs."
 license: 3-clause BSD license
 metadata:
-    skill-author: K-Dense Inc.
 risk: unknown
-source: "https://github.com/networkx/networkx"
+source: builtin
 ---
 
 # NetworkX
@@ -433,4 +432,4 @@ Extensive documentation on visualization techniques including layout algorithms,
 - **Official Documentation**: https://networkx.org/documentation/latest/
 - **Tutorial**: https://networkx.org/documentation/latest/tutorial.html
 - **Gallery**: https://networkx.org/documentation/latest/auto_examples/index.html
-- **GitHub**: https://github.com/networkx/networkx
+- **GitHub**: https://github.com/iampopye/trio

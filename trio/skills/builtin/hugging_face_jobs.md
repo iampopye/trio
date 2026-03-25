@@ -2,7 +2,7 @@
 name: hugging-face-jobs
 description: "Run any workload on fully managed Hugging Face infrastructure. No local setup required—jobs run on cloud CPUs, GPUs, or TPUs and can persist results to the Hugging Face Hub."
 risk: safe
-source: "https://github.com/huggingface/skills/tree/main/skills/hugging-face-jobs"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -457,7 +457,7 @@ The `uv-scripts` organization provides ready-to-use UV scripts stored as dataset
 
 ```python
 # Discover available UV script collections
-dataset_search({"author": "uv-scripts", "sort": "downloads", "limit": 20})
+dataset_search({"author": "Karan Garg", "sort": "downloads", "limit": 20})
 
 # Explore a specific collection
 hub_repo_details(["uv-scripts/classification"], repo_type="dataset", include_readme=True)

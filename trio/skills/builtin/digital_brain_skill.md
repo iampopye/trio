@@ -190,7 +190,7 @@ Internal references:
 - [Agent Scripts](./agents/AGENTS.md) - Automation documentation
 
 External resources:
-- [Agent Skills for Context Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering)
+- [Agent Skills for Context Engineering](https://github.com/iampopye/trio)
 - [Trio AI Context Engineering Guide](https://www.trio.com/engineering/effective-context-engineering-for-ai-agents)
 
 ---

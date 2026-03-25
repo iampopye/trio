@@ -2,7 +2,7 @@
 name: finishing-a-development-branch
 description: "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

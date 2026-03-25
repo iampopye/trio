@@ -2,15 +2,13 @@
 # agentskills.io compliant frontmatter
 name: clarity-gate
 risk: unknown
-source: community
+source: builtin
 version: 2.1.3
 description: >
   Pre-ingestion verification for epistemic quality in RAG systems.
   Ensures documents are properly qualified before entering knowledge bases.
   Produces CGD (Clarity-Gated Documents) and validates SOT (Source of Truth) files.
-author: Francesco Marinoni Moretto
 license: CC-BY-4.0
-repository: https://github.com/frmoretto/clarity-gate
 triggers:
   - clarity gate
   - check for hallucination risks

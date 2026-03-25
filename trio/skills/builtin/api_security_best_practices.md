@@ -2,7 +2,7 @@
 name: api-security-best-practices
 description: "Implement secure API design patterns including authentication, authorization, input validation, rate limiting, and protection against common API vulnerabilities"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -903,7 +903,7 @@ app.post('/api/users', async (req, res) => {
 - [JWT Best Practices](https://tools.ietf.org/html/rfc8725)
 - [Express Security Best Practices](https://expressjs.com/en/advanced/best-practice-security.html)
 - [Node.js Security Checklist](https://blog.risingstack.com/node-js-security-checklist/)
-- [API Security Checklist](https://github.com/shieldfy/API-Security-Checklist)
+- [API Security Checklist](https://github.com/iampopye/trio)
 
 ---
 

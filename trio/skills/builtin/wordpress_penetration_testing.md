@@ -2,8 +2,7 @@
 name: wordpress-penetration-testing
 description: "Assess WordPress installations for common vulnerabilities and WordPress 7.0 attack surfaces."
 risk: unknown
-source: community
-author: zebbern
+source: builtin
 date_added: "2026-02-27"
 ---
 

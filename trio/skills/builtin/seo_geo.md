@@ -2,7 +2,7 @@
 name: seo-geo
 description: "Optimize content for AI Overviews, ChatGPT, Perplexity, and other AI search systems. Use when improving GEO, AI citations, llms.txt readiness, crawler accessibility, and passage-level citability."
 risk: unknown
-source: "https://github.com/AgriciDaniel/trio-seo"
+source: builtin
 date_added: "2026-03-21"
 user-invokable: true
 argument-hint: "[url]"
@@ -105,8 +105,6 @@ Content with multi-modal elements sees **156% higher selection rates**.
 - Publication date and last-updated date
 - Citations to primary sources (studies, official docs, data)
 - Organization credentials and affiliations
-- Expert quotes with attribution
-- Entity presence in Wikipedia, Wikidata
 - Mentions on Reddit, YouTube, LinkedIn
 
 **Weak signals:**

@@ -2,7 +2,7 @@
 name: freshservice-automation
 description: "Automate Freshservice ITSM tasks via Rube MCP (Composio): create/update tickets, bulk operations, service requests, and outbound emails. Always search tools first for current schemas."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -52,8 +52,6 @@ Automate Freshservice IT Service Management operations through Composio's Freshs
 **Pitfalls**:
 - By default, only tickets created within the past 30 days are returned
 - Use `updated_since` to retrieve older tickets
-- Each `include` value consumes additional API credits
-- `page` is 1-indexed; minimum value is 1
 - `per_page` max is 100; default is 30
 - Ticket IDs can be the internal ID or the display_id shown in the UI
 
@@ -194,8 +192,6 @@ Automate Freshservice IT Service Management operations through Composio's Freshs
 
 **Rate Limits**:
 - Freshservice API has per-account rate limits
-- Each `include` option consumes additional API credits
-- Implement backoff on 429 responses
 
 **Response Parsing**:
 - Response data may be nested under `data` or `data.data`

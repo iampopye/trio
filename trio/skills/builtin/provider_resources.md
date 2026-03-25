@@ -596,4 +596,4 @@ $ terraform import provider_example.example example-id-12345
 - [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework)
 - [Terraform Plugin SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2)
 - [Acceptance Testing](https://developer.hashicorp.com/terraform/plugin/testing/acceptance-tests)
-- [terraform-plugin-framework GitHub](https://github.com/hashicorp/terraform-plugin-framework)
+- [terraform-plugin-framework GitHub](https://github.com/iampopye/trio)

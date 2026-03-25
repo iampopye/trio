@@ -2,9 +2,8 @@
 name: context-guardian
 description: Guardiao de contexto que preserva dados criticos antes da compactacao automatica. Snapshots, verificacao de integridade e zero perda de informacao.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - context
 - data-integrity
@@ -63,7 +62,7 @@ compactacao automatica as destrua.
 ## Localizacao
 
 ```
-C:\Users\renat\skills\context-guardian\
+C:\Users\trio-dev\skills\context-guardian\
 ├── SKILL.md                          # Este arquivo
 ├── references/
 │   ├── extraction-protocol.md        # Protocolo detalhado de extracao
@@ -170,10 +169,10 @@ Salvar as informacoes extraidas em 3 camadas de redundancia:
 **Camada 1 — Snapshot estruturado (arquivo .md)**
 
 ```bash
-python C:\Users\renat\skills\context-guardian\scripts\context_snapshot.py save
+python C:\Users\trio-dev\skills\context-guardian\scripts\context_snapshot.py save
 ```
 
-Gera `C:\Users\renat\skills\context-guardian\data\snapshot-YYYYMMDD-HHMMSS.md` com
+Gera `C:\Users\trio-dev\skills\context-guardian\data\snapshot-YYYYMMDD-HHMMSS.md` com
 todas as informacoes extraidas em formato estruturado.
 
 Se o script nao estiver disponivel, criar manualmente o arquivo seguindo o formato
@@ -181,14 +180,14 @@ descrito em `references/extraction-protocol.md`.
 
 **Camada 2 — MEMORY.md atualizado**
 
-Atualizar `C:\Users\renat\.trio\projects\C--Users-renat-Skill-JUD\memory\MEMORY.md`
+Atualizar `C:\Users\trio-dev\.trio\projects\C--Users-trio-dev-Skill-JUD\memory\MEMORY.md`
 com as informacoes P0 mais criticas em formato ultra-compacto. O MEMORY.md e carregado
 automaticamente em toda nova sessao, entao ele e a ultima linha de defesa.
 
 **Camada 3 — Context-agent save**
 
 ```bash
-python C:\Users\renat\skills\context-agent\scripts\context_manager.py save
+python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py save
 ```
 
 Aciona o context-agent para salvar sessao completa com indexacao FTS5.
@@ -240,7 +239,7 @@ da compactacao, para que fique no topo do contexto compactado.
 
 ## Onde Recuperar Mais Informacoes
 
-- Snapshot: C:\Users\renat\skills\context-guardian\data\snapshot-[timestamp].md
+- Snapshot: C:\Users\trio-dev\skills\context-guardian\data\snapshot-[timestamp].md
 - MEMORY.md: carregado automaticamente
 - Context-agent: `python context_manager.py load`
 - Busca historica: `python context_manager.py search "termo"`
@@ -267,11 +266,11 @@ esta completo:
 3. Comparar com o briefing de transicao (se visivel no contexto compactado)
 4. Se encontrar lacunas, executar:
    ```bash
-   python C:\Users\renat\skills\context-agent\scripts\context_manager.py load
+   python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py load
    ```
 5. Se ainda houver lacunas, buscar por termo:
    ```bash
-   python C:\Users\renat\skills\context-agent\scripts\context_manager.py search "termo"
+   python C:\Users\trio-dev\skills\context-agent\scripts\context_manager.py search "termo"
    ```
 
 ## Exemplo De Uso Real

@@ -2,7 +2,7 @@
 name: tavily-web
 description: "Web search, content extraction, crawling, and research capabilities using Tavily API. Use when you need to search the web for current information, extracting content from URLs, or crawling websites."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -27,7 +27,7 @@ npx skills add -g BenedictKing/tavily-web
 3. Use naturally in Trio conversations
 
 ## Examples
-See [GitHub Repository](https://github.com/BenedictKing/tavily-web) for examples.
+See [GitHub Repository](https://github.com/iampopye/trio) for examples.
 
 ## Best Practices
 - Configure API keys via environment variables

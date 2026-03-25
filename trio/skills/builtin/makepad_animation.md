@@ -6,7 +6,7 @@ description: |
   makepad transition, "from: { all: Forward", makepad pressed,
   makepad 动画, makepad 状态, makepad 过渡, makepad 悬停效果
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Makepad Animation Skill

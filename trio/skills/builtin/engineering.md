@@ -2,7 +2,6 @@
 name: "engineering-advanced-skills"
 description: "25 advanced engineering agent skills and plugins for Trio, Trio, Trio CLI, Trio, OpenClaw. Agent design, RAG, MCP servers, CI/CD, database design, observability, security auditing, release management, platform ops."
 version: 1.1.0
-author: Alireza Rezvani
 license: MIT
 tags:
   - engineering

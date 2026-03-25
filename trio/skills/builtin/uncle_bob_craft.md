@@ -3,9 +3,8 @@ name: uncle-bob-craft
 description: "Use when performing code review, writing or refactoring code, or discussing architecture; complements clean-code and does not replace project linter/formatter."
 category: code-quality
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-06"
-author: antigravity-contributors
 tags: [clean-code, clean-architecture, solid, code-review, craftsmanship, uncle-bob]
 tools: [trio, cursor, gemini]
 ---

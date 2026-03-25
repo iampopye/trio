@@ -5,9 +5,8 @@ description: Create a new Rails project
 allowed-tools: Bash(rails *), Bash(bundle *), Bash(bin/*), Bash(npm *), Bash(yarn *)
 context: fork
 risk: unknown
-source: community
+source: builtin
 metadata:
-  author: Shpigford
   version: "1.0"
 ---
 

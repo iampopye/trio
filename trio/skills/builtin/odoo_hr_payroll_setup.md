@@ -2,7 +2,7 @@
 name: odoo-hr-payroll-setup
 description: "Expert guide for Odoo HR and Payroll: salary structures, payslip rules, leave policies, employee contracts, and payroll journal entries."
 risk: safe
-source: "self"
+source: builtin
 ---
 
 # Odoo HR & Payroll Setup
@@ -77,14 +77,9 @@ Menu: Time Off → Managers → Allocations → New
 After validating a payroll batch, Odoo generates:
 
 Debit   Salary Expense Account     $5,000.00
-  Credit  Social Security Payable     $310.00
-  Credit  Medicare Payable             $72.50
-  Credit  Federal Tax Payable         (varies)
-  Credit  Salary Payable           $4,617.50+
 
 When net salary is paid:
 Debit   Salary Payable            $4,617.50
-  Credit  Bank Account              $4,617.50
 
 Employer taxes (e.g., FUTA, SUTA) post as separate journal entries.
 ```

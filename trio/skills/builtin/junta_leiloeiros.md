@@ -2,9 +2,8 @@
 name: junta-leiloeiros
 description: Coleta e consulta dados de leiloeiros oficiais de todas as 27 Juntas Comerciais do Brasil. Scraper multi-UF, banco SQLite, API FastAPI e exportacao CSV/JSON.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - scraping
 - brazilian-data
@@ -47,7 +46,7 @@ persiste em banco SQLite local e oferece API REST e exportação em múltiplos f
 ## Localização
 
 ```
-C:\Users\renat\skills\junta-leiloeiros\
+C:\Users\trio-dev\skills\junta-leiloeiros\
 ├── scripts/
 │   ├── scraper/
 │   │   ├── base_scraper.py      ← classe abstrata
@@ -72,7 +71,7 @@ C:\Users\renat\skills\junta-leiloeiros\
 ## Instalação (Uma Vez)
 
 ```bash
-pip install -r C:\Users\renat\skills\junta-leiloeiros\scripts\requirements.txt
+pip install -r C:\Users\trio-dev\skills\junta-leiloeiros\scripts\requirements.txt
 
 ## Para Sites Com Javascript:
 
@@ -85,35 +84,35 @@ playwright install chromium
 
 ## Todos Os 27 Estados
 
-python C:\Users\renat\skills\junta-leiloeiros\scripts\run_all.py
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\run_all.py
 
 ## Estados Específicos
 
-python C:\Users\renat\skills\junta-leiloeiros\scripts\run_all.py --estado SP RJ MG
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\run_all.py --estado SP RJ MG
 
 ## Ver O Que Seria Coletado Sem Executar
 
-python C:\Users\renat\skills\junta-leiloeiros\scripts\run_all.py --dry-run
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\run_all.py --dry-run
 
 ## Controlar Paralelismo (Default: 5)
 
-python C:\Users\renat\skills\junta-leiloeiros\scripts\run_all.py --concurrency 3
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\run_all.py --concurrency 3
 ```
 
 ## Estatísticas Por Estado
 
-python C:\Users\renat\skills\junta-leiloeiros\scripts\db.py
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\db.py
 
 ## Sql Direto
 
-sqlite3 C:\Users\renat\skills\junta-leiloeiros\data\leiloeiros.db \
+sqlite3 C:\Users\trio-dev\skills\junta-leiloeiros\data\leiloeiros.db \
   "SELECT estado, COUNT(*) FROM leiloeiros GROUP BY estado"
 ```
 
 ## Servir Api Rest
 
 ```bash
-python C:\Users\renat\skills\junta-leiloeiros\scripts\serve_api.py
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\serve_api.py
 
 ## Docs Interativos: Http://Localhost:8000/Docs
 
@@ -130,17 +129,17 @@ python C:\Users\renat\skills\junta-leiloeiros\scripts\serve_api.py
 ## Exportar Dados
 
 ```bash
-python C:\Users\renat\skills\junta-leiloeiros\scripts\export.py --format csv
-python C:\Users\renat\skills\junta-leiloeiros\scripts\export.py --format json
-python C:\Users\renat\skills\junta-leiloeiros\scripts\export.py --format all
-python C:\Users\renat\skills\junta-leiloeiros\scripts\export.py --format csv --estado SP
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\export.py --format csv
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\export.py --format json
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\export.py --format all
+python C:\Users\trio-dev\skills\junta-leiloeiros\scripts\export.py --format csv --estado SP
 ```
 
 ## Usar Em Código Python
 
 ```python
 import sys
-sys.path.insert(0, r"C:\Users\renat\skills\junta-leiloeiros\scripts")
+sys.path.insert(0, r"C:\Users\trio-dev\skills\junta-leiloeiros\scripts")
 from db import Database
 
 db = Database()

@@ -2,7 +2,7 @@
 name: firecrawl-scraper
 description: "Deep web scraping, screenshots, PDF parsing, and website crawling using Firecrawl API. Use when you need deep content extraction from web pages, page interaction is required (clicking, scrolling, etc.), or you want screenshots or PDF parsing."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -28,7 +28,7 @@ npx skills add -g BenedictKing/firecrawl-scraper
 3. Use naturally in Trio conversations
 
 ## Examples
-See [GitHub Repository](https://github.com/BenedictKing/firecrawl-scraper) for examples.
+See [GitHub Repository](https://github.com/iampopye/trio) for examples.
 
 ## Best Practices
 - Configure API keys via environment variables

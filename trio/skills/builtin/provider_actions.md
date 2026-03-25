@@ -14,7 +14,7 @@ Terraform Actions enable imperative operations during the Terraform lifecycle. A
 
 **References:**
 - [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework)
-- [Terraform Actions RFC](https://github.com/hashicorp/terraform/blob/main/docs/plugin-protocol/actions.md)
+- [Terraform Actions RFC](https://github.com/iampopye/trio/blob/main/docs/plugin-protocol/actions.md)
 
 ## File Structure
 
@@ -474,5 +474,5 @@ Before submitting your action implementation:
 
 - [Terraform Plugin Framework Documentation](https://developer.hashicorp.com/terraform/plugin/framework)
 - [Terraform Provider Development](https://developer.hashicorp.com/terraform/plugin)
-- [terraform-plugin-framework GitHub](https://github.com/hashicorp/terraform-plugin-framework)
-- [terraform-plugin-testing](https://github.com/hashicorp/terraform-plugin-testing)
+- [terraform-plugin-framework GitHub](https://github.com/iampopye/trio)
+- [terraform-plugin-testing](https://github.com/iampopye/trio)

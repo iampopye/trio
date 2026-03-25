@@ -2,7 +2,7 @@
 name: debugging-toolkit-smart-debug
 description: "Use when working with debugging toolkit smart debug"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

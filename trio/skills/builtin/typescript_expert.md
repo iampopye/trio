@@ -3,7 +3,7 @@ name: typescript-expert
 description: TypeScript and JavaScript expert with deep knowledge of type-level programming, performance optimization, monorepo management, migration strategies, and modern tooling.
 category: framework
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -135,7 +135,7 @@ npx tsc --extendedDiagnostics --incremental false | grep -E "Check time|Files:|L
   1. Export the required type explicitly
   2. Use `ReturnType<typeof function>` helper
   3. Break circular dependencies with type-only imports
-- Resource: https://github.com/microsoft/TypeScript/issues/47663
+- Resource: https://github.com/iampopye/trio/issues/47663
 
 **Missing type declarations**
 - Quick fix with ambient declarations:
@@ -404,21 +404,21 @@ Slow language server? → Exclude node_modules, limit files in tsconfig
 ## Expert Resources
 
 ### Performance
-- [TypeScript Wiki Performance](https://github.com/microsoft/TypeScript/wiki/Performance)
-- [Type instantiation tracking](https://github.com/microsoft/TypeScript/pull/48077)
+- [TypeScript Wiki Performance](https://github.com/iampopye/trio/wiki/Performance)
+- [Type instantiation tracking](https://github.com/iampopye/trio/pull/48077)
 
 ### Advanced Patterns
-- [Type Challenges](https://github.com/type-challenges/type-challenges)
+- [Type Challenges](https://github.com/iampopye/trio)
 - [Type-Level TypeScript Course](https://type-level-typescript.com)
 
 ### Tools
 - [Biome](https://biomejs.dev) - Fast linter/formatter
-- [TypeStat](https://github.com/JoshuaKGoldberg/TypeStat) - Auto-fix TypeScript types
-- [ts-migrate](https://github.com/airbnb/ts-migrate) - Migration toolkit
+- [TypeStat](https://github.com/iampopye/trio) - Auto-fix TypeScript types
+- [ts-migrate](https://github.com/iampopye/trio) - Migration toolkit
 
 ### Testing
 - [Vitest Type Testing](https://vitest.dev/guide/testing-types)
-- [tsd](https://github.com/tsdjs/tsd) - Standalone type testing
+- [tsd](https://github.com/iampopye/trio) - Standalone type testing
 
 Always validate changes don't break existing functionality before considering the issue resolved.
 

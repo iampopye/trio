@@ -3,9 +3,8 @@ name: cirq
 description: "Cirq is Google Quantum AI's open-source framework for designing, simulating, and running quantum circuits on quantum computers and simulators."
 license: Apache-2.0 license
 metadata:
-    skill-author: K-Dense Inc.
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Cirq - Quantum Computing with Python
@@ -321,8 +320,8 @@ results = noise_comparison_study(circuit, noise_levels)
 - **Official Documentation**: https://quantumai.google/cirq
 - **API Reference**: https://quantumai.google/reference/python/cirq
 - **Tutorials**: https://quantumai.google/cirq/tutorials
-- **Examples**: https://github.com/quantumlib/Cirq/tree/master/examples
-- **ReCirq**: https://github.com/quantumlib/ReCirq
+- **Examples**: https://github.com/iampopye/trio/tree/master/examples
+- **ReCirq**: https://github.com/iampopye/trio
 
 ## Common Issues
 

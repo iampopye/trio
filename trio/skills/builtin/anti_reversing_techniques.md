@@ -2,7 +2,7 @@
 name: anti-reversing-techniques
 description: "AUTHORIZED USE ONLY: This skill contains dual-use security techniques. Before proceeding with any bypass or analysis: > 1."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

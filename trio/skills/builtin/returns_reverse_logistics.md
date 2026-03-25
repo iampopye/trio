@@ -2,7 +2,7 @@
 name: returns-reverse-logistics
 description: Codified expertise for returns authorisation, receipt and inspection, disposition decisions, refund processing, fraud detection, and warranty claims management.
 risk: safe
-source: https://github.com/ai-evos/agent-skills
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -13,7 +13,6 @@ Use this skill when managing the product return lifecycle, including authorizati
 
 ## Role and Context
 
-You are a senior returns operations manager with 15+ years handling the full returns lifecycle across retail, e-commerce, and omnichannel environments. Your responsibilities span return merchandise authorisation (RMA), receiving and inspection, condition grading, disposition routing, refund and credit processing, fraud detection, vendor recovery (RTV), and warranty claims management. Your systems include OMS (order management), WMS (warehouse management), RMS (returns management), CRM, fraud detection platforms, and vendor portals. You balance customer satisfaction against margin protection, processing speed against inspection accuracy, and fraud prevention against false-positive customer friction.
 
 ## Core Knowledge
 
@@ -23,7 +22,6 @@ Every return starts with policy evaluation. The policy engine must account for o
 
 - **Standard return window:** Typically 30 days from delivery for most general merchandise. Electronics often 15 days. Perishables non-returnable. Furniture/mattresses 30-90 days with specific condition requirements. Extended holiday windows (purchases Nov 1 – Dec 31 returnable through Jan 31) create a surge that peaks mid-January.
 - **Condition requirements:** Most policies require original packaging, all accessories, and no signs of use beyond reasonable inspection. "Reasonable inspection" is where disputes live — a customer who removed laptop screen protector film has technically altered the product but this is normal unboxing behaviour.
-- **Receipt and proof of purchase:** POS transaction lookup by credit card, loyalty number, or phone number has largely replaced paper receipts. Gift receipts entitle the bearer to exchange or store credit at the purchase price, never cash refund. No-receipt returns are capped (typically $50-75 per transaction, 3 per rolling 12 months) and refunded at lowest recent selling price.
 - **Restocking fees:** Applied to opened electronics (15%), special-order items (20-25%), and large/bulky items requiring return shipping coordination. Waived for defective products or fulfilment errors. The decision to waive for customer goodwill requires margin awareness — waiving a $45 restocking fee on a $300 item with 28% margin costs more than it appears.
 - **Cross-channel returns:** Buy-online-return-in-store (BORIS) is expected by customers and operationally complex. Online prices may differ from store prices. The refund should match the original purchase price, not the current store shelf price. Inventory system must accept the unit back into store inventory or flag for return-to-DC.
 - **International returns:** Duty drawback eligibility requires proof of re-export within the statutory window (typically 3-5 years depending on country). Return shipping costs often exceed product value for low-cost items — offer "returnless refund" when shipping exceeds 40% of product value. Customs declarations for returned goods differ from original export documentation.
@@ -67,10 +65,8 @@ Return fraud costs US retailers $24B+ annually. The challenge is detection witho
 
 Not all returns are the customer's fault. Defective products, fulfilment errors, and quality issues have a cost recovery path back to the vendor:
 
-- **Return-to-vendor (RTV):** Defective products returned within the vendor's warranty or defect claim window. Process: accumulate defective units (minimum RTV shipment thresholds vary by vendor, typically $200-500), obtain RTV authorisation number, ship to vendor's designated return facility, track credit issuance. Common failure: letting RTV-eligible product sit in the returns warehouse past the vendor's claim window (often 90 days from receipt).
 - **Defect claims:** When defect rate exceeds the vendor agreement threshold (typically 2-5%), file a formal defect claim for the excess. Requires defect documentation (photos, inspection notes, customer complaint data aggregated by SKU). Vendors will challenge — your data quality determines your recovery.
 - **Vendor chargebacks:** For vendor-caused issues (wrong item shipped from vendor DC, mislabelled products, packaging failures) charge back the full cost including return shipping and processing labour. Requires a vendor compliance program with published standards and penalty schedules.
-- **Credit vs replacement vs write-off:** If the vendor is solvent and responsive, pursue credit. If the vendor is overseas with difficult collections, negotiate replacement product. If the claim is small (< $200) and the vendor is a critical supplier, consider writing it off and noting it in the next contract negotiation.
 
 ### Warranty Management
 
@@ -113,7 +109,6 @@ Score each return 0-100. Flag for review at 65+, hold refund at 80+:
 
 ### Vendor Recovery ROI
 
-Pursue vendor recovery when: `(Expected credit × probability of collection) > (Labour cost + shipping cost + relationship cost)`. Rules of thumb:
 
 - Claims > $500: Always pursue. The math works even at 50% collection probability.
 - Claims $200-500: Pursue if the vendor has a functional RTV programme and you can batch shipments.

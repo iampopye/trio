@@ -6,7 +6,7 @@ description: |
   collapsible, drag drop, reusable widget, widget design,
   pageflip, 组件设计, 组件模式
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Robius Widget Patterns Skill

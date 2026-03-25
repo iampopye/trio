@@ -2,7 +2,7 @@
 name: upgrading-expo
 description: "Upgrade Expo SDK versions"
 risk: safe
-source: "https://github.com/expo/skills/tree/main/plugins/upgrading-expo"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -116,4 +116,4 @@ npx expo-doctor
 
 ## Resources
 
-For more information, see the [source repository](https://github.com/expo/skills/tree/main/plugins/upgrading-expo).
+For more information, see the [source repository](https://github.com/iampopye/trio/tree/main/plugins/upgrading-expo).

@@ -2,7 +2,7 @@
 name: react-state-management
 description: "Master modern React state management with Redux Toolkit, Zustand, Jotai, and React Query. Use when setting up global state, managing server state, or choosing between state management solutions."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -439,6 +439,6 @@ const todosSlice = createSlice({
 ## Resources
 
 - [Redux Toolkit Documentation](https://redux-toolkit.js.org/)
-- [Zustand GitHub](https://github.com/pmndrs/zustand)
+- [Zustand GitHub](https://github.com/iampopye/trio)
 - [Jotai Documentation](https://jotai.org/)
 - [TanStack Query](https://tanstack.com/query)

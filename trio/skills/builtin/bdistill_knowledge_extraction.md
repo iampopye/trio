@@ -3,9 +3,8 @@ name: bdistill-knowledge-extraction
 description: "Extract structured domain knowledge from AI models in-session or from local open-source models via Ollama. No API key needed."
 category: ai-research
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-20"
-author: FrancyJGLisboa
 tags: [ai, knowledge-extraction, domain-specific, data-moat, mcp, reference-data]
 tools: [trio, cursor, codex, copilot]
 ---

@@ -2,7 +2,7 @@
 name: azure-mgmt-fabric-dotnet
 description: Azure Resource Manager SDK for Fabric in .NET.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -334,7 +334,7 @@ catch (RequestFailedException ex)
 ## References
 
 - [Azure.ResourceManager.Fabric NuGet](https://www.nuget.org/packages/Azure.ResourceManager.Fabric)
-- [GitHub Source](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/fabric/Azure.ResourceManager.Fabric)
+- [GitHub Source](https://github.com/iampopye/trio/tree/main/sdk/fabric/Azure.ResourceManager.Fabric)
 - [Microsoft Fabric Documentation](https://learn.microsoft.com/fabric/)
 - [Fabric Capacity Management](https://learn.microsoft.com/fabric/admin/service-admin-portal-capacity-settings)
 

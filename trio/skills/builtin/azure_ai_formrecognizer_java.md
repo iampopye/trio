@@ -2,7 +2,7 @@
 name: azure-ai-formrecognizer-java
 description: "Build document analysis applications using the Azure AI Document Intelligence SDK for Java."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

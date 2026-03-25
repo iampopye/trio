@@ -2,7 +2,7 @@
 name: azure-cosmos-db-py
 description: "Build production-grade Azure Cosmos DB NoSQL services following clean code, security best practices, and TDD principles."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

@@ -2,7 +2,7 @@
 name: odoo-automated-tests
 description: "Write and run Odoo automated tests using TransactionCase, HttpCase, and browser tour tests. Covers test data setup, mocking, and CI integration."
 risk: safe
-source: "self"
+source: builtin
 ---
 
 # Odoo Automated Tests
@@ -46,11 +46,11 @@ class TestHospitalPatient(TransactionCase):
 
     def test_create_patient(self):
         patient = self.Patient.create({
-            'name': 'John Doe',
+            'name': 'trio-dev',
             'doctor_id': self.doctor.id,
         })
         self.assertEqual(patient.state, 'draft')
-        self.assertEqual(patient.name, 'John Doe')
+        self.assertEqual(patient.name, 'trio-dev')
 
     def test_confirm_patient(self):
         patient = self.Patient.create({'name': 'Jane Smith'})

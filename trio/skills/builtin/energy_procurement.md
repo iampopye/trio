@@ -2,7 +2,7 @@
 name: energy-procurement
 description: Codified expertise for electricity and gas procurement, tariff optimisation, demand charge management, renewable PPA evaluation, and multi-facility energy cost management.
 risk: safe
-source: https://github.com/ai-evos/agent-skills
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -35,7 +35,6 @@ The core decision in deregulated markets is how much price risk to retain versus
 - **Index/variable pricing:** You pay the real-time or day-ahead wholesale price plus a supplier adder ($0.002–$0.006/kWh). Lowest long-run average cost, but full exposure to price spikes. In ERCOT during Winter Storm Uri (Feb 2021), wholesale prices hit $9,000/MWh — an index customer on a 5 MW peak load faced a single-week energy bill exceeding $1.5M. Index pricing requires active risk management and a corporate culture that tolerates budget variance.
 - **Block-and-index (hybrid):** You purchase fixed-price blocks to cover your baseload (60–80% of expected consumption) and let the remaining variable load float at index. This balances cost optimization with partial budget certainty. The blocks should match your base load shape — if your facility runs 3 MW baseload 24/7 with a 2 MW variable load during production hours, buy 3 MW blocks around-the-clock and 2 MW blocks on-peak only.
 - **Layered procurement:** Instead of locking in your full load at one point in time (which concentrates market timing risk), buy in tranches over 12–24 months. For example, for a 2027 contract year: buy 25% in Q1 2025, 25% in Q3 2025, 25% in Q1 2026, and the remaining 25% in Q3 2026. Dollar-cost averaging for energy. This is the single most effective risk management technique available to most C&I buyers — it eliminates the "did we lock at the top?" problem.
-- **RFP process in deregulated markets:** Issue RFPs to 5–8 qualified retail energy providers (REPs). Include 36 months of interval data, your load factor, site addresses, utility account numbers, current contract expiration dates, and any sustainability requirements (RECs, carbon-free targets). Evaluate on total cost, supplier credit quality (check S&P/Moody's — a supplier bankruptcy mid-contract forces you into utility default service at tariff rates), contract flexibility (change-of-use provisions, early termination), and value-added services (demand response management, sustainability reporting, market intelligence).
 
 ### Demand Charge Management
 
@@ -99,7 +98,6 @@ Before committing to a 10–25 year PPA, evaluate:
 1. **Does the project economics pencil?** Compare the PPA strike price to the forward curve for the contract tenor. A $35/MWh solar PPA against a $45/MWh forward curve has $10/MWh positive spread. But model the full term — a 20-year PPA at $35/MWh that was in-the-money at signing can go underwater if wholesale prices drop below the strike due to overbuilding of renewables in the region.
 2. **What is the basis risk?** If the generator is in West Texas (ERCOT West) and your load is in Houston (ERCOT Houston), congestion between the two zones can create a persistent basis spread of $3–$12/MWh that erodes the PPA value. Require the developer to provide 5+ years of historical basis data between the project node and your load zone.
 3. **What is the curtailment exposure?** ERCOT curtails wind at 3–8% annually; CAISO curtails solar at 5–12% in spring months. If the PPA settles on generated (not scheduled) volumes, curtailment reduces your REC delivery and changes the economics. Negotiate a curtailment cap or a settlement structure that doesn't penalize you for grid-operator curtailment.
-4. **What are the credit requirements?** Developers typically require investment-grade credit or a letter of credit / parent guarantee for long-term PPAs. A $50M notional VPPA may require a $5–$10M LC, tying up capital. Factor the LC cost into your PPA economics.
 
 ### Demand Charge Mitigation ROI
 
@@ -162,7 +160,6 @@ For full communication templates, see [communication-templates.md](references/co
 | Trigger                                                              | Action                                                                                      | Timeline               |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------- |
 | Wholesale prices exceed 2× budget assumption for 5+ consecutive days | Notify finance, evaluate hedge position, consider emergency fixed-price procurement         | Within 24 hours        |
-| Supplier credit downgrade below investment grade                     | Review contract termination provisions, assess replacement supplier options                 | Within 48 hours        |
 | Utility rate case filed with >10% proposed increase                  | Engage regulatory counsel, evaluate intervention filing                                     | Within 1 week          |
 | Demand peak exceeds ratchet threshold by >15%                        | Investigate root cause with operations, model billing impact, evaluate mitigation           | Within 24 hours        |
 | PPA developer misses REC delivery by >10% of contracted volume       | Issue notice of default per contract, evaluate replacement REC procurement                  | Within 5 business days |

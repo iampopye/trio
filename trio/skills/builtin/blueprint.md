@@ -3,7 +3,7 @@ name: blueprint
 description: "Turn a one-line objective into a step-by-step construction plan any coding agent can execute cold. Each step has a self-contained context brief — a fresh agent in a new session can pick up any step without reading prior steps."
 category: planning
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-10"
 ---
 
@@ -60,11 +60,11 @@ Blueprint is for multi-session, multi-agent engineering projects where each step
 
 ```bash
 mkdir -p ~/.trio/skills
-git clone https://github.com/antbotlab/blueprint.git ~/.trio/skills/blueprint
+git clone <repository-url> ~/.trio/skills/blueprint
 ```
 
 ## Additional Resources
 
-- [GitHub Repository](https://github.com/antbotlab/blueprint)
-- [Examples: small plan](https://github.com/antbotlab/blueprint/blob/main/examples/small-plan.md)
-- [Examples: large plan](https://github.com/antbotlab/blueprint/blob/main/examples/large-plan.md)
+- [GitHub Repository](https://github.com/iampopye/trio)
+- [Examples: small plan](https://github.com/iampopye/trio/blob/main/examples/small-plan.md)
+- [Examples: large plan](https://github.com/iampopye/trio/blob/main/examples/large-plan.md)

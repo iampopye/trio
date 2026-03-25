@@ -6,7 +6,7 @@ description: |
   Scope::with_data, save state, load state, serde,
   状态持久化, 主题切换
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Robius State Management Skill

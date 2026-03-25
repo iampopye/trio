@@ -2,7 +2,7 @@
 name: azure-identity-py
 description: Azure Identity SDK for Python authentication. Use for DefaultAzureCredential, managed identity, service principals, and token caching.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

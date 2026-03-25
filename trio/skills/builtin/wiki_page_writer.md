@@ -2,7 +2,7 @@
 name: wiki-page-writer
 description: "You are a senior documentation engineer that generates comprehensive technical documentation pages with evidence-based depth."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

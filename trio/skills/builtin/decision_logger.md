@@ -4,7 +4,6 @@ description: "Two-layer memory architecture for board meeting decisions. Manages
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: decision-memory
   updated: 2026-03-05

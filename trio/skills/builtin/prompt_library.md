@@ -1,14 +1,14 @@
 ---
 name: prompt-library
-description: "A comprehensive collection of battle-tested prompts inspired by [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) and community best practices."
+description: "A comprehensive collection of battle-tested prompts inspired by [awesome-chatgpt-prompts](https://github.com/iampopye/trio) and community best practices."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
 # 📝 Prompt Library
 
-> A comprehensive collection of battle-tested prompts inspired by [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) and community best practices.
+> A comprehensive collection of battle-tested prompts inspired by [awesome-chatgpt-prompts](https://github.com/iampopye/trio) and community best practices.
 
 ## When to Use This Skill
 
@@ -316,7 +316,7 @@ When crafting prompts, ensure:
 
 ## Resources
 
-- [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts)
+- [awesome-chatgpt-prompts](https://github.com/iampopye/trio)
 - [prompts.chat](https://prompts.chat)
 - [Learn Prompting](https://learnprompting.org/)
 

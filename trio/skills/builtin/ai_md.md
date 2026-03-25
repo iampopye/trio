@@ -2,7 +2,7 @@
 name: ai-md
 description: "Convert human-written CLAUDE.md into AI-native structured-label format. Battle-tested across 4 models. Same rules, fewer tokens, higher compliance."
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-11"
 ---
 

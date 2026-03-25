@@ -4,7 +4,6 @@ description: "Deprecated redirect skill that routes legacy 'content creator' req
 license: MIT
 metadata:
   version: 2.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
   status: deprecated

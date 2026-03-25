@@ -2,7 +2,7 @@
 name: azure-mgmt-mongodbatlas-dotnet
 description: "Manage MongoDB Atlas Organizations as Azure ARM resources with unified billing through Azure Marketplace."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -353,7 +353,7 @@ var response = await orgResource.GetAsync();
 
 - [Microsoft Learn: MongoDB Atlas on Azure](https://learn.microsoft.com/en-us/azure/partner-solutions/mongodb-atlas/)
 - [API Reference](https://learn.microsoft.com/en-us/dotnet/api/azure.resourcemanager.mongodbatlas)
-- [Azure SDK for .NET](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/mongodbatlas)
+- [Azure SDK for .NET](https://github.com/iampopye/trio/tree/main/sdk/mongodbatlas)
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.

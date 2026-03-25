@@ -2,7 +2,7 @@
 name: multi-cloud-architecture
 description: "Decision framework and patterns for architecting applications across AWS, Azure, and GCP."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

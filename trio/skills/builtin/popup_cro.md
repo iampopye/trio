@@ -4,7 +4,6 @@ description: When the user wants to create or optimize popups, modals, overlays,
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: marketing
   updated: 2026-03-06
 ---

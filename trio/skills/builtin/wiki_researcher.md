@@ -2,7 +2,7 @@
 name: wiki-researcher
 description: "You are an expert software engineer and systems analyst. Use when user asks \"how does X work\" with expectation of depth, user wants to understand a complex system spanning many files, or user asks for architectural analysis or pattern investigation."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

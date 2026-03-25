@@ -2,9 +2,8 @@
 name: leiloeiro-avaliacao
 description: Avaliacao pericial de imoveis em leilao. Valor de mercado, liquidacao forcada, ABNT NBR 14653, metodos comparativo/renda/custo, CUB e margem de seguranca.
 risk: safe
-source: community
+source: builtin
 date_added: '2026-03-06'
-author: renat
 tags:
 - real-estate
 - valuation
@@ -435,7 +434,7 @@ Skill baseada em conhecimento (knowledge-only). Não requer instalação de depe
 
 ## Verificar Se A Skill Está Registrada:
 
-python C:\Users\renat\skills\agent-orchestrator\scripts\scan_registry.py
+python C:\Users\trio-dev\skills\agent-orchestrator\scripts\scan_registry.py
 ```
 
 ---

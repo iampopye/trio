@@ -3,7 +3,7 @@ name: snowflake-development
 description: "Comprehensive Snowflake development assistant covering SQL best practices, data pipeline design (Dynamic Tables, Streams, Tasks, Snowpipe), Cortex AI functions, Cortex Agents, Snowpark Python, dbt integration, performance tuning, and security hardening."
 category: data-engineering
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-24"
 ---
 

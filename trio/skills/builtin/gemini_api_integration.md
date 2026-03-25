@@ -2,7 +2,7 @@
 name: gemini-api-integration
 description: "Use when integrating Google Gemini API into projects. Covers model selection, multimodal inputs, streaming, function calling, and production best practices."
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-04"
 ---
 

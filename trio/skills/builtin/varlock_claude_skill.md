@@ -2,7 +2,7 @@
 name: varlock-trio-skill
 description: "Secure environment variable management ensuring secrets are never exposed in Trio sessions, terminals, logs, or git commits"
 risk: safe
-source: "https://github.com/wrsmith108/varlock-trio-skill"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -20,4 +20,4 @@ Use this skill when you need to work with secure environment variable management
 
 This skill provides guidance and patterns for secure environment variable management ensuring secrets are never exposed in trio sessions, terminals, logs, or git commits.
 
-For more information, see the [source repository](https://github.com/wrsmith108/varlock-trio-skill).
+For more information, see the [source repository](https://github.com/iampopye/trio).

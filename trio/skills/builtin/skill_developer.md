@@ -2,7 +2,7 @@
 name: skill-developer
 description: "Comprehensive guide for creating and managing skills in Trio with auto-activation system, following Trio AI's official best practices including the 500-line rule and progressive disclosure pattern."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

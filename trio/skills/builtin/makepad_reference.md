@@ -2,7 +2,7 @@
 name: makepad-reference
 description: "This category provides reference materials for debugging, code quality, and advanced layout patterns."
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Makepad Reference
@@ -44,6 +44,6 @@ log!("State: {} / {}", self.counter, self.is_loading);
 ## Resources
 
 - [Makepad Official Docs](https://publish.obsidian.md/makepad-docs/) - Obsidian-based documentation
-- [Makepad Repository](https://github.com/makepad/makepad)
-- [Robrix](https://github.com/project-robius/robrix) - Production reference
-- [Moly](https://github.com/moxin-org/moly) - Production reference
+- [Makepad Repository](https://github.com/iampopye/trio)
+- [Robrix](https://github.com/iampopye/trio) - Production reference
+- [Moly](https://github.com/iampopye/trio) - Production reference

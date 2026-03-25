@@ -2,7 +2,7 @@
 name: azure-cosmos-java
 description: Azure Cosmos DB SDK for Java. NoSQL database operations with global distribution, multi-model support, and reactive patterns.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 
@@ -140,7 +140,7 @@ CosmosAsyncContainer container = asyncClient
     .getContainer("myContainer");
 
 // Create
-container.createItem(new User("1", "John Doe", "john@example.com"))
+container.createItem(new User("1", "trio-dev", "john@example.com"))
     .flatMap(response -> {
         System.out.println("Created: " + response.getItem());
         // Read
@@ -253,7 +253,7 @@ try {
 | Maven Package | https://central.sonatype.com/artifact/com.azure/azure-cosmos |
 | API Documentation | https://azuresdkdocs.z19.web.core.windows.net/java/azure-cosmos/latest/index.html |
 | Product Docs | https://learn.microsoft.com/azure/cosmos-db/ |
-| Samples | https://github.com/Azure-Samples/azure-cosmos-java-sql-api-samples |
+| Samples | https://github.com/iampopye/trio |
 | Performance Guide | https://learn.microsoft.com/azure/cosmos-db/performance-tips-java-sdk-v4-sql |
 | Troubleshooting | https://learn.microsoft.com/azure/cosmos-db/troubleshoot-java-sdk-v4-sql |
 

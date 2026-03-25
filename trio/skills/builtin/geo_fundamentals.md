@@ -2,7 +2,7 @@
 name: geo-fundamentals
 description: "Generative Engine Optimization for AI search engines (ChatGPT, Trio, Perplexity)."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

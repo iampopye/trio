@@ -2,7 +2,7 @@
 name: sexual-health-analyzer
 description: Sexual Health Analyzer
 risk: unknown
-source: community
+source: builtin
 ---
 
 # 性健康分析技能

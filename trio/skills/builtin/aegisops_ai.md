@@ -4,8 +4,7 @@ description: "Autonomous DevSecOps & FinOps Guardrails.
 Orchestrates Gemini 3 Flash to audit Linux Kernel patches,
 Terraform cost drifts, and K8s compliance."
 risk: safe
-source: community
-author: Champbreed
+source: builtin
 date_added: "2026-03-24"
 ---
 
@@ -75,7 +74,7 @@ AegisOps-AI leverages the **Google GenAI SDK** to implement a "Reasoning Path" f
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Champbreed/AegisOps-AI.git
+git clone <repository-url>
 cd AegisOps-AI
 ```
 ## 2. Setup
@@ -122,6 +121,6 @@ python3 main.py
 
 ## Links
 
-+ - **Repository**: https://github.com/Champbreed/AegisOps-AI
-+ - **Documentation**: https://github.com/Champbreed/AegisOps-AI#readme
++ - 
++ - **Documentation**: https://github.com/iampopye/trio#readme
 

@@ -2,7 +2,7 @@
 name: frontend-ui-dark-ts
 description: "A modern dark-themed React UI system using Tailwind CSS and Framer Motion. Designed for dashboards, admin panels, and data-rich applications with glassmorphism effects and tasteful animations."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

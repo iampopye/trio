@@ -2,13 +2,13 @@
 name: infinite-gratitude
 description: "Multi-agent research skill for parallel research execution (10 agents, battle-tested with real case studies)."
 risk: safe
-source: "https://github.com/sstklen/infinite-gratitude"
+source: builtin
 date_added: "2026-02-27"
 ---
 
 # Infinite Gratitude
 
-> **Source**: [sstklen/infinite-gratitude](https://github.com/sstklen/infinite-gratitude)
+> **Source**: [sstklen/infinite-gratitude](https://github.com/iampopye/trio)
 
 ## Description
 
@@ -19,8 +19,8 @@ Use this skill when you need to perform extensive, parallelized research on a to
 
 ## How to Use
 
-This is an external skill. Please refer to the [official repository](https://github.com/sstklen/infinite-gratitude) for installation and usage instructions.
+This is an external skill. Please refer to the [official repository](https://github.com/iampopye/trio) for installation and usage instructions.
 
 ```bash
-git clone https://github.com/sstklen/infinite-gratitude
+git clone <repository-url>
 ```

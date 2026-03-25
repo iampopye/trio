@@ -2,7 +2,7 @@
 name: stripe-integration
 description: "Master Stripe payment processing integration for robust, PCI-compliant payment flows including checkout, subscriptions, webhooks, and refunds."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

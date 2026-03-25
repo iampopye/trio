@@ -1,7 +1,5 @@
 ---
 name: market_research
-description: Conduct market research, competitive analysis, investor due diligence, and industry intelligence with source attribution
-alwaysLoad: false
 ---
 
 # Market Research

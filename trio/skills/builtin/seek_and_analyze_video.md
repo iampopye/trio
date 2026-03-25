@@ -3,9 +3,8 @@ name: seek-and-analyze-video
 description: "Seek and analyze video content using Memories.ai Large Visual Memory Model for persistent video intelligence"
 category: data-ai
 risk: safe
-source: "https://github.com/kennyzheng-builds/seek-and-analyze-video"
+source: builtin
 date_added: "2026-03-09"
-author: kennyzheng-builds
 tags: [video, ai, memories, social-media, youtube, tiktok, analysis]
 tools: [trio, cursor, gemini]
 ---
@@ -88,8 +87,6 @@ Agent: uploads recording -> waits -> gets transcript -> uses chat_video for stru
 ## Limitations
 
 - Video processing takes 1-5 minutes depending on length
-- Free tier limited to 100 credits
-- Social media import requires public content
 - Audio search only works on processed videos
 
 ## Related Skills

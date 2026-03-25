@@ -2,7 +2,7 @@
 name: agentmail
 description: Email infrastructure for AI agents. Create accounts, send/receive emails, manage webhooks, and check karma balance via the AgentMail API.
 risk: safe
-source: community
+source: builtin
 ---
 
 # AgentMail — Email for AI Agents
@@ -119,7 +119,6 @@ Every action has a karma cost or reward:
 
 | Event | Karma | Why |
 |---|---|---|
-| `money_paid` | +100 | Purchase credits |
 | `email_received` | +2 | Someone replied from a trusted domain |
 | `account_deleted` | +10 | Karma refunded when you delete an address |
 | `email_sent` | -1 | Sending costs karma |

@@ -4,7 +4,6 @@ description: "Advanced Scrum Master skill for data-driven agile team analysis an
 license: MIT
 metadata:
   version: 2.0.0
-  author: Alireza Rezvani
   category: project-management
   domain: agile-development
   updated: 2026-02-15

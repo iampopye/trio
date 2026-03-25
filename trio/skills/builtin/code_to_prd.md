@@ -3,7 +3,7 @@ Name: code-to-prd
 Tier: STANDARD
 Category: product
 Dependencies: none
-Author: Alireza Rezvani
+Author: trio-dev trio-dev
 Version: 2.1.2
 name: code-to-prd
 description: |
@@ -502,6 +502,3 @@ Both scripts are **stdlib-only** — no pip install needed.
 
 ---
 
-## Attribution
-
-This skill was inspired by [code-to-prd](https://github.com/lihanglogan/code-to-prd) by [@lihanglogan](https://github.com/lihanglogan), who proposed the original concept and methodology in [PR #368](https://github.com/alirezarezvani/trio-skills/pull/368). The core three-phase workflow (global scan → page-by-page analysis → structured document generation) originated from that work. This version was rebuilt from scratch in English with added tooling (analysis scripts, scaffolder, framework reference, quality checklist).

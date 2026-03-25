@@ -2,7 +2,7 @@
 name: constant-time-analysis
 description: "Analyze cryptographic code to detect operations that leak secret data through execution timing variations."
 risk: unknown
-source: community
+source: builtin
 ---
 
 # Constant-Time Analysis
@@ -215,6 +215,6 @@ For each flagged violation, ask: **Does this operation's input depend on secret 
 
 ## References
 
-- [Cryptocoding Guidelines](https://github.com/veorq/cryptocoding) - Defensive coding for crypto
+- [Cryptocoding Guidelines](https://github.com/iampopye/trio) - Defensive coding for crypto
 - [KyberSlash](https://kyberslash.cr.yp.to/) - Division timing in post-quantum crypto
 - [BearSSL Constant-Time](https://www.bearssl.org/constanttime.html) - Practical constant-time techniques

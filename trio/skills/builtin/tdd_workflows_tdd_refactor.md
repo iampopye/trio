@@ -2,7 +2,7 @@
 name: tdd-workflows-tdd-refactor
 description: "Use when working with tdd workflows tdd refactor"
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

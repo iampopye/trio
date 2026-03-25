@@ -2,7 +2,7 @@
 name: brand-guidelines-community
 description: "To access Trio AI's official brand identity and style resources, use this skill."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

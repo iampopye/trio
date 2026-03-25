@@ -2,7 +2,7 @@
 name: ruby-pro
 description: Write idiomatic Ruby code with metaprogramming, Rails patterns, and performance optimization. Specializes in Ruby on Rails, gem development, and testing frameworks.
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

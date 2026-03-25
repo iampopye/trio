@@ -2,7 +2,7 @@
 name: revops
 description: "Design and improve revenue operations, lead lifecycle rules, scoring, routing, handoffs, and CRM process automation. Use when marketing, sales, and customer success workflows need clearer operational structure."
 risk: unknown
-source: "https://github.com/coreyhaines31/marketingskills"
+source: builtin
 date_added: "2026-03-21"
 metadata:
   version: 1.1.0
@@ -347,6 +347,4 @@ For implementation, use the CRM, scheduling, enrichment, and automation tools av
 - **cold-email**: For outbound prospecting emails
 - **email-sequence**: For lifecycle and nurture email flows
 - **pricing-strategy**: For pricing decisions and packaging
-- **analytics-tracking**: For tracking pipeline metrics and attribution
-- **launch-strategy**: For go-to-market launch planning
 - **sales-enablement**: For sales collateral, decks, and objection handling

@@ -4,7 +4,6 @@ description: "Marketing leadership for scaling companies. Brand positioning, gro
 license: MIT
 metadata:
   version: 1.0.0
-  author: Alireza Rezvani
   category: c-level
   domain: cmo-leadership
   updated: 2026-03-05
@@ -100,7 +99,6 @@ Ask these before making any strategic recommendation:
 - No defined ICP — "companies with 50-1000 employees" is not an ICP
 - Marketing and sales disagree on what an MQL is (this is always a system problem, not a people problem)
 - CAC tracked only as a blended number — channel-level CAC is non-negotiable
-- Pipeline attribution is self-reported by sales reps, not CRM-timestamped
 - CMO can't answer "what's our payback period?" without a 48-hour research project
 - Brand work and performance marketing have no shared narrative — they're contradicting each other
 - Marketing team is producing content with no documented positioning to anchor it

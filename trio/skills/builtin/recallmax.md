@@ -3,9 +3,8 @@ name: recallmax
 description: "FREE — God-tier long-context memory for AI agents. Injects 500K-1M clean tokens, auto-summarizes with tone/intent preservation, compresses 14-turn history into 800 tokens."
 category: memory
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-13"
-author: christopherlhammer11-ai
 tags: [memory, context, rag, summarization, compression, long-context, agent-infrastructure]
 tools: [trio, cursor, codex, gemini, copilot, windsurf, antigravity, grok]
 ---
@@ -16,7 +15,6 @@ tools: [trio, cursor, codex, gemini, copilot, windsurf, antigravity, grok]
 
 RecallMax enhances AI agent memory capabilities dramatically. Inject 500K to 1M clean tokens of external context without hallucination drift. Auto-summarize conversations while preserving tone, sarcasm, and intent. Compress multi-turn histories into high-density token sequences.
 
-Free forever. Built by the Genesis Agent Marketplace.
 
 ## Install
 
@@ -38,8 +36,6 @@ npx skills add christopherlhammer11-ai/recallmax
 
 RecallMax cleanly injects external context (documents, RAG results, prior conversations) into the agent's working memory. Unlike naive concatenation, it:
 - Deduplicates overlapping content
-- Preserves source attribution
-- Prevents hallucination drift from context pollution
 
 ### Step 2: Adaptive Summarization
 
@@ -72,6 +68,6 @@ Built-in cross-reference checks for controversial or ambiguous claims within the
 
 ## Links
 
-- **Repo:** https://github.com/christopherlhammer11-ai/recallmax
+- **Repo:** https://github.com/iampopye/trio
 - **Marketplace:** https://genesis-node-api.vercel.app
 - **Browse skills:** https://genesis-marketplace.vercel.app

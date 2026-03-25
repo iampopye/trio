@@ -2,7 +2,7 @@
 name: react-flow-architect
 description: "Build production-ready ReactFlow applications with hierarchical navigation, performance optimization, and advanced state management."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

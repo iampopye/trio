@@ -2,8 +2,7 @@
 name: aws-penetration-testing
 description: "Provide comprehensive techniques for penetration testing AWS cloud environments. Covers IAM enumeration, privilege escalation, SSRF to metadata endpoint, S3 bucket exploitation, Lambda code extraction, and persistence techniques for red team operations."
 risk: unknown
-source: community
-author: zebbern
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -35,11 +34,11 @@ Provide comprehensive techniques for penetration testing AWS cloud environments.
 
 | Tool | Purpose | Installation |
 |------|---------|--------------|
-| Pacu | AWS exploitation framework | `git clone https://github.com/RhinoSecurityLabs/pacu` |
+| Pacu | AWS exploitation framework | `git clone <repository-url> |
 | SkyArk | Shadow Admin discovery | `Import-Module .\SkyArk.ps1` |
 | Prowler | Security auditing | `pip install prowler` |
 | ScoutSuite | Multi-cloud auditing | `pip install scoutsuite` |
-| enumerate-iam | Permission enumeration | `git clone https://github.com/andresriancho/enumerate-iam` |
+| enumerate-iam | Permission enumeration | `git clone <repository-url> |
 | Principal Mapper | IAM analysis | `pip install principalmapper` |
 
 ---
@@ -304,7 +303,7 @@ secretsdump.py -system ./SYSTEM -ntds ./ntds.dit local
 Convert CLI credentials to console access:
 
 ```bash
-git clone https://github.com/NetSPI/aws_consoler
+git clone <repository-url>
 aws_consoler -v -a AKIAXXXXXXXX -s SECRETKEY
 
 # Generates signin URL for console access

@@ -3,7 +3,7 @@ name: x-twitter-scraper
 description: "X (Twitter) data platform skill — tweet search, user lookup, follower extraction, engagement metrics, giveaway draws, monitoring, webhooks, 19 extraction tools, MCP server."
 category: data
 risk: safe
-source: community
+source: builtin
 tags: "[twitter, x-api, scraping, mcp, social-media, data-extraction, giveaway, monitoring, webhooks]"
 date_added: "2026-02-28"
 ---
@@ -38,10 +38,10 @@ Or clone manually into your agent's skills directory:
 
 ```bash
 # Trio
-git clone https://github.com/Xquik-dev/x-twitter-scraper.git .trio/skills/x-twitter-scraper
+git clone <repository-url> .trio/skills/x-twitter-scraper
 
 # Trio / Trio / Trio CLI / Copilot
-git clone https://github.com/Xquik-dev/x-twitter-scraper.git .agents/skills/x-twitter-scraper
+git clone <repository-url> .agents/skills/x-twitter-scraper
 ```
 
 ### Get an API Key
@@ -124,6 +124,6 @@ export XQUIK_API_KEY="xq_YOUR_KEY_HERE"
 
 ## Repository
 
-https://github.com/Xquik-dev/x-twitter-scraper
+https://github.com/iampopye/trio
 
 **Maintained By:** [Xquik](https://xquik.com)

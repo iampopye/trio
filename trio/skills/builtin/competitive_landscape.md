@@ -2,7 +2,7 @@
 name: competitive-landscape
 description: "Comprehensive frameworks for analyzing competition, identifying differentiation opportunities, and developing winning market positioning strategies."
 risk: unknown
-source: community
+source: builtin
 date_added: '2026-02-27'
 ---
 

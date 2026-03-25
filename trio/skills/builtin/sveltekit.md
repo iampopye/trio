@@ -3,9 +3,8 @@ name: sveltekit
 description: "Build full-stack web applications with SvelteKit — file-based routing, SSR, SSG, API routes, and form actions in one framework."
 category: frontend
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-18"
-author: suhaibjanjua
 tags: [svelte, sveltekit, fullstack, ssr, ssg, typescript]
 tools: [trio, cursor, gemini]
 ---

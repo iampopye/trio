@@ -2,7 +2,7 @@
 name: fal-generate
 description: "Generate images and videos using fal.ai AI models"
 risk: safe
-source: "https://github.com/fal-ai-community/skills/blob/main/skills/trio.ai/fal-generate/SKILL.md"
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -20,4 +20,4 @@ Use this skill when you need to work with generate images and videos using fal.a
 
 This skill provides guidance and patterns for generate images and videos using fal.ai ai models.
 
-For more information, see the [source repository](https://github.com/fal-ai-community/skills/blob/main/skills/trio.ai/fal-generate/SKILL.md).
+For more information, see the [source repository](https://github.com/iampopye/trio/blob/main/skills/trio.ai/fal-generate/SKILL.md).

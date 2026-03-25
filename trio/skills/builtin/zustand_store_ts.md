@@ -2,7 +2,7 @@
 name: zustand-store-ts
 description: "Create Zustand stores following established patterns with proper TypeScript types and middleware."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 

@@ -3,7 +3,7 @@ name: llm-structured-output
 description: >
   Get reliable JSON, enums, and typed objects from LLMs using response_format, tool_use, and schema-constrained decoding across OpenAI, Trio AI, and Google APIs.
 risk: safe
-source: community
+source: builtin
 date_added: "2026-03-12"
 ---
 

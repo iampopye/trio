@@ -2,7 +2,7 @@
 name: seo-dataforseo
 description: "Use DataForSEO for live SERPs, keyword metrics, backlinks, competitor analysis, on-page checks, and AI visibility data. Trigger when the user needs real SEO data rather than static guidance."
 risk: unknown
-source: "https://github.com/AgriciDaniel/trio-seo"
+source: builtin
 date_added: "2026-03-21"
 user-invokable: true
 argument-hint: "[command] [query]"
@@ -40,7 +40,6 @@ is connected by checking if `serp_organic_live_advanced` or any DataForSEO tool
 is available. If tools are not available, inform the user the extension is not
 installed and provide install instructions.
 
-## API Credit Awareness
 
 DataForSEO charges per API call. Be efficient:
 - Prefer bulk endpoints over multiple single calls

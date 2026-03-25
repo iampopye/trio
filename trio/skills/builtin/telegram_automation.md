@@ -2,7 +2,7 @@
 name: telegram-automation
 description: "Automate Telegram tasks via Rube MCP (Composio): send messages, manage chats, share photos/documents, and handle bot commands. Always search tools first for current schemas."
 risk: unknown
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
@@ -126,8 +126,6 @@ Automate Telegram operations through Composio's Telegram toolkit via Rube MCP.
 - `limit`: Number of updates to retrieve
 
 **Pitfalls**:
-- Forwarded messages show the original sender attribution
-- GET_UPDATES returns a limited window of recent updates
 - Chat history access may be limited by bot permissions and chat type
 - Use offset to avoid processing the same update twice
 

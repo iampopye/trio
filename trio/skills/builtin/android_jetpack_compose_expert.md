@@ -2,7 +2,7 @@
 name: android-jetpack-compose-expert
 description: "Expert guidance for building modern Android UIs with Jetpack Compose, covering state management, navigation, performance, and Material Design 3."
 risk: safe
-source: community
+source: builtin
 date_added: "2026-02-27"
 ---
 
