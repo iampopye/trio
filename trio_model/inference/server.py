@@ -22,21 +22,41 @@ class TrioEngine:
     """Loads Trio and handles text generation."""
 
     def __init__(self, checkpoint_path: str, preset: str = "nano"):
-        self.cfg       = get_config(preset)
-        self.tokenizer = get_tokenizer(preset)
-        self.cfg.vocab_size = self.tokenizer.vocab_size
-        self.device    = torch.device(self.cfg.device)
+        self.device = torch.device(get_config(preset).device)
 
         print(f"[Trio Engine] Loading model from: {checkpoint_path}")
-        self.model = TrioModel(self.cfg).to(self.device)
 
         if os.path.exists(checkpoint_path):
-            ckpt = torch.load(checkpoint_path, map_location=self.device)
+            ckpt = torch.load(checkpoint_path, map_location=self.device, weights_only=False)
+            saved_cfg = ckpt.get("config", {})
+            saved_vocab = saved_cfg.get("vocab_size", 0)
+
+            # Auto-detect tokenizer from checkpoint vocab size
+            # BPE models (Kaggle-trained) have vocab_size ~50257
+            # CharTokenizer models have vocab_size ~105
+            if saved_vocab > 1000:
+                self.tokenizer = get_tokenizer("small")  # BPE tokenizer
+                self.cfg = get_config(preset)
+                # Override config with saved values from checkpoint
+                for k, v in saved_cfg.items():
+                    if hasattr(self.cfg, k):
+                        setattr(self.cfg, k, v)
+                print(f"[Trio Engine] Detected BPE model (vocab={saved_vocab})")
+            else:
+                self.cfg = get_config(preset)
+                self.tokenizer = get_tokenizer(preset)
+                self.cfg.vocab_size = self.tokenizer.vocab_size
+
+            self.model = TrioModel(self.cfg).to(self.device)
             self.model.load_state_dict(ckpt["model"])
             step = ckpt.get("step", "?")
             val_loss = ckpt.get("val_loss", "?")
             print(f"[Trio Engine] Loaded! Step={step}, val_loss={val_loss}")
         else:
+            self.cfg = get_config(preset)
+            self.tokenizer = get_tokenizer(preset)
+            self.cfg.vocab_size = self.tokenizer.vocab_size
+            self.model = TrioModel(self.cfg).to(self.device)
             print(f"[Trio Engine] Checkpoint not found at {checkpoint_path}")
             print("[Trio Engine] Using random weights (for testing only)")
 
