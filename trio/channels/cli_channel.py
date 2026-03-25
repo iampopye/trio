@@ -18,6 +18,7 @@ class CLIChannel(BaseChannel):
         self._running = True
         self._current_response = ""
         self._streaming = False
+        self._streamed_content = False  # Track if content was already streamed
 
     async def start(self) -> None:
         """Start reading user input from terminal."""
@@ -29,13 +30,18 @@ class CLIChannel(BaseChannel):
     async def send_message(self, chat_id: str, content: str) -> None:
         """Print final message to terminal."""
         if self._streaming:
-            # Clear the streaming line and print final
             print()  # New line after streaming
             self._streaming = False
             self._current_response = ""
 
-        # Print the response
-        print(f"\n{content}\n")
+        if self._streamed_content:
+            # Content was already shown via streaming — only print stats line
+            stats_start = content.rfind("\n\n_(")
+            if stats_start >= 0:
+                print(content[stats_start:])
+            self._streamed_content = False
+        else:
+            print(f"\n{content}\n")
 
     async def send_stream_chunk(self, chat_id: str, chunk: StreamChunk) -> None:
         """Print streaming chunks in real-time."""
@@ -49,6 +55,7 @@ class CLIChannel(BaseChannel):
         if chunk.chunk:
             print(chunk.chunk, end="", flush=True)
             self._streaming = True
+            self._streamed_content = True
 
     async def run_interactive(self) -> None:
         """Run the interactive input loop."""
