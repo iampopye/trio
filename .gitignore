@@ -1,4 +1,3 @@
-# Patterns to ignore in git
 # ── Python ──────────────────────────────────────
 __pycache__/
 *.py[cod]
@@ -17,29 +16,27 @@ env/
 .venv/
 trio_env/
 
+# ── Environment ────────────────────────────────
+.env
+
 # ── Checkpoints & model weights ──────────────
-# (large binary files - push to HuggingFace Hub or cloud storage instead)
 checkpoints/*.pt
 checkpoints/sft/*.pt
 *.bin
 *.safetensors
 
 # ── Training data (large files) ──────────────
-data/corpus/*.txt
-data/corpus/*.jsonl
-data/corpus/*.bin
-data/corpus/*.npy
+trio_model/data/corpus/*.txt
+trio_model/data/corpus/*.jsonl
+trio_model/data/corpus/*.bin
+trio_model/data/corpus/*.npy
 
 # EXCEPT sample data used for first-run testing
-!data/corpus/.gitkeep
+!trio_model/data/corpus/.gitkeep
 
 # ── Logs ─────────────────────────────────────
 logs/
-*.jsonl
 *.log
-
-# ── Tokenizer vocab (regenerate from training) ─
-data/vocab.json
 
 # ── OS files ─────────────────────────────────
 .DS_Store
@@ -55,3 +52,6 @@ desktop.ini
 # ── Jupyter ───────────────────────────────────
 .ipynb_checkpoints/
 *.ipynb
+
+# ── trio agent runtime ───────────────────────
+.trio/

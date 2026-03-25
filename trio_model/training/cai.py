@@ -8,18 +8,15 @@ Implements Anthropic's CAI technique:
 """
 
 import os
-import sys
 import json
 import argparse
 from typing import List, Dict
 
 import torch
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from config import get_config
-from model.architecture import TrioModel
-from data.tokenizer import get_tokenizer
+from trio_model.config import get_config
+from trio_model.model.architecture import TrioModel
+from trio_model.data.tokenizer import get_tokenizer
 
 
 # ── Trio's Constitution ────────────────────────────────────────────────────────

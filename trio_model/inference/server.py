@@ -5,18 +5,15 @@ and serves it through a REST API + interactive CLI.
 """
 
 import os
-import sys
 import argparse
 import json
 from typing import List, Optional
 
 import torch
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from config import get_config
-from model.architecture import TrioModel
-from data.tokenizer import get_tokenizer
+from trio_model.config import get_config
+from trio_model.model.architecture import TrioModel
+from trio_model.data.tokenizer import get_tokenizer
 
 
 # ── Generation Engine ──────────────────────────────────────────────────────────

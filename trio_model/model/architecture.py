@@ -13,8 +13,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Optional
 
-from config import TrioConfig
-from model.attention import MultiHeadAttention
+from trio_model.config import TrioConfig
+from trio_model.model.attention import MultiHeadAttention
 
 
 # ── RMS Normalization ──────────────────────────────────────────────────────────

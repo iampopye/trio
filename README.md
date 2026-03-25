@@ -1,135 +1,171 @@
-# 🤖 Trio AI
+# trio.ai
 
-> A Claude-inspired language model built from scratch using PyTorch.
+> Train your own AI. Deploy it everywhere.
 
-Trio is a decoder-only transformer language model with a Constitutional AI training pipeline. It is designed to be **helpful, honest, and harmless** — inspired by Anthropic's Claude. The architecture runs from a tiny 1M-parameter nano model (suitable for a Mac Mini with 4GB RAM) all the way up to a 1B-parameter medium model for cloud GPU training.
+**trio.ai** is a complete open-source AI platform that combines a trainable language model with a multi-platform agent framework. Train your own LLM from scratch, align it with Constitutional AI, and deploy it as an intelligent agent across CLI, Discord, Telegram, and Signal — all in one project.
 
 ---
 
-## Architecture Highlights
+## What Makes trio.ai Different
 
-| Feature | Implementation |
+| Other tools | trio.ai |
 |---|---|
-| Architecture | Decoder-only Transformer |
-| Positional Encoding | Rotary (RoPE) |
-| Normalization | RMSNorm |
-| Activation | SwiGLU |
-| Attention | Multi-Head + optional Group Query Attention (GQA) |
-| Alignment | Constitutional AI (CAI) self-critique loop |
+| LangChain/CrewAI need external LLMs | **Train your own model** from scratch |
+| Ollama just runs models | **Full agent** with tools, memory, channels |
+| Open Interpreter needs API keys | Works **100% local** or with 13+ cloud providers |
+
+---
+
+## Features
+
+### LLM Engine (`trio_model/`)
+- **Decoder-only Transformer** built from scratch with PyTorch
+- **RoPE** positional encoding, **RMSNorm**, **SwiGLU** activation
+- **Grouped Query Attention (GQA)** for efficient inference
+- **3 presets**: nano (~1M, CPU), small (~125M, T4 GPU), medium (~1B, A100)
+- **Constitutional AI** alignment (Anthropic-inspired self-critique)
+- **FastAPI** inference server + CLI chat
+
+### Agent Framework (`trio/`)
+- **Multi-platform**: CLI, Discord, Telegram, Signal
+- **13+ LLM providers**: Ollama, OpenAI, Claude, Gemini, DeepSeek, Groq, and more
+- **Built-in Trio provider**: Use your own trained model as the agent backend
+- **Tool system**: Web search, math solver, shell, file ops, RAG, MCP
+- **Persistent memory**: Long-term facts, interaction history, daily notes
+- **5-layer guardrails**: Input/output filtering, jailbreak detection, rate limiting
+- **Markdown skills**: Extensible skill system with YAML frontmatter
+- **Cron scheduler**: Recurring tasks
+
+---
+
+## Quick Start
+
+### Option A: Agent Framework (use with Ollama or cloud LLMs)
+
+```bash
+pip install trio-ai
+trio onboard          # Interactive setup wizard
+trio agent            # Start chatting
+```
+
+### Option B: Train Your Own Model + Deploy
+
+```bash
+# Clone and install with model dependencies
+git clone https://github.com/iampopye/trio.git
+cd trio
+pip install -e ".[model,serve]"
+
+# Train nano model on CPU (takes hours, not days)
+python -m trio_model.training.pretrain --preset nano
+
+# Fine-tune on instructions
+python -m trio_model.training.sft --preset nano
+
+# Chat with your trained model
+python -m trio_model.inference.server --preset nano --mode cli
+
+# Or deploy as a multi-platform agent
+trio onboard          # Select "trio" as provider
+trio agent            # Chat using your own model
+```
 
 ---
 
 ## Project Structure
 
 ```
-trio/
-├── config.py                # Nano / Small / Medium presets
-├── test_setup.py            # Quick validation script (run this first!)
-├── requirements.txt
+trio.ai/
+├── trio/                        # Agent Framework
+│   ├── core/                    #   AgentLoop, MessageBus, Config, Memory, RAG
+│   ├── providers/               #   Ollama, OpenAI, Claude, Gemini, Trio Local
+│   ├── channels/                #   CLI, Discord, Telegram, Signal
+│   ├── tools/                   #   Web search, math, shell, file ops, MCP
+│   ├── skills/                  #   Markdown-based dynamic skills
+│   ├── shared/                  #   Guardrails, context analyzer
+│   └── cli/                     #   Onboard, agent, gateway, provider mgmt
 │
-├── model/
-│   ├── architecture.py      # TrioModel (full transformer)
-│   └── attention.py         # MHA + RoPE + GQA
+├── trio_model/                  # LLM Engine
+│   ├── model/                   #   TrioModel, RoPE, GQA, RMSNorm, SwiGLU
+│   ├── data/                    #   Tokenizer (char + BPE), datasets
+│   ├── training/                #   Pre-train, SFT, Constitutional AI
+│   ├── inference/               #   FastAPI server + CLI chat
+│   └── configs/                 #   nano.yaml, small.yaml, medium.yaml
 │
-├── data/
-│   ├── tokenizer.py         # CharTokenizer (nano) + tiktoken BPE (small/medium)
-│   └── dataset.py           # Pretrain + SFT datasets
-│
-├── training/
-│   ├── pretrain.py          # Pre-training loop
-│   ├── sft.py               # Supervised fine-tuning
-│   ├── cai.py               # Constitutional AI self-critique
-│   └── constitution.md      # Trio's values & principles
-│
-├── inference/
-│   └── server.py            # FastAPI REST server + CLI chat
-│
-└── configs/
-    ├── nano.yaml            # Mac Mini / CPU (~1M params)
-    ├── small.yaml           # Kaggle T4 (~125M params)
-    └── medium.yaml          # RunPod A100 (~1B params)
-```
-
----
-
-## Quick Start
-
-### 1. Install dependencies
-```bash
-python -m venv trio_env
-source trio_env/bin/activate       # Mac/Linux
-# trio_env\Scripts\activate        # Windows
-
-pip install -r requirements.txt
-```
-
-### 2. Verify setup
-```bash
-python test_setup.py
-```
-
-### 3. Train Trio (nano — runs on CPU / Mac Mini)
-```bash
-python training/pretrain.py --preset nano
-```
-
-### 4. Fine-tune on instructions (SFT)
-```bash
-python training/sft.py --preset nano
-```
-
-### 5. Chat with Trio
-```bash
-# Interactive CLI
-python inference/server.py --preset nano --mode cli
-
-# REST API
-python inference/server.py --preset nano --mode api
-# Then open: http://localhost:8080/docs
-```
-
----
-
-## Training Pipeline (Claude-Inspired)
-
-```
-1. Pre-training     →  Learn language from raw text
-2. SFT              →  Learn to follow instructions
-3. Constitutional AI → Self-critique against principles
-4. (Optional) RLHF  → Human preference fine-tuning
+└── workspace/                   # Agent personality & context
 ```
 
 ---
 
 ## Hardware Targets
 
-| Config | Params | Hardware | Est. Train Time |
+| Config | Params | Hardware | Training Time |
 |---|---|---|---|
-| `nano` | ~1M | Mac Mini / any CPU | Hours |
-| `small` | ~125M | Kaggle T4 (free) | Days |
-| `medium` | ~1B | RunPod A100 | Weeks |
+| `nano` | ~1M | Any CPU / Mac Mini | Hours |
+| `small` | ~125M | Kaggle T4 (free) / Colab | Days |
+| `medium` | ~1B | RunPod A100 (40GB+) | Weeks |
+
+---
+
+## Training Pipeline
+
+```
+1. Pre-training      → Learn language from raw text
+2. SFT               → Learn to follow instructions
+3. Constitutional AI  → Self-critique against principles (helpful, honest, harmless)
+4. Deploy as Agent    → Multi-platform with tools, memory, and guardrails
+```
+
+---
+
+## CLI Commands
+
+```bash
+trio onboard              # Setup wizard (providers, channels, features)
+trio agent                # Interactive chat
+trio agent -m "message"   # Single message mode
+trio gateway              # Start all enabled channels (Discord, Telegram, etc.)
+trio provider list        # List configured LLM providers
+trio provider add         # Add a new provider
+trio status               # Show system status
+```
+
+---
+
+## Architecture
+
+```
+User → Channel → MessageBus → AgentLoop
+     → Build Context (memory + skills + tools)
+     → Call LLM Provider (Trio local / Ollama / Cloud API)
+     → Execute Tools (if needed)
+     → Guardrails Filter
+     → MessageBus → Channel → User
+```
 
 ---
 
 ## Roadmap
 
-- [x] Transformer architecture (RoPE, SwiGLU, RMSNorm)
-- [x] Tokenizer (char-level + BPE)
-- [x] Pre-training loop
-- [x] SFT instruction tuning
-- [x] Constitutional AI self-critique
-- [x] FastAPI inference server
+- [x] Transformer architecture (RoPE, SwiGLU, RMSNorm, GQA)
+- [x] Multi-platform agent framework
+- [x] 13+ LLM provider integrations
+- [x] Tool system with MCP support
+- [x] Constitutional AI alignment
+- [x] Persistent memory system
+- [x] 5-layer safety guardrails
 - [ ] RLHF (reward model + PPO)
-- [ ] Quantization (4-bit / 8-bit for Mac Mini inference)
-- [ ] HuggingFace Hub upload
-- [ ] Web UI (Gradio / Streamlit)
+- [ ] Model quantization (4-bit / 8-bit)
+- [ ] Web UI dashboard
+- [ ] HuggingFace Hub model upload
+- [ ] Voice channel support
 
 ---
 
 ## License
 
-MIT — build freely, give credit.
+MIT — Karan Garg
 
 ---
 
-*Built with ❤️ from scratch. Trio v0.1.0*
+*Built from scratch. Train it. Deploy it. Own it.*

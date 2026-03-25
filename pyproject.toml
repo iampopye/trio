@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trio-ai"
+version = "0.1.0"
+description = "trio.ai - train your own AI, deploy it everywhere"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Karan Garg"},
+]
+keywords = ["ai", "agent", "chatbot", "llm", "ollama", "discord", "telegram", "signal", "transformer", "training"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "aiohttp>=3.9.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+    "prompt-toolkit>=3.0.0",
+]
+
+[project.optional-dependencies]
+model = ["torch>=2.0.0", "tiktoken>=0.5.0", "pyyaml>=6.0", "numpy>=1.24.0"]
+serve = ["fastapi>=0.104.0", "uvicorn>=0.24.0", "pydantic>=2.0.0"]
+discord = ["discord.py>=2.3.0", "yt-dlp>=2024.0.0", "PyNaCl>=1.5.0"]
+telegram = ["pyTelegramBotAPI>=4.14.0"]
+signal = []
+search = ["duckduckgo-search>=4.0.0"]
+math = ["sympy>=1.12"]
+web = ["beautifulsoup4>=4.12.0", "playwright>=1.40.0", "PyPDF2>=3.0.0"]
+all = [
+    "trio-ai[model]",
+    "trio-ai[serve]",
+    "trio-ai[discord]",
+    "trio-ai[telegram]",
+    "trio-ai[signal]",
+    "trio-ai[search]",
+    "trio-ai[math]",
+    "trio-ai[web]",
+]
+dev = ["pytest>=7.0", "pytest-asyncio>=0.21.0"]
+
+[project.scripts]
+trio = "trio.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/iampopye/trio"
+Repository = "https://github.com/iampopye/trio"
+
+[tool.setuptools.packages.find]
+include = ["trio*", "trio_model*"]

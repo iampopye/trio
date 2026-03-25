@@ -9,7 +9,6 @@ Full training loop with:
 """
 
 import os
-import sys
 import time
 import math
 import argparse
@@ -18,13 +17,10 @@ from contextlib import nullcontext
 
 import torch
 
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from config import get_config, TrioConfig
-from model.architecture import TrioModel
-from data.tokenizer import get_tokenizer
-from data.dataset import get_dataloaders
+from trio_model.config import get_config, TrioConfig
+from trio_model.model.architecture import TrioModel
+from trio_model.data.tokenizer import get_tokenizer
+from trio_model.data.dataset import get_dataloaders
 
 
 # ── Learning Rate Schedule ─────────────────────────────────────────────────────
