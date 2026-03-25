@@ -131,8 +131,14 @@ def load_progress():
 
 
 def train(reset=False):
-    train_txt = DATA_DIR / "train.txt"
-    sft_jsonl = DATA_DIR / "sft_data.jsonl"
+    # Prefer HuggingFace datasets if available, fallback to skill-based data
+    train_txt = DATA_DIR / "pretrain_merged.txt"
+    sft_jsonl = DATA_DIR / "sft_merged.jsonl"
+
+    if not train_txt.exists():
+        train_txt = DATA_DIR / "train.txt"  # Fallback to skills data
+    if not sft_jsonl.exists():
+        sft_jsonl = DATA_DIR / "sft_data.jsonl"  # Fallback to skills SFT
 
     REPO_CKPT_DIR.mkdir(parents=True, exist_ok=True)
     USER_DIR.mkdir(parents=True, exist_ok=True)
@@ -140,7 +146,9 @@ def train(reset=False):
     user_output = USER_DIR / "trio-nano.pt"
 
     if not train_txt.exists():
-        print("Training data not found. Run: python scripts/build_training_data.py")
+        print("Training data not found. Run one of:")
+        print("  python scripts/download_training_data.py  (recommended — HuggingFace datasets)")
+        print("  python scripts/build_training_data.py     (fallback — skill files only)")
         return
 
     # Config
