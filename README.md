@@ -33,7 +33,8 @@
 - **Tool system**: Web search, math solver, shell, file ops, RAG, MCP
 - **Persistent memory**: Long-term facts, interaction history, daily notes
 - **5-layer guardrails**: Input/output filtering, jailbreak detection, rate limiting
-- **Markdown skills**: Extensible skill system with YAML frontmatter
+- **1,600+ built-in skills**: Coding, marketing, SEO, DevOps, data analysis, C-level advisory, security, testing, cloud, finance, and more
+- **Extensible skill system**: Add your own skills as simple markdown files
 - **Cron scheduler**: Recurring tasks
 
 ---
@@ -150,6 +151,7 @@ User → Channel → MessageBus → AgentLoop
 - [x] Transformer architecture (RoPE, SwiGLU, RMSNorm, GQA)
 - [x] Multi-platform agent framework
 - [x] 13+ LLM provider integrations
+- [x] 1,600+ built-in skills (largest open-source skill library)
 - [x] Tool system with MCP support
 - [x] Constitutional AI alignment
 - [x] Persistent memory system
