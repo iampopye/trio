@@ -44,12 +44,11 @@ async def run_status():
     if provider == "trio":
         from pathlib import Path as _P
         model_dir = _P.home() / ".trio" / "models"
-        presets = ["trio-nano.pt", "trio-small.pt", "trio-medium.pt"]
-        found = [p.stem for p in model_dir.glob("*.pt")] if model_dir.exists() else []
+        found = list(model_dir.glob("*.pt")) if model_dir.exists() else []
         if found:
-            console.print(f"Trio model: [green]ready[/green] ({', '.join(found)})")
+            console.print(f"trio-max: [green]ready[/green]")
         else:
-            console.print("Trio model: [yellow]will auto-initialize on first use[/yellow]")
+            console.print("trio-max: [yellow]will deploy on first use[/yellow]")
     elif provider == "ollama":
         base_url = config.get("providers", {}).get("ollama", {}).get("base_url", "http://localhost:11434")
         try:

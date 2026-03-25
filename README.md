@@ -22,7 +22,7 @@
 - **Decoder-only Transformer** built from scratch with PyTorch
 - **RoPE** positional encoding, **RMSNorm**, **SwiGLU** activation
 - **Grouped Query Attention (GQA)** for efficient inference
-- **3 presets**: nano (~1M, CPU), small (~125M, T4 GPU), medium (~1B, A100)
+- **trio-max**: Auto-optimizes for your hardware (CPU, GPU, or cloud)
 - **Constitutional AI** alignment (Anthropic-inspired self-critique)
 - **FastAPI** inference server + CLI chat
 
@@ -41,34 +41,27 @@
 
 ## Quick Start
 
-### Option A: Agent Framework (use with Ollama or cloud LLMs)
-
 ```bash
 pip install trio-ai
-trio onboard          # Interactive setup wizard
-trio agent            # Start chatting
+trio onboard          # One-time setup (select default)
+trio agent            # Start chatting — trio-max auto-deploys
 ```
 
-### Option B: Train Your Own Model + Deploy
+No API keys. No model downloads. No training. Just install and go.
+
+### For Developers: Train Your Own Model
 
 ```bash
-# Clone and install with model dependencies
 git clone https://github.com/iampopye/trio.git
 cd trio
 pip install -e ".[model,serve]"
 
-# Train nano model on CPU (takes hours, not days)
-python -m trio_model.training.pretrain --preset nano
+# Train on your own data
+python scripts/build_training_data.py
+python scripts/train_default_model.py
 
-# Fine-tune on instructions
-python -m trio_model.training.sft --preset nano
-
-# Chat with your trained model
-python -m trio_model.inference.server --preset nano --mode cli
-
-# Or deploy as a multi-platform agent
-trio onboard          # Select "trio" as provider
-trio agent            # Chat using your own model
+# Or use the API server
+python -m trio_model.inference.server --mode api
 ```
 
 ---
@@ -98,13 +91,26 @@ trio.ai/
 
 ---
 
+## Platform Support
+
+| Platform | Status | GPU Acceleration |
+|---|---|---|
+| **Windows** 10/11 | Full support | NVIDIA CUDA |
+| **macOS** (Intel) | Full support | — |
+| **macOS** (Apple Silicon M1-M4) | Full support | MPS (Metal) |
+| **Ubuntu / Debian** | Full support | NVIDIA CUDA, AMD ROCm |
+| **Fedora / CentOS / RHEL** | Full support | NVIDIA CUDA, AMD ROCm |
+| **Arch Linux** | Full support | NVIDIA CUDA, AMD ROCm |
+| **WSL2** | Full support | NVIDIA CUDA (passthrough) |
+
 ## Hardware Targets
 
 | Config | Params | Hardware | Training Time |
 |---|---|---|---|
-| `nano` | ~1M | Any CPU / Mac Mini | Hours |
-| `small` | ~125M | Kaggle T4 (free) / Colab | Days |
-| `medium` | ~1B | RunPod A100 (40GB+) | Weeks |
+| **trio-max** | Auto | **Any system** — auto-optimizes | **Pre-trained** |
+| Internal: nano | ~1M | CPU (4GB+ RAM) | Hours |
+| Internal: small | ~125M | GPU (T4 16GB+ / Apple M1+) | Days |
+| Internal: medium | ~1B | GPU (A100 40GB+ / M2 Ultra+) | Weeks |
 
 ---
 

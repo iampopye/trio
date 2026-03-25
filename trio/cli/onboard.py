@@ -61,20 +61,12 @@ async def run_onboard():
 
     if mode == "default":
         # Built-in Trio model — zero config needed
-        console.print("\n[green]Using built-in Trio model (trio-nano).[/green]")
-        console.print("[dim]The model will auto-initialize on first use using your system's CPU.[/dim]")
-        console.print("[dim]No downloads, no API keys, no external dependencies.[/dim]")
+        console.print("\n[green]Using built-in trio-max model.[/green]")
+        console.print("[dim]Auto-optimizes for your system's hardware. No API keys needed.[/dim]")
 
-        preset = Prompt.ask(
-            "Model size",
-            choices=["nano", "small", "medium"],
-            default="nano",
-        )
-        model_name = f"trio-{preset}"
-
-        config["providers"]["trio"] = {"default_model": model_name}
+        config["providers"]["trio"] = {"default_model": "trio-max"}
         config["agents"]["defaults"]["provider"] = "trio"
-        config["agents"]["defaults"]["model"] = model_name
+        config["agents"]["defaults"]["model"] = "trio-max"
 
     else:
         # Custom provider

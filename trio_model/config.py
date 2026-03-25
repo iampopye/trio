@@ -149,10 +149,38 @@ PRESETS = {
 }
 
 
+def _auto_detect_device() -> str:
+    """Auto-detect the best available compute device.
+
+    Priority: CUDA (NVIDIA) > MPS (Apple Silicon) > CPU
+    """
+    try:
+        import torch
+        if torch.cuda.is_available():
+            return "cuda"
+        if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            return "mps"
+    except ImportError:
+        pass
+    return "cpu"
+
+
 def get_config(preset: str = "nano") -> TrioConfig:
     if preset not in PRESETS:
         raise ValueError(f"Unknown preset '{preset}'. Choose from: {list(PRESETS.keys())}")
     cfg = PRESETS[preset]()
+
+    # Auto-detect best device for this system
+    best_device = _auto_detect_device()
+    if cfg.device == "cuda" and best_device != "cuda":
+        cfg.device = best_device
+    elif cfg.device == "cpu" and best_device in ("cuda", "mps"):
+        cfg.device = best_device
+
+    # MPS doesn't support float16 well, use float32
+    if cfg.device == "mps" and cfg.dtype == "float16":
+        cfg.dtype = "float32"
+
     params = cfg.num_parameters()
-    print(f"[Trio] Config: {cfg.model_name}  |  ~{params/1e6:.1f}M parameters")
+    print(f"[Trio] Config: {cfg.model_name}  |  ~{params/1e6:.1f}M parameters  |  device: {cfg.device}")
     return cfg

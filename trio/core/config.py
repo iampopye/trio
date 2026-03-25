@@ -8,13 +8,13 @@ from typing import Any
 DEFAULT_CONFIG = {
     "providers": {
         "trio": {
-            "default_model": "trio-nano",
+            "default_model": "trio-max",
         }
     },
     "agents": {
         "defaults": {
             "provider": "trio",
-            "model": "trio-nano",
+            "model": "trio-max",
             "max_iterations": 20,
             "memory_window": 20,
         }
@@ -111,7 +111,7 @@ def get_agent_defaults(config: dict) -> dict:
     """Get agent default settings."""
     return config.get("agents", {}).get("defaults", {
         "provider": "trio",
-        "model": "trio-nano",
+        "model": "trio-max",
         "max_iterations": 20,
         "memory_window": 20,
     })

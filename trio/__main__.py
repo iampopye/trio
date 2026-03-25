@@ -7,30 +7,70 @@ import sys
 
 
 def _ensure_path():
-    """On Windows, ensure pip Scripts folder is on PATH so 'trio' works."""
-    if sys.platform != "win32":
-        return
-    scripts_dir = os.path.join(os.path.dirname(sys.executable), "Scripts")
-    if not os.path.isdir(scripts_dir):
-        # Microsoft Store Python uses a different layout
-        import site
-        user_scripts = os.path.join(site.getusersitepackages().replace("site-packages", ""), "Scripts")
-        if os.path.isdir(user_scripts):
-            scripts_dir = user_scripts
-        else:
-            return
-    user_path = os.environ.get("PATH", "")
-    if scripts_dir.lower() not in user_path.lower():
-        try:
-            import winreg
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment", 0, winreg.KEY_ALL_ACCESS) as key:
-                current, _ = winreg.QueryValueEx(key, "PATH")
-                if scripts_dir.lower() not in current.lower():
-                    winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, current + ";" + scripts_dir)
-                    print(f"[trio.ai] Added {scripts_dir} to your PATH.")
-                    print("[trio.ai] Restart your terminal for 'trio' command to work.\n")
-        except Exception:
-            pass
+    """Ensure pip scripts folder is on PATH so 'trio' command works.
+
+    Supports Windows, macOS, and Linux.
+    """
+    from pathlib import Path
+
+    if sys.platform == "win32":
+        # Windows: add Scripts folder to user PATH via registry
+        scripts_dir = os.path.join(os.path.dirname(sys.executable), "Scripts")
+        if not os.path.isdir(scripts_dir):
+            try:
+                import site
+                user_scripts = os.path.join(
+                    site.getusersitepackages().replace("site-packages", ""), "Scripts"
+                )
+                if os.path.isdir(user_scripts):
+                    scripts_dir = user_scripts
+                else:
+                    return
+            except Exception:
+                return
+        user_path = os.environ.get("PATH", "")
+        if scripts_dir.lower() not in user_path.lower():
+            try:
+                import winreg
+                with winreg.OpenKey(
+                    winreg.HKEY_CURRENT_USER, "Environment", 0, winreg.KEY_ALL_ACCESS
+                ) as key:
+                    current, _ = winreg.QueryValueEx(key, "PATH")
+                    if scripts_dir.lower() not in current.lower():
+                        winreg.SetValueEx(
+                            key, "PATH", 0, winreg.REG_EXPAND_SZ,
+                            current + ";" + scripts_dir,
+                        )
+                        print(f"[trio.ai] Added {scripts_dir} to your PATH.")
+                        print("[trio.ai] Restart your terminal for 'trio' command to work.\n")
+            except Exception:
+                pass
+
+    else:
+        # macOS / Linux: check if ~/.local/bin is on PATH
+        local_bin = Path.home() / ".local" / "bin"
+        user_path = os.environ.get("PATH", "")
+        if str(local_bin) not in user_path and local_bin.is_dir():
+            # Detect shell profile
+            shell = os.environ.get("SHELL", "/bin/bash")
+            if "zsh" in shell:
+                profile = Path.home() / ".zshrc"
+            elif "fish" in shell:
+                profile = Path.home() / ".config" / "fish" / "config.fish"
+            else:
+                profile = Path.home() / ".bashrc"
+
+            export_line = f'export PATH="$HOME/.local/bin:$PATH"'
+            try:
+                if profile.exists():
+                    content = profile.read_text(encoding="utf-8", errors="ignore")
+                    if ".local/bin" not in content:
+                        with open(profile, "a", encoding="utf-8") as f:
+                            f.write(f"\n# Added by trio.ai\n{export_line}\n")
+                        print(f"[trio.ai] Added ~/.local/bin to PATH in {profile.name}")
+                        print("[trio.ai] Restart your terminal or run: source " + str(profile) + "\n")
+            except Exception:
+                pass
 
 
 def main():

@@ -89,16 +89,32 @@ def train():
     num_cores = os.cpu_count() or 1
     ram_gb = 0
     try:
-        import ctypes
-        class MEMORYSTATUSEX(ctypes.Structure):
-            _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
-                        ("ullTotalPhys", ctypes.c_ulonglong)] + [("_pad" + str(i), ctypes.c_ulonglong) for i in range(6)]
-        stat = MEMORYSTATUSEX()
-        stat.dwLength = ctypes.sizeof(stat)
-        ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
-        ram_gb = round(stat.ullTotalPhys / (1024**3), 1)
-    except Exception:
-        ram_gb = 8
+        import psutil
+        ram_gb = round(psutil.virtual_memory().total / (1024**3), 1)
+    except ImportError:
+        try:
+            if sys.platform == "win32":
+                import ctypes
+                class MEMORYSTATUSEX(ctypes.Structure):
+                    _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
+                                ("ullTotalPhys", ctypes.c_ulonglong)] + [("_pad" + str(i), ctypes.c_ulonglong) for i in range(6)]
+                stat = MEMORYSTATUSEX()
+                stat.dwLength = ctypes.sizeof(stat)
+                ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
+                ram_gb = round(stat.ullTotalPhys / (1024**3), 1)
+            elif sys.platform == "darwin":
+                import subprocess
+                result = subprocess.run(["sysctl", "-n", "hw.memsize"], capture_output=True, text=True, timeout=5)
+                if result.returncode == 0:
+                    ram_gb = round(int(result.stdout.strip()) / (1024**3), 1)
+            else:
+                with open("/proc/meminfo", "r") as f:
+                    for line in f:
+                        if line.startswith("MemTotal:"):
+                            ram_gb = round(int(line.split()[1]) / (1024**2), 1)
+                            break
+        except Exception:
+            ram_gb = 8
 
     print(f"\n{'='*60}")
     print(f"  TRIO.AI — Model Training (MAX POWER)")

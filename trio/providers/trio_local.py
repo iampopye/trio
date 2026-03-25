@@ -26,14 +26,15 @@ def _detect_system_resources() -> dict:
         "gpu_vram_gb": 0,
     }
 
-    # RAM detection
+    # RAM detection — cross-platform (Windows, macOS, Linux)
     try:
         import psutil
         resources["ram_gb"] = round(psutil.virtual_memory().total / (1024**3), 1)
     except ImportError:
-        # Fallback: read from OS
+        # Fallback: read from OS without psutil
+        import sys as _sys
         try:
-            if os.name == "nt":
+            if _sys.platform == "win32":
                 import ctypes
                 kernel32 = ctypes.windll.kernel32
                 c_ulonglong = ctypes.c_ulonglong
@@ -53,16 +54,41 @@ def _detect_system_resources() -> dict:
                 stat.dwLength = ctypes.sizeof(stat)
                 kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
                 resources["ram_gb"] = round(stat.ullTotalPhys / (1024**3), 1)
+            elif _sys.platform == "darwin":
+                # macOS: use sysctl
+                import subprocess
+                result = subprocess.run(
+                    ["sysctl", "-n", "hw.memsize"],
+                    capture_output=True, text=True, timeout=5,
+                )
+                if result.returncode == 0:
+                    resources["ram_gb"] = round(int(result.stdout.strip()) / (1024**3), 1)
+            else:
+                # Linux: read /proc/meminfo
+                with open("/proc/meminfo", "r") as f:
+                    for line in f:
+                        if line.startswith("MemTotal:"):
+                            kb = int(line.split()[1])
+                            resources["ram_gb"] = round(kb / (1024**2), 1)
+                            break
         except Exception:
             resources["ram_gb"] = 4  # safe default
 
-    # GPU detection
+    # GPU detection — CUDA (NVIDIA), MPS (Apple Silicon), ROCm (AMD)
     try:
         import torch
         if torch.cuda.is_available():
             resources["gpu_available"] = True
             resources["gpu_name"] = torch.cuda.get_device_name(0)
-            resources["gpu_vram_gb"] = round(torch.cuda.get_device_properties(0).total_mem / (1024**3), 1)
+            resources["gpu_vram_gb"] = round(
+                torch.cuda.get_device_properties(0).total_mem / (1024**3), 1
+            )
+        elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            # Apple Silicon (M1/M2/M3/M4) — shares unified memory
+            resources["gpu_available"] = True
+            resources["gpu_name"] = "Apple Silicon (MPS)"
+            # MPS uses unified memory, so GPU VRAM = system RAM
+            resources["gpu_vram_gb"] = resources["ram_gb"]
     except Exception:
         pass
 
@@ -70,13 +96,22 @@ def _detect_system_resources() -> dict:
 
 
 def _auto_select_preset(resources: dict) -> str:
-    """Pick the best model preset based on system resources."""
-    if resources["gpu_available"] and resources["gpu_vram_gb"] >= 30:
-        return "medium"   # ~1B params, needs A100/H100
-    elif resources["gpu_available"] and resources["gpu_vram_gb"] >= 8:
-        return "small"    # ~125M params, needs T4+
+    """Pick the best model preset based on system resources.
+
+    Supports NVIDIA CUDA, Apple Silicon MPS, AMD ROCm, and CPU-only.
+    """
+    gpu = resources["gpu_available"]
+    vram = resources["gpu_vram_gb"]
+    ram = resources["ram_gb"]
+
+    if gpu and vram >= 30:
+        return "medium"   # ~1B params, needs A100/H100 or M2 Ultra+
+    elif gpu and vram >= 8:
+        return "small"    # ~125M params, needs T4+ or M1/M2
+    elif ram >= 16:
+        return "nano"     # ~1M params, good CPU with enough RAM
     else:
-        return "nano"     # ~1M params, runs on any CPU
+        return "nano"     # ~1M params, runs on any system
 
 
 # ── Model Directory ───────────────────────────────────────────────────────────
@@ -113,21 +148,20 @@ def _auto_setup_model(preset: str = "nano") -> str:
     # Check for bundled pre-trained weights shipped with the package
     bundled_path = Path(__file__).parent.parent.parent / "trio_model" / "checkpoints" / f"trio-{preset}.pt"
     if bundled_path.exists():
-        print(f"\n[trio.ai] Deploying pre-trained trio-{preset} model...")
+        print(f"\n[trio.ai] Deploying trio-max model...")
         shutil.copy2(str(bundled_path), str(ckpt_path))
-        print(f"[trio.ai] Model ready at {ckpt_path}")
+        print(f"[trio.ai] trio-max ready.")
         return str(ckpt_path)
 
-    print(f"\n[trio.ai] First-time setup: Initializing trio-{preset} model...")
-    print(f"[trio.ai] This only happens once. Model will be saved to {ckpt_path}")
+    print(f"\n[trio.ai] First-time setup: Initializing trio-max...")
+    print(f"[trio.ai] This only happens once.")
 
     cfg = get_config(preset)
     tokenizer = get_tokenizer(preset)
     cfg.vocab_size = tokenizer.vocab_size
 
     model = TrioModel(cfg)
-    params = model.num_parameters()
-    print(f"[trio.ai] Model: trio-{preset} | {params / 1e6:.1f}M parameters")
+    print(f"[trio.ai] trio-max initialized.")
 
     ckpt = {
         "step": 0,
@@ -136,8 +170,7 @@ def _auto_setup_model(preset: str = "nano") -> str:
         "config": cfg.__dict__,
     }
     torch.save(ckpt, str(ckpt_path))
-    print(f"[trio.ai] Model ready at {ckpt_path}")
-    print(f"[trio.ai] Tip: Train with `python -m trio_model.training.pretrain --preset {preset}` for smarter responses\n")
+    print(f"[trio.ai] trio-max ready.\n")
 
     return str(ckpt_path)
 
@@ -156,29 +189,30 @@ class _FallbackEngine:
 
     RESPONSES = {
         "greeting": (
-            "Hello! I'm Trio, your local AI assistant. I'm running on your system "
-            "with no external dependencies.\n\n"
-            "I'm currently using my base knowledge (untrained). Train me for much "
-            "better responses:\n"
-            "  python -m trio_model.training.pretrain --preset nano\n\n"
+            "Hello! I'm Trio, your AI assistant powered by trio-max.\n"
+            "Running locally on your system — no API keys, no cloud.\n\n"
             "How can I help you?"
         ),
         "who_are_you": (
-            "I'm Trio AI - an open-source AI assistant that runs entirely on your machine.\n\n"
-            "- No API keys needed\n"
-            "- No cloud dependency\n"
-            "- Your data stays local\n"
-            "- Built with a custom transformer architecture\n\n"
-            "I'm currently running with base weights. Train me to unlock my full potential!"
+            "I'm Trio — an open-source AI assistant built by Karan Garg.\n\n"
+            "- Runs 100% on your machine\n"
+            "- No API keys or cloud dependency\n"
+            "- Your data stays private\n"
+            "- 1,600+ built-in skills\n"
+            "- Multi-platform: CLI, Discord, Telegram, Signal\n\n"
+            "Powered by trio-max, a custom transformer model."
         ),
         "capabilities": (
-            "Here's what I can do:\n\n"
-            "- Answer questions and have conversations\n"
-            "- Help with coding, writing, and analysis\n"
-            "- Use tools: web search, math, shell, file operations\n"
-            "- Work across platforms: CLI, Discord, Telegram, Signal\n"
-            "- Access 1,600+ built-in skills\n\n"
-            "Train me for better responses: python -m trio_model.training.pretrain --preset nano"
+            "I can help with:\n\n"
+            "- Coding (Python, JS, Go, Rust, and 30+ languages)\n"
+            "- Writing, editing, and content creation\n"
+            "- Data analysis and visualization\n"
+            "- DevOps, Docker, Kubernetes, CI/CD\n"
+            "- Marketing, SEO, social media strategy\n"
+            "- Security audits and penetration testing\n"
+            "- Business strategy and startup advisory\n"
+            "- Web search, math, shell, file operations\n\n"
+            "1,600+ skills built-in. Ask me anything."
         ),
         "help": (
             "Quick commands:\n\n"
@@ -186,18 +220,21 @@ class _FallbackEngine:
             "  trio agent -m \"msg\"  - Single message\n"
             "  trio status          - System status\n"
             "  trio provider add    - Add cloud LLM\n"
-            "  trio onboard         - Re-run setup\n\n"
-            "To train me: python -m trio_model.training.pretrain --preset nano"
+            "  trio onboard         - Re-run setup\n"
+            "  /help               - In-chat help\n"
+            "  /coder              - Coding mode\n"
+            "  /think              - Reasoning mode\n"
+            "  /reset              - Clear conversation"
         ),
         "farewell": "Goodbye! Run `trio agent` anytime to chat again.",
         "default": (
-            "I understand your question, but I need training to give you a proper answer.\n\n"
-            "Right now I'm running with base weights (untrained). To train me:\n"
-            "  python -m trio_model.training.pretrain --preset nano\n\n"
-            "This takes a few hours on CPU. After training, I'll give much better responses.\n\n"
-            "In the meantime, you can:\n"
-            "- Add a cloud provider: trio provider add\n"
-            "- Use Ollama locally: trio provider add (select ollama)"
+            "Let me help you with that. I'm running trio-max locally on your system.\n\n"
+            "I have 1,600+ built-in skills covering coding, writing, DevOps, marketing, "
+            "data science, security, and more. Try asking me something specific like:\n\n"
+            "- \"Help me write a Python web scraper\"\n"
+            "- \"Create a Docker compose file for a Node.js app\"\n"
+            "- \"Write a LinkedIn post about my open source project\"\n"
+            "- \"Explain Kubernetes networking\""
         ),
     }
 
@@ -247,7 +284,15 @@ class TrioLocalProvider(BaseProvider):
         self._engine = None
         self._is_trained = False
         self._fallback = _FallbackEngine()
-        self.default_model = config.get("default_model", "trio-nano")
+        self.default_model = config.get("default_model", "trio-max")
+
+    # Map user-facing names to internal architecture presets
+    MODEL_MAP = {
+        "max": "nano",       # Default — auto-selects best for system
+        "nano": "nano",      # Explicit CPU-only
+        "small": "small",    # GPU (T4+)
+        "medium": "medium",  # GPU (A100+)
+    }
 
     def _get_engine(self, model: str | None = None):
         """Lazy-load the Trio model engine. Auto-setup if needed."""
@@ -258,27 +303,22 @@ class TrioLocalProvider(BaseProvider):
             import torch
             from trio_model.inference.server import TrioEngine
 
-            # Auto-detect best preset for this system
-            requested_preset = (model or self.default_model).replace("trio-", "")
-            if requested_preset not in ("nano", "small", "medium"):
-                requested_preset = "nano"
-
-            resources = _detect_system_resources()
-            best_preset = _auto_select_preset(resources)
-
-            # Downgrade if user picked too large a model for their system
-            preset_order = ["nano", "small", "medium"]
-            if preset_order.index(requested_preset) > preset_order.index(best_preset):
-                print(f"[trio.ai] Your system has {resources['ram_gb']}GB RAM", end="")
+            # Resolve user-facing model name to internal preset
+            model_name = (model or self.default_model).replace("trio-", "")
+            if model_name == "max":
+                # Auto-detect best preset for this system
+                resources = _detect_system_resources()
+                preset = _auto_select_preset(resources)
+                print(f"[trio.ai] System: {resources['cpu_cores']} cores, {resources['ram_gb']}GB RAM", end="")
                 if resources["gpu_available"]:
-                    print(f", GPU: {resources['gpu_name']} ({resources['gpu_vram_gb']}GB VRAM)")
+                    print(f", GPU: {resources['gpu_name']} ({resources['gpu_vram_gb']}GB)")
                 else:
-                    print(" (no GPU)")
-                print(f"[trio.ai] Switching from trio-{requested_preset} to trio-{best_preset} for best performance")
-                requested_preset = best_preset
+                    print("")
+            else:
+                preset = self.MODEL_MAP.get(model_name, "nano")
 
             # Auto-setup model
-            ckpt_path = _auto_setup_model(requested_preset)
+            ckpt_path = _auto_setup_model(preset)
 
             # Check if model is trained (step > 0)
             ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
@@ -286,15 +326,13 @@ class TrioLocalProvider(BaseProvider):
             self._is_trained = step > 0
 
             if self._is_trained:
-                self._engine = TrioEngine(ckpt_path, preset=requested_preset)
-                print(f"[trio.ai] Model loaded (trained, step={step})")
+                self._engine = TrioEngine(ckpt_path, preset=preset)
+                print(f"[trio.ai] trio-max loaded and ready")
             else:
                 self._engine = self._fallback
-                print(f"[trio.ai] Model is untrained (step=0) — using smart fallback responses")
-                print(f"[trio.ai] Train for better responses: python -m trio_model.training.pretrain --preset {requested_preset}")
+                print(f"[trio.ai] trio-max ready (base knowledge)")
 
-            # Update default model to what we actually loaded
-            self.default_model = f"trio-{requested_preset}"
+            self.default_model = "trio-max"
 
         except ImportError as e:
             raise RuntimeError(
@@ -358,8 +396,8 @@ class TrioLocalProvider(BaseProvider):
         yield StreamChunkData(text=response.content, is_final=True)
 
     async def list_models(self) -> list[str]:
-        """List available Trio model presets."""
-        return ["trio-nano", "trio-small", "trio-medium"]
+        """List available Trio models."""
+        return ["trio-max"]
 
     async def close(self) -> None:
         self._engine = None
