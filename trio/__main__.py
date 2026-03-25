@@ -45,23 +45,23 @@ def main():
     # trioai onboard
     subparsers.add_parser("onboard", help="Initialize config and workspace")
 
-    # trio agent
+    # trioai agent
     agent_parser = subparsers.add_parser("agent", help="Interactive chat mode")
     agent_parser.add_argument("-m", "--message", help="Send a single message")
     agent_parser.add_argument("--no-markdown", action="store_true", help="Plain text output")
     agent_parser.add_argument("--logs", action="store_true", help="Show runtime logs")
 
-    # trio gateway
+    # trioai gateway
     subparsers.add_parser("gateway", help="Start all enabled channels")
 
-    # trio provider
+    # trioai provider
     provider_parser = subparsers.add_parser("provider", help="Manage LLM providers")
     provider_sub = provider_parser.add_subparsers(dest="provider_action")
     provider_sub.add_parser("add", help="Add a new provider interactively")
     provider_sub.add_parser("list", help="List configured providers")
     provider_sub.add_parser("login", help="OAuth login for a provider")
 
-    # trio status
+    # trioai status
     subparsers.add_parser("status", help="Show system status")
 
     args = parser.parse_args()

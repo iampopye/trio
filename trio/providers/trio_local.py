@@ -91,7 +91,14 @@ def _get_trio_model_dir() -> Path:
 # ── Auto Setup ────────────────────────────────────────────────────────────────
 
 def _auto_setup_model(preset: str = "nano") -> str:
-    """Auto-setup the Trio model on first use. Returns checkpoint path."""
+    """Auto-setup the Trio model on first use. Returns checkpoint path.
+
+    Priority:
+    1. Use existing checkpoint in ~/.trio/models/
+    2. Copy pre-trained weights bundled with the package
+    3. Initialize fresh (untrained) model as last resort
+    """
+    import shutil
     import torch
     from trio_model.config import get_config
     from trio_model.model.architecture import TrioModel
@@ -101,6 +108,14 @@ def _auto_setup_model(preset: str = "nano") -> str:
     ckpt_path = model_dir / f"trio-{preset}.pt"
 
     if ckpt_path.exists():
+        return str(ckpt_path)
+
+    # Check for bundled pre-trained weights shipped with the package
+    bundled_path = Path(__file__).parent.parent.parent / "trio_model" / "checkpoints" / f"trio-{preset}.pt"
+    if bundled_path.exists():
+        print(f"\n[trio.ai] Deploying pre-trained trio-{preset} model...")
+        shutil.copy2(str(bundled_path), str(ckpt_path))
+        print(f"[trio.ai] Model ready at {ckpt_path}")
         return str(ckpt_path)
 
     print(f"\n[trio.ai] First-time setup: Initializing trio-{preset} model...")

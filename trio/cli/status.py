@@ -1,4 +1,4 @@
-"""trio status — show system status."""
+"""trioai status — show system status."""
 
 import asyncio
 from pathlib import Path
@@ -27,7 +27,7 @@ async def run_status():
     """Show trio system status."""
     config = load_config()
 
-    console.print(Panel.fit("[bold cyan]trio status[/bold cyan]", border_style="cyan"))
+    console.print(Panel.fit("[bold cyan]trioai status[/bold cyan]", border_style="cyan"))
 
     # Config
     console.print(f"\nConfig: {_friendly_path(get_config_path())}")

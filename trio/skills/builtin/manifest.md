@@ -31,13 +31,13 @@ Follow these steps **in order**. Do not skip ahead.
 Stop the gateway first to avoid hot-reload issues during configuration.
 
 ```bash
-trio gateway stop
+trioai gateway stop
 ```
 
 ### Step 2 — Install the plugin
 
 ```bash
-trio plugins install manifest
+trioai plugins install manifest
 ```
 
 If it fails, check that the CLI is installed and available in the PATH.
@@ -58,7 +58,7 @@ Wait for a key starting with `mnfst_`. If the key doesn't match, tell the user t
 ### Step 4 — Configure the plugin
 
 ```bash
-trio config set plugins.entries.manifest.config.apiKey "USER_API_KEY"
+trioai config set plugins.entries.manifest.config.apiKey "USER_API_KEY"
 ```
 
 Replace `USER_API_KEY` with the actual key the user provided.
@@ -66,13 +66,13 @@ Replace `USER_API_KEY` with the actual key the user provided.
 Ask the user if they have a custom endpoint. If not, the default (`https://app.manifest.build/api/v1/otlp`) is used automatically. If they do:
 
 ```bash
-trio config set plugins.entries.manifest.config.endpoint "USER_ENDPOINT"
+trioai config set plugins.entries.manifest.config.endpoint "USER_ENDPOINT"
 ```
 
 ### Step 5 — Start the gateway
 
 ```bash
-trio gateway install
+trioai gateway install
 ```
 
 ### Step 6 — Verify
@@ -103,7 +103,7 @@ If it appears, tell the user setup is complete. If not, check the error messages
 | Missing apiKey | Re-run step 4 |
 | Invalid apiKey format | The key must start with `mnfst_` |
 | Connection refused | The endpoint is unreachable. Check the URL or ask if they self-host |
-| Duplicate OTel registration | Disable the conflicting built-in plugin: `trio plugins disable diagnostics-otel` |
+| Duplicate OTel registration | Disable the conflicting built-in plugin: `trioai plugins disable diagnostics-otel` |
 
 ## Examples
 

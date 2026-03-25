@@ -1,4 +1,4 @@
-"""trio provider — manage LLM providers."""
+"""trioai provider — manage LLM providers."""
 
 from rich.console import Console
 from rich.table import Table

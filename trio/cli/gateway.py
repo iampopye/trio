@@ -1,4 +1,4 @@
-"""trio gateway — start all enabled channels."""
+"""trioai gateway — start all enabled channels."""
 
 import asyncio
 import logging
@@ -96,7 +96,7 @@ async def run_gateway():
             console.print("[yellow]Signal channel not available[/yellow]")
 
     if enabled_count == 0:
-        console.print("[red]No channels enabled. Edit ~/.trio/config.json or run 'trio onboard'.[/red]")
+        console.print("[red]No channels enabled. Edit ~/.trio/config.json or run 'trioai onboard'.[/red]")
         return
 
     console.print(f"[green]Starting gateway with {enabled_count} channel(s)...[/green]")

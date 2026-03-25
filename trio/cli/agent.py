@@ -1,4 +1,4 @@
-"""trio agent — interactive CLI chat mode."""
+"""trioai agent — interactive CLI chat mode."""
 
 import asyncio
 import logging

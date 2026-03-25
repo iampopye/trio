@@ -55,3 +55,7 @@ desktop.ini
 
 # ── trio agent runtime ───────────────────────
 .trio/
+
+# Training data (regenerate with: python scripts/build_training_data.py)
+trio_model/data/train.txt
+trio_model/data/sft_data.jsonl
