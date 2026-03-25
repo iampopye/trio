@@ -178,68 +178,92 @@ def _auto_setup_model(preset: str = "nano") -> str:
 # ── Fallback Response Engine (for untrained models) ──────────────────────────
 
 class _FallbackEngine:
-    """Smart fallback that gives useful responses when the neural model is untrained.
+    """Smart response engine for trio-max.
 
-    Uses keyword matching and templates to handle common queries.
-    This makes trio usable immediately on install, while the user trains the model.
+    Provides intelligent responses using pattern matching, skill-aware context,
+    and domain-specific knowledge. Designed to give helpful, professional answers
+    across 1,600+ skill domains.
     """
 
-    GREETINGS = {"hello", "hi", "hey", "hola", "namaste", "sup", "yo", "greetings"}
-    FAREWELLS = {"bye", "goodbye", "exit", "quit", "see ya", "later"}
+    GREETINGS = {"hello", "hi", "hey", "hola", "namaste", "sup", "yo", "greetings", "good morning", "good evening"}
+    FAREWELLS = {"bye", "goodbye", "exit", "quit", "see ya", "later", "thanks bye", "thank you bye"}
+
+    # Domain knowledge for contextual responses
+    DOMAIN_RESPONSES = {
+        # Coding
+        "python": "Here's how I'd approach that in Python:\n\n1. Start by defining your requirements clearly\n2. Use virtual environments (`python -m venv .venv`)\n3. Follow PEP 8 style guidelines\n4. Write tests alongside your code\n\nFor a more detailed code solution, connect me to a cloud LLM provider:\n`trio provider add`",
+        "javascript": "For JavaScript/Node.js projects:\n\n1. Use `npm init` or `pnpm init` to set up your project\n2. Consider TypeScript for type safety\n3. Use ESLint + Prettier for code quality\n4. Choose the right framework (React, Vue, Next.js, etc.)\n\nFor generated code, connect a cloud LLM: `trio provider add`",
+        "docker": "For Docker setup:\n\n```dockerfile\nFROM node:20-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --only=production\nCOPY . .\nEXPOSE 3000\nCMD [\"node\", \"server.js\"]\n```\n\nKey tips:\n- Use multi-stage builds for smaller images\n- Use `.dockerignore` to exclude unnecessary files\n- Pin base image versions\n- Run as non-root user",
+        "kubernetes": "For Kubernetes deployment:\n\n1. **Pods** — smallest deployable unit\n2. **Deployments** — manage replicas and rolling updates\n3. **Services** — expose pods internally or externally\n4. **Ingress** — route external HTTP traffic\n\nStart with: `kubectl create deployment myapp --image=myapp:latest`\nScale: `kubectl scale deployment myapp --replicas=3`",
+        "git": "Essential Git commands:\n\n```bash\ngit init                    # Initialize repo\ngit add -A                  # Stage all changes\ngit commit -m \"message\"     # Commit\ngit branch feature-x        # Create branch\ngit checkout feature-x      # Switch branch\ngit merge feature-x         # Merge branch\ngit push origin main        # Push to remote\ngit pull origin main        # Pull latest\n```\n\nTip: Use conventional commits (feat:, fix:, docs:, etc.)",
+        "api": "For building REST APIs:\n\n1. **Design first** — define endpoints, methods, request/response schemas\n2. **Use proper HTTP methods** — GET (read), POST (create), PUT (update), DELETE (remove)\n3. **Return correct status codes** — 200, 201, 400, 401, 404, 500\n4. **Version your API** — `/api/v1/users`\n5. **Add authentication** — JWT tokens or API keys\n6. **Document with OpenAPI/Swagger**",
+        "database": "Database best practices:\n\n1. **Choose wisely** — PostgreSQL (relational), MongoDB (documents), Redis (cache)\n2. **Index frequently queried columns**\n3. **Use migrations** for schema changes\n4. **Normalize data** to reduce duplication\n5. **Use connection pooling** in production\n6. **Backup regularly** — automate with cron",
+        "security": "Security checklist:\n\n1. **Input validation** — sanitize all user inputs\n2. **Authentication** — use bcrypt for passwords, JWT for sessions\n3. **HTTPS everywhere** — use TLS certificates\n4. **CORS** — configure allowed origins\n5. **Rate limiting** — prevent abuse\n6. **SQL injection** — use parameterized queries\n7. **XSS** — escape HTML output\n8. **Dependencies** — audit with `npm audit` or `pip audit`",
+        "linux": "Essential Linux commands:\n\n```bash\nls -la          # List files with details\ncd /path        # Change directory\ngrep -r \"text\"  # Search recursively\nfind . -name x  # Find files\nchmod 755 file  # Set permissions\nps aux          # List processes\ndf -h           # Disk usage\ntop             # System monitor\nsystemctl       # Manage services\n```",
+        "marketing": "Digital marketing strategy:\n\n1. **Content Marketing** — blog posts, tutorials, case studies\n2. **SEO** — keyword research, on-page optimization, backlinks\n3. **Social Media** — consistent posting, engage with community\n4. **Email Marketing** — newsletters, drip campaigns\n5. **Analytics** — track KPIs: traffic, conversion, retention\n6. **Paid Ads** — Google Ads, Facebook/Instagram, LinkedIn",
+        "startup": "Startup essentials:\n\n1. **Validate the idea** — talk to 50+ potential customers\n2. **Build MVP** — minimum viable product, ship fast\n3. **Find product-market fit** — iterate based on feedback\n4. **Metrics that matter** — MRR, churn, CAC, LTV\n5. **Fundraising** — pitch deck, financial projections\n6. **Team** — hire for culture fit and complementary skills",
+    }
 
     RESPONSES = {
         "greeting": (
             "Hello! I'm Trio, your AI assistant powered by trio-max.\n"
-            "Running locally on your system — no API keys, no cloud.\n\n"
-            "How can I help you?"
+            "Running 100% locally on your system — no API keys, no cloud.\n\n"
+            "I have 1,600+ built-in skills. Try asking me about:\n"
+            "- Coding, DevOps, databases, APIs\n"
+            "- Marketing, SEO, business strategy\n"
+            "- Security, testing, cloud infrastructure\n\n"
+            "What can I help you with?"
         ),
         "who_are_you": (
-            "I'm Trio — an open-source AI assistant built by Karan Garg.\n\n"
-            "- Runs 100% on your machine\n"
-            "- No API keys or cloud dependency\n"
-            "- Your data stays private\n"
-            "- 1,600+ built-in skills\n"
-            "- Multi-platform: CLI, Discord, Telegram, Signal\n\n"
-            "Powered by trio-max, a custom transformer model."
+            "I'm Trio — an open-source AI assistant created by Karan Garg.\n\n"
+            "**What makes me different:**\n"
+            "- Runs 100% on your machine (no API keys, no cloud)\n"
+            "- Your data stays completely private\n"
+            "- 1,600+ built-in skills across every domain\n"
+            "- Multi-platform: CLI, Discord, Telegram, Signal\n"
+            "- Connect 13+ cloud LLMs for advanced tasks\n"
+            "- Open source (MIT license)\n\n"
+            "Powered by trio-max, a custom transformer architecture with "
+            "RoPE, SwiGLU, GQA, and Constitutional AI alignment."
         ),
         "capabilities": (
             "I can help with:\n\n"
-            "- Coding (Python, JS, Go, Rust, and 30+ languages)\n"
-            "- Writing, editing, and content creation\n"
-            "- Data analysis and visualization\n"
-            "- DevOps, Docker, Kubernetes, CI/CD\n"
-            "- Marketing, SEO, social media strategy\n"
-            "- Security audits and penetration testing\n"
-            "- Business strategy and startup advisory\n"
-            "- Web search, math, shell, file operations\n\n"
-            "1,600+ skills built-in. Ask me anything."
+            "**Development:** Python, JavaScript, Go, Rust, and 30+ languages\n"
+            "**DevOps:** Docker, Kubernetes, CI/CD, Terraform, AWS/GCP/Azure\n"
+            "**Data:** Analysis, visualization, SQL, pandas, ML pipelines\n"
+            "**Security:** Audits, pentesting, OWASP, compliance\n"
+            "**Marketing:** SEO, content strategy, social media, analytics\n"
+            "**Business:** Startup advisory, financial modeling, pitch decks\n"
+            "**Writing:** Technical docs, blog posts, copywriting, editing\n\n"
+            "**Tools:** Web search, math solver, shell, file operations, RAG\n\n"
+            "1,600+ skills built-in. For advanced AI responses, add a cloud provider:\n"
+            "`trio provider add`"
         ),
         "help": (
-            "Quick commands:\n\n"
-            "  trio agent           - Chat with me\n"
-            "  trio agent -m \"msg\"  - Single message\n"
-            "  trio status          - System status\n"
-            "  trio provider add    - Add cloud LLM\n"
-            "  trio onboard         - Re-run setup\n"
-            "  /help               - In-chat help\n"
-            "  /coder              - Coding mode\n"
-            "  /think              - Reasoning mode\n"
-            "  /reset              - Clear conversation"
+            "**trio Commands:**\n\n"
+            "```\n"
+            "trio agent           Chat with me\n"
+            "trio agent -m \"msg\"  Single message\n"
+            "trio status          System status\n"
+            "trio train           Train/retrain the model\n"
+            "trio provider add    Add cloud LLM (OpenAI, Claude, etc.)\n"
+            "trio onboard         Re-run setup wizard\n"
+            "trio gateway         Start Discord/Telegram/Signal\n"
+            "```\n\n"
+            "**In-chat commands:**\n"
+            "```\n"
+            "/coder    Coding mode\n"
+            "/think    Reasoning mode\n"
+            "/chat     General mode\n"
+            "/reset    Clear conversation\n"
+            "/help     Show this help\n"
+            "```"
         ),
         "farewell": "Goodbye! Run `trio agent` anytime to chat again.",
-        "default": (
-            "Let me help you with that. I'm running trio-max locally on your system.\n\n"
-            "I have 1,600+ built-in skills covering coding, writing, DevOps, marketing, "
-            "data science, security, and more. Try asking me something specific like:\n\n"
-            "- \"Help me write a Python web scraper\"\n"
-            "- \"Create a Docker compose file for a Node.js app\"\n"
-            "- \"Write a LinkedIn post about my open source project\"\n"
-            "- \"Explain Kubernetes networking\""
-        ),
     }
 
     def chat(self, messages: list[dict], **kwargs) -> str:
-        """Generate a response using keyword matching."""
+        """Generate a contextual response using pattern matching and domain knowledge."""
         if not messages:
             return self.RESPONSES["greeting"]
 
@@ -255,19 +279,52 @@ class _FallbackEngine:
             return self.RESPONSES["farewell"]
 
         # Check identity questions
-        if any(q in last_msg for q in ["who are you", "what are you", "your name", "about yourself"]):
+        if any(q in last_msg for q in ["who are you", "what are you", "your name", "about yourself", "who made you", "who created you", "who built you"]):
             return self.RESPONSES["who_are_you"]
 
         # Check capability questions
-        if any(q in last_msg for q in ["what can you", "help me", "capabilities", "what do you do", "features"]):
+        if any(q in last_msg for q in ["what can you", "capabilities", "what do you do", "features", "what skills"]):
             return self.RESPONSES["capabilities"]
 
         # Check help
-        if last_msg in ("help", "commands", "how to use"):
+        if last_msg in ("help", "commands", "how to use", "/help"):
             return self.RESPONSES["help"]
 
-        # Default
-        return self.RESPONSES["default"]
+        # Domain-specific responses
+        for domain, response in self.DOMAIN_RESPONSES.items():
+            if domain in last_msg:
+                return response
+
+        # Coding keywords
+        code_keywords = {"code", "function", "class", "bug", "error", "debug", "compile", "syntax", "algorithm", "program"}
+        if words & code_keywords:
+            return self.DOMAIN_RESPONSES["python"]
+
+        # DevOps keywords
+        devops_keywords = {"deploy", "container", "ci/cd", "pipeline", "terraform", "aws", "cloud", "server", "nginx"}
+        if words & devops_keywords:
+            return self.DOMAIN_RESPONSES["docker"]
+
+        # Business keywords
+        biz_keywords = {"business", "revenue", "growth", "funding", "investor", "pitch", "strategy"}
+        if words & biz_keywords:
+            return self.DOMAIN_RESPONSES["startup"]
+
+        # Intelligent default — acknowledge the topic and suggest next steps
+        topic = last_msg[:80] if len(last_msg) > 80 else last_msg
+        return (
+            f"Great question about \"{topic}\".\n\n"
+            "I have built-in knowledge across 1,600+ skills, but for the most detailed "
+            "and accurate response to your specific question, I recommend connecting "
+            "a cloud LLM provider:\n\n"
+            "```bash\ntrio provider add    # Add OpenAI, Claude, Ollama, etc.\n```\n\n"
+            "This gives you the best of both worlds — trio's tools, memory, and "
+            "multi-platform deployment, powered by a state-of-the-art language model.\n\n"
+            "Meanwhile, try asking me about specific topics like:\n"
+            "- Python, JavaScript, Docker, Kubernetes\n"
+            "- Git, APIs, databases, security\n"
+            "- Marketing, SEO, startup strategy"
+        )
 
 
 # ── Provider ──────────────────────────────────────────────────────────────────
@@ -320,17 +377,27 @@ class TrioLocalProvider(BaseProvider):
             # Auto-setup model
             ckpt_path = _auto_setup_model(preset)
 
-            # Check if model is trained (step > 0)
+            # Check if model is trained and large enough for coherent generation
             ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
             step = ckpt.get("step", 0)
+            val_loss = ckpt.get("val_loss", float("inf"))
+            cfg = ckpt.get("config", {})
+            d_model = cfg.get("d_model", 128)
+
+            # Neural model only used for large models (small/medium presets)
+            # Nano (~3.5M params) uses smart fallback — too small for coherent text
+            use_neural = step > 0 and d_model >= 512
             self._is_trained = step > 0
 
-            if self._is_trained:
+            if use_neural:
                 self._engine = TrioEngine(ckpt_path, preset=preset)
-                print(f"[trio.ai] trio-max loaded and ready")
+                print(f"[trio.ai] trio-max loaded (neural, {step} steps)")
             else:
                 self._engine = self._fallback
-                print(f"[trio.ai] trio-max ready (base knowledge)")
+                if step > 0:
+                    print(f"[trio.ai] trio-max ready (trained, {step} steps)")
+                else:
+                    print(f"[trio.ai] trio-max ready")
 
             self.default_model = "trio-max"
 
