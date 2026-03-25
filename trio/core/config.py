@@ -23,11 +23,31 @@ DEFAULT_CONFIG = {
         "discord": {"enabled": False, "token": ""},
         "telegram": {"enabled": False, "token": "", "admin_id": 0},
         "signal": {"enabled": False, "phone": ""},
+        "whatsapp": {"enabled": False, "phone_number_id": "", "access_token": "", "verify_token": "trio_verify", "webhook_port": 8080},
+        "slack": {"enabled": False, "bot_token": "", "app_token": ""},
+        "teams": {"enabled": False, "app_id": "", "app_password": "", "webhook_port": 3978},
+        "google_chat": {"enabled": False, "service_account_file": "", "webhook_port": 8090},
+        "imessage": {"enabled": False, "poll_interval": 5},
     },
     "tools": {
-        "builtin": ["web_search", "math_solver", "url_reader", "shell", "file_ops"],
+        "builtin": [
+            "web_search", "math_solver", "url_reader", "shell", "file_ops",
+            "browser", "email", "calendar", "notes", "screenshot",
+        ],
         "restrictToWorkspace": False,
         "mcpServers": {},
+        "email": {
+            "smtp_host": "",
+            "smtp_port": 587,
+            "imap_host": "",
+            "username": "",
+            "password": "",
+        },
+    },
+    "heartbeat": {
+        "enabled": False,
+        "interval_seconds": 300,
+        "notify_channel": "",
     },
     "guardrails": {"enabled": True},
     "memory": {"consolidation_threshold": 20},
@@ -67,6 +87,18 @@ def get_skills_dir() -> Path:
     skills = get_trio_dir() / "skills"
     skills.mkdir(parents=True, exist_ok=True)
     return skills
+
+
+def get_notes_dir() -> Path:
+    notes = get_trio_dir() / "notes"
+    notes.mkdir(parents=True, exist_ok=True)
+    return notes
+
+
+def get_plugins_dir() -> Path:
+    plugins = get_trio_dir() / "plugins"
+    plugins.mkdir(parents=True, exist_ok=True)
+    return plugins
 
 
 def load_config() -> dict[str, Any]:

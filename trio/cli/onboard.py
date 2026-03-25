@@ -117,6 +117,35 @@ async def run_onboard():
         config["channels"]["signal"]["enabled"] = True
         config["channels"]["signal"]["phone"] = phone
 
+    if Confirm.ask("Enable WhatsApp?", default=False):
+        phone_id = Prompt.ask("WhatsApp Phone Number ID")
+        token = Prompt.ask("WhatsApp Access Token")
+        config["channels"]["whatsapp"]["enabled"] = True
+        config["channels"]["whatsapp"]["phone_number_id"] = phone_id
+        config["channels"]["whatsapp"]["access_token"] = token
+
+    if Confirm.ask("Enable Slack?", default=False):
+        bot_token = Prompt.ask("Slack Bot Token (xoxb-...)")
+        app_token = Prompt.ask("Slack App Token (xapp-...)")
+        config["channels"]["slack"]["enabled"] = True
+        config["channels"]["slack"]["bot_token"] = bot_token
+        config["channels"]["slack"]["app_token"] = app_token
+
+    if Confirm.ask("Enable Microsoft Teams?", default=False):
+        app_id = Prompt.ask("Teams App ID")
+        app_pw = Prompt.ask("Teams App Password")
+        config["channels"]["teams"]["enabled"] = True
+        config["channels"]["teams"]["app_id"] = app_id
+        config["channels"]["teams"]["app_password"] = app_pw
+
+    if Confirm.ask("Enable Google Chat?", default=False):
+        sa_file = Prompt.ask("Service Account JSON path")
+        config["channels"]["google_chat"]["enabled"] = True
+        config["channels"]["google_chat"]["service_account_file"] = sa_file
+
+    if Confirm.ask("Enable iMessage (macOS only)?", default=False):
+        config["channels"]["imessage"]["enabled"] = True
+
     # Create directories
     console.print("\n[bold]Step 3: Creating workspace...[/bold]")
 

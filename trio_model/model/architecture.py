@@ -11,6 +11,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint as grad_checkpoint
 from typing import Optional
 
 from trio_model.config import TrioConfig
@@ -119,6 +120,7 @@ class TrioModel(nn.Module):
         self.drop            = nn.Dropout(cfg.dropout)
         self.blocks          = nn.ModuleList([TrioBlock(cfg) for _ in range(cfg.num_layers)])
         self.norm_f          = RMSNorm(cfg.d_model)
+        self._use_gradient_checkpointing = False
 
         # LM head — tied weights with token embedding (saves params, improves perf)
         self.lm_head = nn.Linear(cfg.d_model, cfg.vocab_size, bias=False)
@@ -152,9 +154,12 @@ class TrioModel(nn.Module):
         # Embed tokens
         x = self.drop(self.token_embedding(input_ids))  # (B, T, d_model)
 
-        # Pass through transformer blocks
+        # Pass through transformer blocks (with optional gradient checkpointing)
         for block in self.blocks:
-            x = block(x)
+            if self._use_gradient_checkpointing and self.training:
+                x = grad_checkpoint(block, x, use_reentrant=False)
+            else:
+                x = block(x)
 
         x = self.norm_f(x)           # final norm
         logits = self.lm_head(x)     # (B, T, vocab_size)
@@ -208,6 +213,14 @@ class TrioModel(nn.Module):
                 break
 
         return input_ids
+
+    def gradient_checkpointing_enable(self):
+        """Enable gradient checkpointing to save VRAM (trades compute for memory)."""
+        self._use_gradient_checkpointing = True
+
+    def gradient_checkpointing_disable(self):
+        """Disable gradient checkpointing."""
+        self._use_gradient_checkpointing = False
 
     def num_parameters(self, only_trainable: bool = True) -> int:
         params = self.parameters() if not only_trainable else (

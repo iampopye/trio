@@ -11,8 +11,11 @@ from trio.core.config import get_sessions_dir
 class Session:
     """A conversation session for a specific channel:chat_id pair."""
 
-    def __init__(self, key: str, history: list[dict] | None = None):
+    def __init__(self, key: str, history: list[dict] | None = None,
+                 name: str = "", created_at: float | None = None):
         self.key = key
+        self.name = name or key
+        self.created_at = created_at or time.time()
         self.history: list[dict] = history or []
         self.last_consolidated: int = 0
         self.metadata: dict[str, Any] = {}
@@ -85,6 +88,42 @@ class SessionManager:
     def list_sessions(self) -> list[str]:
         """List all session keys."""
         return [f.stem for f in self._dir.glob("*.jsonl")]
+
+    def rename_session(self, session_key: str, new_name: str) -> bool:
+        """Rename a session (display name, not file key)."""
+        session = self.get(session_key)
+        session.name = new_name
+        # Save metadata
+        meta_path = self._dir / f"{session_key}_meta.json"
+        meta_path.write_text(
+            json.dumps({"name": new_name, "created_at": session.created_at}),
+            encoding="utf-8",
+        )
+        return True
+
+    def get_named_sessions(self) -> list[dict]:
+        """List sessions with their names and metadata."""
+        sessions = []
+        for f in sorted(self._dir.glob("*.jsonl")):
+            key = f.stem
+            meta_path = self._dir / f"{key}_meta.json"
+            name = key
+            created_at = f.stat().st_ctime
+            if meta_path.exists():
+                try:
+                    meta = json.loads(meta_path.read_text(encoding="utf-8"))
+                    name = meta.get("name", key)
+                    created_at = meta.get("created_at", created_at)
+                except Exception:
+                    pass
+            msg_count = sum(1 for line in f.read_text(encoding="utf-8").split("\n") if line.strip())
+            sessions.append({
+                "key": key,
+                "name": name,
+                "created_at": created_at,
+                "messages": msg_count,
+            })
+        return sessions
 
     def _session_path(self, key: str) -> Path:
         safe_key = key.replace(":", "_").replace("/", "_")

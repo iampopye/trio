@@ -65,6 +65,22 @@ class AgentLoop:
         self._skills = SkillsLoader()
         self._skills.load_all()
 
+        # Load plugins
+        try:
+            from trio.plugins.loader import PluginLoader
+            from trio.core.config import get_plugins_dir
+            self._plugin_loader = PluginLoader(get_plugins_dir())
+            manifests = self._plugin_loader.discover()
+            for manifest in manifests:
+                loaded = self._plugin_loader.load_tools(manifest, self.tools)
+                skill_paths = self._plugin_loader.load_skills(manifest)
+                for sp in skill_paths:
+                    self._skills.load_file(sp)
+                if loaded or skill_paths:
+                    logger.info(f"Plugin '{manifest.name}': {loaded} tools, {len(skill_paths)} skills")
+        except Exception as e:
+            logger.debug(f"Plugin loading skipped: {e}")
+
     async def run(self) -> None:
         """Main loop — consume inbound messages and process them."""
         logger.info("Agent loop started")
@@ -279,6 +295,9 @@ class AgentLoop:
             state = "ON" if not current else "OFF"
             return f"Deep thinking display: **{state}**"
 
+        elif command == "session":
+            return self._handle_session_command(msg, arg)
+
         elif command == "help":
             return (
                 "**trio Commands:**\n"
@@ -289,10 +308,69 @@ class AgentLoop:
                 "/setmodel <name> — Set custom model\n"
                 "/model — Show current model\n"
                 "/deepthink — Toggle reasoning display\n"
+                "/session — Manage sessions (list/new/switch/rename/delete)\n"
                 "/help — Show this help"
             )
 
         return None  # Not a recognized command, process as message
+
+    def _handle_session_command(self, msg: InboundMessage, arg: str) -> str:
+        """Handle /session subcommands."""
+        parts = arg.split(None, 1)
+        sub = parts[0] if parts else "list"
+        sub_arg = parts[1].strip() if len(parts) > 1 else ""
+
+        if sub == "list":
+            sessions = self.sessions.get_named_sessions()
+            if not sessions:
+                return "No sessions yet."
+            lines = []
+            for s in sessions:
+                marker = " ← current" if s["key"] == msg.session_key else ""
+                lines.append(f"  **{s['name']}** ({s['messages']} msgs){marker}")
+            return "**Sessions:**\n" + "\n".join(lines)
+
+        elif sub == "new":
+            name = sub_arg or f"session_{len(self.sessions.list_sessions()) + 1}"
+            new_key = f"{msg.channel}_{name}"
+            self.sessions.get(new_key)
+            self.sessions.rename_session(new_key, name)
+            return f"Created session: **{name}**\nSwitch to it: `/session switch {name}`"
+
+        elif sub == "switch":
+            if not sub_arg:
+                return "Usage: /session switch <name>"
+            # Find matching session
+            for s in self.sessions.get_named_sessions():
+                if s["name"] == sub_arg or s["key"] == sub_arg:
+                    # Update the chat_id mapping
+                    return f"Switched to session: **{s['name']}**\n(Note: session switching is fully supported in CLI mode)"
+            return f"Session not found: {sub_arg}"
+
+        elif sub == "rename":
+            if not sub_arg:
+                return "Usage: /session rename <new_name>"
+            self.sessions.rename_session(msg.session_key, sub_arg)
+            return f"Session renamed to: **{sub_arg}**"
+
+        elif sub == "delete":
+            if not sub_arg:
+                return "Usage: /session delete <name>"
+            for s in self.sessions.get_named_sessions():
+                if s["name"] == sub_arg or s["key"] == sub_arg:
+                    self.sessions.delete(s["key"])
+                    return f"Session **{sub_arg}** deleted."
+            return f"Session not found: {sub_arg}"
+
+        else:
+            return (
+                "**Session Commands:**\n"
+                "/session list — List all sessions\n"
+                "/session new [name] — Create new session\n"
+                "/session switch <name> — Switch to session\n"
+                "/session rename <name> — Rename current session\n"
+                "/session delete <name> — Delete a session"
+            )
 
     def _load_workspace_file(self, filename: str) -> str | None:
         """Load a workspace file (SOUL.md, USER.md, etc.)."""

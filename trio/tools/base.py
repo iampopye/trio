@@ -128,4 +128,31 @@ class ToolRegistry:
             from trio.tools.rag_tool import RAGSearchTool
             self.register(RAGSearchTool())
 
+        if "browser" in enabled:
+            try:
+                from trio.tools.browser import BrowserTool
+                self.register(BrowserTool())
+            except ImportError:
+                logger.warning("browser tool unavailable (install playwright)")
+
+        if "email" in enabled:
+            from trio.tools.email_tool import EmailTool
+            email_cfg = config.get("tools", {}).get("email", {})
+            self.register(EmailTool(config=email_cfg))
+
+        if "calendar" in enabled:
+            from trio.tools.calendar_tool import CalendarTool
+            self.register(CalendarTool())
+
+        if "notes" in enabled:
+            from trio.tools.notes_tool import NotesTool
+            self.register(NotesTool())
+
+        if "screenshot" in enabled:
+            try:
+                from trio.tools.screenshot_tool import ScreenshotTool
+                self.register(ScreenshotTool())
+            except ImportError:
+                logger.warning("screenshot tool unavailable (install mss, Pillow)")
+
         logger.info(f"Registered {len(self._tools)} tools: {', '.join(self._tools.keys())}")

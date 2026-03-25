@@ -94,5 +94,32 @@ async def run_status():
     tools = config.get("tools", {}).get("builtin", [])
     mcp = config.get("tools", {}).get("mcpServers", {})
     console.print(f"\nTools: {len(tools)} built-in, {len(mcp)} MCP servers")
+    console.print(f"  Built-in: {', '.join(tools)}")
+
+    # Plugins
+    try:
+        from trio.plugins.manager import PluginManager
+        pm = PluginManager()
+        plugins = pm.list_plugins()
+        enabled = sum(1 for p in plugins if p.enabled)
+        console.print(f"\nPlugins: {len(plugins)} installed, {enabled} enabled")
+        for p in plugins:
+            status = "[green]on[/green]" if p.enabled else "[red]off[/red]"
+            console.print(f"  {p.name} v{p.version} [{status}]")
+    except Exception:
+        console.print("\nPlugins: none")
+
+    # Heartbeat
+    hb = config.get("heartbeat", {})
+    if hb.get("enabled"):
+        console.print(f"\nHeartbeat: [green]enabled[/green] (every {hb.get('interval_seconds', 300)}s)")
+    else:
+        console.print("\nHeartbeat: [dim]disabled[/dim]")
+
+    # Skills
+    from trio.core.config import get_skills_dir
+    skills_dir = get_skills_dir()
+    skill_count = len(list(skills_dir.glob("*.md")))
+    console.print(f"Skills: {skill_count}")
 
     console.print()

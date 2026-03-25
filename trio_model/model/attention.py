@@ -134,20 +134,14 @@ class MultiHeadAttention(nn.Module):
         k = self._repeat_kv(k)   # (B,H,T,hd)
         v = self._repeat_kv(v)   # (B,H,T,hd)
 
-        # Scaled dot-product attention
-        attn = torch.matmul(q, k.transpose(-2, -1)) * self.scale  # (B,H,T,T)
-
-        # Causal mask
-        causal = torch.tril(torch.ones(T, T, device=x.device)).bool()
-        attn = attn.masked_fill(~causal, float("-inf"))
-
-        if mask is not None:
-            attn = attn + mask
-
-        attn = F.softmax(attn, dim=-1)
-        attn = self.attn_drop(attn)
-
-        out = torch.matmul(attn, v)          # (B,H,T,hd)
+        # Use PyTorch SDPA (Flash Attention) — never materializes full (B,H,T,T) matrix
+        # Available in PyTorch 2.0+, massively reduces VRAM usage
+        out = F.scaled_dot_product_attention(
+            q, k, v,
+            attn_mask=None,
+            dropout_p=self.attn_drop.p if self.training else 0.0,
+            is_causal=True,
+        )  # (B,H,T,hd)
         out = out.transpose(1, 2).contiguous().view(B, T, self.d_model)
         out = self.resid_drop(self.out_proj(out))
         return out

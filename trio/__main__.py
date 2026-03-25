@@ -104,6 +104,37 @@ def main():
     # trio status
     subparsers.add_parser("status", help="Show system status")
 
+    # trio heartbeat
+    hb_parser = subparsers.add_parser("heartbeat", help="Heartbeat daemon management")
+    hb_sub = hb_parser.add_subparsers(dest="hb_action")
+    hb_sub.add_parser("status", help="Show heartbeat status")
+    hb_sub.add_parser("log", help="Show recent heartbeat log")
+    hb_sub.add_parser("edit", help="Open HEARTBEAT.md for editing")
+
+    # trio plugin
+    plugin_parser = subparsers.add_parser("plugin", help="Manage plugins")
+    plugin_sub = plugin_parser.add_subparsers(dest="plugin_action")
+    plugin_sub.add_parser("list", help="List installed plugins")
+    plugin_sub.add_parser("install", help="Install a plugin").add_argument("path", help="Plugin path or URL")
+    plugin_sub.add_parser("uninstall", help="Uninstall a plugin").add_argument("name", help="Plugin name")
+    plugin_sub.add_parser("enable", help="Enable a plugin").add_argument("name", help="Plugin name")
+    plugin_sub.add_parser("disable", help="Disable a plugin").add_argument("name", help="Plugin name")
+
+    # trio skill
+    skill_parser = subparsers.add_parser("skill", help="Manage skills")
+    skill_sub = skill_parser.add_subparsers(dest="skill_action")
+    skill_sub.add_parser("list", help="List installed skills")
+    skill_search = skill_sub.add_parser("search", help="Search TrioHub for skills")
+    skill_search.add_argument("query", help="Search query")
+    skill_install = skill_sub.add_parser("install", help="Install a skill from TrioHub")
+    skill_install.add_argument("name", help="Skill name")
+
+    # trio hub
+    hub_parser = subparsers.add_parser("hub", help="TrioHub community registry")
+    hub_sub = hub_parser.add_subparsers(dest="hub_action")
+    hub_sub.add_parser("search", help="Search TrioHub").add_argument("query", help="Search query")
+    hub_sub.add_parser("trending", help="Show trending skills and plugins")
+
     # trio train
     train_parser = subparsers.add_parser("train", help="Train or retrain the trio-max model")
     train_parser.add_argument("--reset", action="store_true", help="Start fresh, ignore saved progress")
@@ -137,6 +168,22 @@ def main():
     elif args.command == "status":
         from trio.cli.status import run_status
         asyncio.run(run_status())
+
+    elif args.command == "heartbeat":
+        from trio.cli.heartbeat_cmd import run_heartbeat
+        asyncio.run(run_heartbeat(args.hb_action))
+
+    elif args.command == "plugin":
+        from trio.cli.plugin_cmd import run_plugin
+        asyncio.run(run_plugin(args))
+
+    elif args.command == "skill":
+        from trio.cli.skill_cmd import run_skill
+        asyncio.run(run_skill(args))
+
+    elif args.command == "hub":
+        from trio.cli.hub_cmd import run_hub
+        asyncio.run(run_hub(args))
 
     elif args.command == "train":
         import subprocess

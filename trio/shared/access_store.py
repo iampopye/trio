@@ -19,21 +19,16 @@ logger = logging.getLogger(__name__)
 _FILE = str(get_trio_dir() / "approved_users.json")
 _lock = threading.Lock()
 
-_data = {
-    "telegram": {},
-    "signal": {},
-    "discord": {},
-    "pending": {"telegram": {}, "signal": {}, "discord": {}},
-}
+_PLATFORMS = ("telegram", "signal", "discord", "whatsapp", "slack", "teams", "google_chat", "imessage")
+
+_data = {p: {} for p in _PLATFORMS}
+_data["pending"] = {p: {} for p in _PLATFORMS}
 
 
 def _default_data():
-    return {
-        "telegram": {},
-        "signal": {},
-        "discord": {},
-        "pending": {"telegram": {}, "signal": {}, "discord": {}},
-    }
+    d = {p: {} for p in _PLATFORMS}
+    d["pending"] = {p: {} for p in _PLATFORMS}
+    return d
 
 
 def load():
@@ -44,12 +39,12 @@ def load():
             try:
                 with open(_FILE, "r", encoding="utf-8") as f:
                     _data = json.load(f)
-                for key in ("telegram", "signal", "discord"):
+                for key in _PLATFORMS:
                     if key not in _data:
                         _data[key] = {}
                 if "pending" not in _data:
-                    _data["pending"] = {"telegram": {}, "signal": {}, "discord": {}}
-                for key in ("telegram", "signal", "discord"):
+                    _data["pending"] = {p: {} for p in _PLATFORMS}
+                for key in _PLATFORMS:
                     if key not in _data["pending"]:
                         _data["pending"][key] = {}
                 logger.info(f"Loaded access store: {sum(len(v) for k, v in _data.items() if k != 'pending')} users")

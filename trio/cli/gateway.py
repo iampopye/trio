@@ -95,22 +95,79 @@ async def run_gateway():
         except ImportError:
             console.print("[yellow]Signal channel not available[/yellow]")
 
+    if channels_config.get("whatsapp", {}).get("enabled"):
+        try:
+            from trio.channels.whatsapp_channel import WhatsAppChannel
+            wa = WhatsAppChannel(bus=bus, config=channels_config["whatsapp"])
+            channel_manager.register(wa)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]WhatsApp: install aiohttp (pip install aiohttp)[/yellow]")
+
+    if channels_config.get("slack", {}).get("enabled"):
+        try:
+            from trio.channels.slack_channel import SlackChannel
+            sl = SlackChannel(bus=bus, config=channels_config["slack"])
+            channel_manager.register(sl)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]Slack: install slack-sdk (pip install trio-ai[slack])[/yellow]")
+
+    if channels_config.get("teams", {}).get("enabled"):
+        try:
+            from trio.channels.teams_channel import TeamsChannel
+            tm = TeamsChannel(bus=bus, config=channels_config["teams"])
+            channel_manager.register(tm)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]Teams: install botbuilder-core (pip install trio-ai[teams])[/yellow]")
+
+    if channels_config.get("google_chat", {}).get("enabled"):
+        try:
+            from trio.channels.google_chat_channel import GoogleChatChannel
+            gc = GoogleChatChannel(bus=bus, config=channels_config["google_chat"])
+            channel_manager.register(gc)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]Google Chat: install google-auth (pip install trio-ai[google_chat])[/yellow]")
+
+    if channels_config.get("imessage", {}).get("enabled"):
+        try:
+            from trio.channels.imessage_channel import IMessageChannel
+            im = IMessageChannel(bus=bus, config=channels_config["imessage"])
+            channel_manager.register(im)
+            enabled_count += 1
+        except (ImportError, RuntimeError) as e:
+            console.print(f"[yellow]iMessage: {e}[/yellow]")
+
     if enabled_count == 0:
         console.print("[red]No channels enabled. Edit ~/.trio/config.json or run 'trio onboard'.[/red]")
         return
 
+    # Heartbeat channel + daemon
+    heartbeat_daemon = None
+    if config.get("heartbeat", {}).get("enabled"):
+        from trio.channels.heartbeat_channel import HeartbeatChannel
+        from trio.cron.heartbeat import HeartbeatDaemon
+
+        hb_channel = HeartbeatChannel(bus=bus, config=config)
+        channel_manager.register(hb_channel)
+        heartbeat_daemon = HeartbeatDaemon(bus=bus, config=config)
+
     console.print(f"[green]Starting gateway with {enabled_count} channel(s)...[/green]")
 
     try:
-        await asyncio.gather(
-            agent.run(),
-            channel_manager.start_all(),
-        )
+        tasks = [agent.run(), channel_manager.start_all()]
+        if heartbeat_daemon:
+            tasks.append(heartbeat_daemon.start())
+        await asyncio.gather(*tasks)
     except KeyboardInterrupt:
         console.print("\n[yellow]Shutting down...[/yellow]")
     finally:
         agent.stop()
         await channel_manager.stop_all()
+        if heartbeat_daemon:
+            await heartbeat_daemon.stop()
         await provider.close()
         if mcp_manager:
             await mcp_manager.stop_all()

@@ -80,7 +80,7 @@ def auto_config_for_gpu():
             dtype="bfloat16",
         )
     elif vram_gb >= 14:
-        # T4 16GB — maximize with optimizations
+        # T4 16GB — optimized with Flash Attention + gradient checkpointing
         print(f"GPU VRAM: {vram_gb:.0f}GB → Training ~350M param model (FP16 + grad checkpoint)")
         return TrioConfig(
             model_name="trio-max",
@@ -91,8 +91,8 @@ def auto_config_for_gpu():
             num_layers=20,
             ff_dim=4096,
             num_kv_heads=4,       # GQA for efficiency
-            batch_size=4,
-            gradient_accumulation_steps=8,  # effective batch = 32
+            batch_size=2,         # reduced for T4 VRAM
+            gradient_accumulation_steps=16,  # effective batch = 32
             learning_rate=6e-5,
             max_iters=30000,
             warmup_iters=1000,
@@ -276,15 +276,12 @@ device = torch.device(cfg.device)
 model = model.to(device)
 
 # Enable gradient checkpointing for memory savings
-if hasattr(model, 'gradient_checkpointing_enable'):
-    model.gradient_checkpointing_enable()
-    print("Gradient checkpointing: enabled")
-else:
-    # Manual gradient checkpointing for our architecture
-    for block in model.blocks if hasattr(model, 'blocks') else []:
-        if hasattr(block, 'use_checkpoint'):
-            block.use_checkpoint = True
-    print("Gradient checkpointing: manual")
+model.gradient_checkpointing_enable()
+print("Gradient checkpointing: enabled")
+
+# Set PyTorch memory allocator to avoid fragmentation OOM
+import os
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 # Mixed precision setup
 use_amp = cfg.dtype in ("float16", "bfloat16")
