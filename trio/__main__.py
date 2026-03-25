@@ -104,6 +104,10 @@ def main():
     # trio status
     subparsers.add_parser("status", help="Show system status")
 
+    # trio train
+    train_parser = subparsers.add_parser("train", help="Train or retrain the trio-max model")
+    train_parser.add_argument("--reset", action="store_true", help="Start fresh, ignore saved progress")
+
     args = parser.parse_args()
 
     if args.command is None:
@@ -133,6 +137,19 @@ def main():
     elif args.command == "status":
         from trio.cli.status import run_status
         asyncio.run(run_status())
+
+    elif args.command == "train":
+        import subprocess
+        script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
+        if not os.path.exists(script):
+            # Installed via pip — script is in package
+            script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
+        cmd = [sys.executable, "-u", script]
+        if args.reset:
+            cmd.append("--reset")
+        print("[trio.ai] Starting model training...")
+        print("[trio.ai] You can pause anytime (Ctrl+C) and resume with: trio train\n")
+        subprocess.run(cmd)
 
 
 if __name__ == "__main__":

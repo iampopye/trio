@@ -60,6 +60,11 @@ class AgentLoop:
         self._soul_content = self._load_workspace_file("SOUL.md")
         self._user_context = self._load_workspace_file("USER.md")
 
+        # Load skills
+        from trio.skills.loader import SkillsLoader
+        self._skills = SkillsLoader()
+        self._skills.load_all()
+
     async def run(self) -> None:
         """Main loop — consume inbound messages and process them."""
         logger.info("Agent loop started")
@@ -124,6 +129,7 @@ class AgentLoop:
             soul_content=self._soul_content,
             user_context=self._user_context,
             tool_schemas=self.tools.get_schemas() if self.tools.list_tools() else None,
+            skill_prompts=self._skills.get_always_load_prompts(),
         )
 
         messages = build_messages(session, system_prompt, max_history=self.memory_window)
