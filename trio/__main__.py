@@ -2,17 +2,47 @@
 
 import argparse
 import asyncio
+import os
 import sys
 
 
+def _ensure_path():
+    """On Windows, ensure pip Scripts folder is on PATH so 'trioai' works."""
+    if sys.platform != "win32":
+        return
+    scripts_dir = os.path.join(os.path.dirname(sys.executable), "Scripts")
+    if not os.path.isdir(scripts_dir):
+        # Microsoft Store Python uses a different layout
+        import site
+        user_scripts = os.path.join(site.getusersitepackages().replace("site-packages", ""), "Scripts")
+        if os.path.isdir(user_scripts):
+            scripts_dir = user_scripts
+        else:
+            return
+    user_path = os.environ.get("PATH", "")
+    if scripts_dir.lower() not in user_path.lower():
+        try:
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment", 0, winreg.KEY_ALL_ACCESS) as key:
+                current, _ = winreg.QueryValueEx(key, "PATH")
+                if scripts_dir.lower() not in current.lower():
+                    winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, current + ";" + scripts_dir)
+                    print(f"[trio.ai] Added {scripts_dir} to your PATH.")
+                    print("[trio.ai] Restart your terminal for 'trioai' command to work.\n")
+        except Exception:
+            pass
+
+
 def main():
+    _ensure_path()
+
     parser = argparse.ArgumentParser(
         prog="trioai",
-        description="trio - the open agent framework for every platform",
+        description="trio.ai - train your own AI, deploy it everywhere",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # trio onboard
+    # trioai onboard
     subparsers.add_parser("onboard", help="Initialize config and workspace")
 
     # trio agent
