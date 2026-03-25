@@ -43,7 +43,7 @@ async def run_agent(message: str | None = None, no_markdown: bool = False, show_
         provider = ProviderRegistry.create(provider_name, provider_config)
     except ValueError as e:
         console.print(f"[red]Error: {e}[/red]")
-        console.print("Run [cyan]trio onboard[/cyan] to configure a provider.")
+        console.print("Run [cyan]trioai onboard[/cyan] to configure a provider.")
         return
 
     # Initialize components

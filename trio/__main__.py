@@ -7,7 +7,7 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="trio",
+        prog="trioai",
         description="trio - the open agent framework for every platform",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
