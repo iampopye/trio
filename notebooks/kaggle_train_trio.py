@@ -493,3 +493,74 @@ with torch.no_grad(), torch.amp.autocast("cuda", dtype=dtype, enabled=use_amp):
 
 output = tokenizer.decode(x[0].tolist())
 print(output[:1000])
+
+# ── Cell 10: Upload to HuggingFace Hub ──────────────────────────────────────
+
+# This makes the model auto-downloadable by anyone who installs trio.ai
+# Users just run: pip install trio-ai && trio agent
+# The model downloads automatically on first use.
+#
+# INSTRUCTIONS:
+# 1. Get a HuggingFace token from https://huggingface.co/settings/tokens
+# 2. Create a "Write" token
+# 3. Uncomment the lines below and paste your token
+# 4. Run this cell
+
+# from huggingface_hub import HfApi, create_repo
+#
+# HF_TOKEN = "hf_YOUR_TOKEN_HERE"  # <-- paste your HuggingFace token
+# REPO_ID = "iampopye/trio-max"
+#
+# # Create repo if it doesn't exist
+# create_repo(REPO_ID, token=HF_TOKEN, exist_ok=True, repo_type="model")
+#
+# # Upload the checkpoint
+# api = HfApi()
+# api.upload_file(
+#     path_or_fileobj=str(SAVE_PATH),
+#     path_in_repo="trio-nano.pt",
+#     repo_id=REPO_ID,
+#     token=HF_TOKEN,
+# )
+#
+# # Upload a model card
+# model_card = f"""---
+# license: mit
+# tags:
+#   - trio-ai
+#   - transformer
+#   - from-scratch
+# ---
+#
+# # Trio-Max — Custom AI Model by Karan Garg
+#
+# A {param_count/1e6:.0f}M parameter transformer trained from scratch.
+#
+# - **Architecture**: Custom transformer with RoPE, SwiGLU, GQA
+# - **Training data**: TinyStories + Alpaca-GPT4 + Dolly-15K
+# - **Training**: {total_time/3600:.1f} hours on Kaggle T4 GPU
+# - **Pre-training**: {pretrain_steps} steps
+# - **SFT**: {sft_steps} steps on 67K+ instruction pairs
+#
+# ## Usage
+#
+# ```bash
+# pip install trio-ai[model]
+# trio agent -m "Hello"
+# ```
+#
+# The model downloads automatically on first use.
+#
+# ## Created by
+# Karan Garg — [github.com/iampopye/trio](https://github.com/iampopye/trio)
+# """
+#
+# api.upload_file(
+#     path_or_fileobj=model_card.encode(),
+#     path_in_repo="README.md",
+#     repo_id=REPO_ID,
+#     token=HF_TOKEN,
+# )
+#
+# print(f"\nModel uploaded to: https://huggingface.co/{REPO_ID}")
+# print(f"Anyone who installs trio-ai will auto-download this model!")

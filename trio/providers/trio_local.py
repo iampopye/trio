@@ -123,6 +123,75 @@ def _get_trio_model_dir() -> Path:
     return model_dir
 
 
+# ── HuggingFace Model Download ───────────────────────────────────────────────
+
+HUGGINGFACE_REPO = "iampopye/trio-max"
+HUGGINGFACE_FILENAME = "trio-nano.pt"
+
+
+def _download_from_huggingface(dest_path: Path) -> bool:
+    """Download the trained trio-max model from HuggingFace Hub.
+
+    Returns True if download succeeded, False otherwise.
+    """
+    try:
+        from huggingface_hub import hf_hub_download
+        print(f"\n[trio.ai] Downloading trio-max model from HuggingFace...")
+        print(f"[trio.ai] This is a one-time download (~1.3GB).")
+        print(f"[trio.ai] Source: huggingface.co/{HUGGINGFACE_REPO}\n")
+
+        downloaded = hf_hub_download(
+            repo_id=HUGGINGFACE_REPO,
+            filename=HUGGINGFACE_FILENAME,
+            local_dir=str(dest_path.parent),
+            local_dir_use_symlinks=False,
+        )
+        # hf_hub_download saves to local_dir/filename
+        dl_path = dest_path.parent / HUGGINGFACE_FILENAME
+        if dl_path.exists() and str(dl_path) != str(dest_path):
+            import shutil
+            shutil.move(str(dl_path), str(dest_path))
+
+        print(f"[trio.ai] trio-max downloaded successfully!")
+        size_mb = dest_path.stat().st_size / (1024 * 1024)
+        print(f"[trio.ai] Model size: {size_mb:.0f}MB\n")
+        return True
+    except ImportError:
+        # Try pip install huggingface_hub
+        try:
+            import subprocess, sys
+            print(f"\n[trio.ai] Installing huggingface_hub for model download...")
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "-q", "huggingface_hub"],
+                check=True, capture_output=True,
+            )
+            from huggingface_hub import hf_hub_download
+            print(f"[trio.ai] Downloading trio-max model from HuggingFace...")
+            print(f"[trio.ai] This is a one-time download (~1.3GB).\n")
+
+            downloaded = hf_hub_download(
+                repo_id=HUGGINGFACE_REPO,
+                filename=HUGGINGFACE_FILENAME,
+                local_dir=str(dest_path.parent),
+                local_dir_use_symlinks=False,
+            )
+            dl_path = dest_path.parent / HUGGINGFACE_FILENAME
+            if dl_path.exists() and str(dl_path) != str(dest_path):
+                import shutil
+                shutil.move(str(dl_path), str(dest_path))
+
+            print(f"[trio.ai] trio-max downloaded successfully!")
+            return True
+        except Exception as e:
+            print(f"[trio.ai] Could not install huggingface_hub: {e}")
+            return False
+    except Exception as e:
+        print(f"[trio.ai] Download failed: {e}")
+        print(f"[trio.ai] You can manually download from: huggingface.co/{HUGGINGFACE_REPO}")
+        print(f"[trio.ai] Place the file at: {dest_path}\n")
+        return False
+
+
 # ── Auto Setup ────────────────────────────────────────────────────────────────
 
 def _auto_setup_model(preset: str = "nano") -> str:
@@ -131,7 +200,8 @@ def _auto_setup_model(preset: str = "nano") -> str:
     Priority:
     1. Use existing checkpoint in ~/.trio/models/
     2. Copy pre-trained weights bundled with the package
-    3. Initialize fresh (untrained) model as last resort
+    3. Download trained model from HuggingFace Hub
+    4. Initialize fresh (untrained) model as last resort
     """
     import shutil
     import torch
@@ -153,15 +223,22 @@ def _auto_setup_model(preset: str = "nano") -> str:
         print(f"[trio.ai] trio-max ready.")
         return str(ckpt_path)
 
+    # Download from HuggingFace Hub (trained model hosted there)
+    if _download_from_huggingface(ckpt_path):
+        return str(ckpt_path)
+
+    # Last resort: initialize untrained model
     print(f"\n[trio.ai] First-time setup: Initializing trio-max...")
-    print(f"[trio.ai] This only happens once.")
+    print(f"[trio.ai] For best results, train the model:")
+    print(f"[trio.ai]   trio train           (CPU, ~50 min)")
+    print(f"[trio.ai]   Use Kaggle notebook  (GPU, much smarter model)")
+    print(f"[trio.ai] This only happens once.\n")
 
     cfg = get_config(preset)
     tokenizer = get_tokenizer(preset)
     cfg.vocab_size = tokenizer.vocab_size
 
     model = TrioModel(cfg)
-    print(f"[trio.ai] trio-max initialized.")
 
     ckpt = {
         "step": 0,
