@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "trio-ai"
+name = "triobot"
 version = "0.1.0"
 description = "trio.ai - train your own AI, deploy it everywhere"
 readme = "README.md"
@@ -57,26 +57,26 @@ search = ["duckduckgo-search>=4.0.0"]
 math = ["sympy>=1.12"]
 web = ["beautifulsoup4>=4.12.0", "playwright>=1.40.0", "PyPDF2>=3.0.0"]
 all = [
-    "trio-ai[model]",
-    "trio-ai[local]",
-    "trio-ai[serve]",
-    "trio-ai[discord]",
-    "trio-ai[telegram]",
-    "trio-ai[signal]",
-    "trio-ai[slack]",
-    "trio-ai[teams]",
-    "trio-ai[google_chat]",
-    "trio-ai[matrix]",
-    "trio-ai[sms]",
-    "trio-ai[instagram]",
-    "trio-ai[messenger]",
-    "trio-ai[line]",
-    "trio-ai[reddit]",
-    "trio-ai[email_channel]",
-    "trio-ai[screenshot]",
-    "trio-ai[search]",
-    "trio-ai[math]",
-    "trio-ai[web]",
+    "triobot[model]",
+    "triobot[local]",
+    "triobot[serve]",
+    "triobot[discord]",
+    "triobot[telegram]",
+    "triobot[signal]",
+    "triobot[slack]",
+    "triobot[teams]",
+    "triobot[google_chat]",
+    "triobot[matrix]",
+    "triobot[sms]",
+    "triobot[instagram]",
+    "triobot[messenger]",
+    "triobot[line]",
+    "triobot[reddit]",
+    "triobot[email_channel]",
+    "triobot[screenshot]",
+    "triobot[search]",
+    "triobot[math]",
+    "triobot[web]",
 ]
 dev = ["pytest>=7.0", "pytest-asyncio>=0.21.0"]
 
