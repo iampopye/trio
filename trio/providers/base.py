@@ -120,9 +120,10 @@ def register_all_providers() -> None:
     """Register all built-in providers."""
     from trio.providers.ollama import OllamaProvider
     from trio.providers.openai_compat import OpenAICompatProvider
-    from trio.providers.trio_local import TrioLocalProvider
+    from trio.providers.local import LocalProvider
 
-    ProviderRegistry.register("trio", TrioLocalProvider)            # Built-in Trio LLM
+    ProviderRegistry.register("trio", LocalProvider)                # Built-in Trio LLM (native GGUF, no Ollama)
+    ProviderRegistry.register("local", LocalProvider)               # Alias
     ProviderRegistry.register("ollama", OllamaProvider)
     ProviderRegistry.register("openai", OpenAICompatProvider)       # OpenAI GPT
     ProviderRegistry.register("anthropic", OpenAICompatProvider)    # Claude

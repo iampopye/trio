@@ -37,6 +37,7 @@ dependencies = [
 
 [project.optional-dependencies]
 model = ["torch>=2.0.0", "tiktoken>=0.5.0", "pyyaml>=6.0", "numpy>=1.24.0", "datasets>=2.14.0"]
+local = ["llama-cpp-python>=0.3.0"]
 serve = ["fastapi>=0.104.0", "uvicorn>=0.24.0", "pydantic>=2.0.0"]
 discord = ["discord.py>=2.3.0", "yt-dlp>=2024.0.0", "PyNaCl>=1.5.0"]
 telegram = ["pyTelegramBotAPI>=4.14.0"]
@@ -44,12 +45,20 @@ signal = []
 slack = ["slack-sdk>=3.25.0"]
 teams = ["botbuilder-core>=4.14.0", "botbuilder-integration-aiohttp>=4.14.0"]
 google_chat = ["google-auth>=2.20.0", "google-api-python-client>=2.100.0"]
+matrix = ["matrix-nio>=0.21.0"]
+sms = ["twilio>=8.0.0"]
+instagram = []
+messenger = []
+line = ["line-bot-sdk>=3.0.0"]
+reddit = ["praw>=7.7.0"]
+email_channel = ["aiosmtplib>=2.0.0", "aioimaplib>=1.0.0"]
 screenshot = ["mss>=9.0.0", "Pillow>=10.0.0"]
 search = ["duckduckgo-search>=4.0.0"]
 math = ["sympy>=1.12"]
 web = ["beautifulsoup4>=4.12.0", "playwright>=1.40.0", "PyPDF2>=3.0.0"]
 all = [
     "trio-ai[model]",
+    "trio-ai[local]",
     "trio-ai[serve]",
     "trio-ai[discord]",
     "trio-ai[telegram]",
@@ -57,6 +66,13 @@ all = [
     "trio-ai[slack]",
     "trio-ai[teams]",
     "trio-ai[google_chat]",
+    "trio-ai[matrix]",
+    "trio-ai[sms]",
+    "trio-ai[instagram]",
+    "trio-ai[messenger]",
+    "trio-ai[line]",
+    "trio-ai[reddit]",
+    "trio-ai[email_channel]",
     "trio-ai[screenshot]",
     "trio-ai[search]",
     "trio-ai[math]",

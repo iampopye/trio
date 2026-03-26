@@ -135,9 +135,41 @@ def main():
     hub_sub.add_parser("search", help="Search TrioHub").add_argument("query", help="Search query")
     hub_sub.add_parser("trending", help="Show trending skills and plugins")
 
+    # trio doctor
+    doctor_parser = subparsers.add_parser("doctor", help="Diagnose and repair system issues")
+    doctor_parser.add_argument("--fix", action="store_true", help="Auto-repair fixable issues")
+
+    # trio update
+    update_parser = subparsers.add_parser("update", help="Update trio to the latest version")
+    update_parser.add_argument("--channel", default="stable", help="Update channel (default: stable)")
+
+    # trio pairing
+    pairing_parser = subparsers.add_parser("pairing", help="Manage DM pairing security")
+    pairing_sub = pairing_parser.add_subparsers(dest="pairing_action")
+    pairing_sub.add_parser("list", help="Show pairing status across channels")
+    pairing_sub.add_parser("pending", help="Show pending pairing requests")
+    pairing_approve = pairing_sub.add_parser("approve", help="Approve a pairing request")
+    pairing_approve.add_argument("channel", help="Channel name (discord, telegram, etc.)")
+    pairing_approve.add_argument("code", help="Pairing code")
+    pairing_revoke = pairing_sub.add_parser("revoke", help="Revoke a user's access")
+    pairing_revoke.add_argument("channel", help="Channel name")
+    pairing_revoke.add_argument("user_id", help="User ID to revoke")
+
+    # trio daemon
+    daemon_parser = subparsers.add_parser("daemon", help="Manage background gateway service")
+    daemon_sub = daemon_parser.add_subparsers(dest="daemon_action")
+    daemon_sub.add_parser("install", help="Install as system service (auto-start)")
+    daemon_sub.add_parser("uninstall", help="Remove system service")
+    daemon_sub.add_parser("start", help="Start daemon in background")
+    daemon_sub.add_parser("stop", help="Stop running daemon")
+    daemon_sub.add_parser("restart", help="Restart the daemon")
+    daemon_sub.add_parser("status", help="Show daemon status (PID, uptime, health)")
+    daemon_sub.add_parser("logs", help="Show daemon logs")
+
     # trio train
     train_parser = subparsers.add_parser("train", help="Train or retrain the trio-max model")
     train_parser.add_argument("--reset", action="store_true", help="Start fresh, ignore saved progress")
+    train_parser.add_argument("--setup", action="store_true", help="Download and install trio-max/nano via Ollama")
 
     args = parser.parse_args()
 
@@ -185,18 +217,45 @@ def main():
         from trio.cli.hub_cmd import run_hub
         asyncio.run(run_hub(args))
 
+    elif args.command == "doctor":
+        from trio.cli.doctor_cmd import run_doctor
+        asyncio.run(run_doctor(fix=args.fix))
+
+    elif args.command == "update":
+        from trio.cli.update_cmd import run_update
+        asyncio.run(run_update(channel=args.channel))
+
+    elif args.command == "pairing":
+        from trio.cli.pairing_cmd import run_pairing
+        asyncio.run(run_pairing(args))
+
+    elif args.command == "daemon":
+        from trio.cli.daemon_cmd import run_daemon
+        asyncio.run(run_daemon(args.daemon_action))
+
     elif args.command == "train":
-        import subprocess
-        script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
-        if not os.path.exists(script):
-            # Installed via pip — script is in package
+        if args.setup:
+            # Download pre-quantized GGUF models and register with Ollama
+            import subprocess
+            script = os.path.join(os.path.dirname(__file__), "..", "scripts", "setup_models.py")
+            script = os.path.normpath(script)
+            if not os.path.exists(script):
+                print("[trio.ai] Error: setup_models.py not found at", script)
+                sys.exit(1)
+            print("[trio.ai] Setting up trio-max and trio-nano via Ollama...\n")
+            subprocess.run([sys.executable, "-u", script])
+        else:
+            # Train from scratch using local training pipeline
+            import subprocess
             script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
-        cmd = [sys.executable, "-u", script]
-        if args.reset:
-            cmd.append("--reset")
-        print("[trio.ai] Starting model training...")
-        print("[trio.ai] You can pause anytime (Ctrl+C) and resume with: trio train\n")
-        subprocess.run(cmd)
+            if not os.path.exists(script):
+                script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
+            cmd = [sys.executable, "-u", script]
+            if args.reset:
+                cmd.append("--reset")
+            print("[trio.ai] Starting model training...")
+            print("[trio.ai] You can pause anytime (Ctrl+C) and resume with: trio train\n")
+            subprocess.run(cmd)
 
 
 if __name__ == "__main__":

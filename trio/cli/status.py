@@ -91,10 +91,17 @@ async def run_status():
         console.print("RAG: not initialized")
 
     # Tools
-    tools = config.get("tools", {}).get("builtin", [])
+    tools_cfg = config.get("tools", {}).get("builtin", [])
     mcp = config.get("tools", {}).get("mcpServers", {})
-    console.print(f"\nTools: {len(tools)} built-in, {len(mcp)} MCP servers")
-    console.print(f"  Built-in: {', '.join(tools)}")
+    # Also count tools that register_builtins can load
+    try:
+        from trio.tools.base import register_builtins
+        available = register_builtins(config)
+        console.print(f"\nTools: {len(available)} built-in, {len(mcp)} MCP servers")
+        console.print(f"  Built-in: {', '.join(t.name for t in available)}")
+    except Exception:
+        console.print(f"\nTools: {len(tools_cfg)} built-in, {len(mcp)} MCP servers")
+        console.print(f"  Built-in: {', '.join(tools_cfg)}")
 
     # Plugins
     try:

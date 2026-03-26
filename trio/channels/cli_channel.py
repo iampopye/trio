@@ -16,9 +16,10 @@ class CLIChannel(BaseChannel):
     def __init__(self, bus: MessageBus, config: dict | None = None):
         super().__init__(name="cli", bus=bus, config=config or {})
         self._running = True
-        self._current_response = ""
         self._streaming = False
-        self._streamed_content = False  # Track if content was already streamed
+        self._streamed_content = False
+        self._session_name: str | None = None
+        self._response_done = asyncio.Event()
 
     async def start(self) -> None:
         """Start reading user input from terminal."""
@@ -26,13 +27,13 @@ class CLIChannel(BaseChannel):
 
     async def stop(self) -> None:
         self._running = False
+        self._response_done.set()  # Unblock any waiting
 
     async def send_message(self, chat_id: str, content: str) -> None:
         """Print final message to terminal."""
         if self._streaming:
             print()  # New line after streaming
             self._streaming = False
-            self._current_response = ""
 
         if self._streamed_content:
             # Content was already shown via streaming — only print stats line
@@ -41,7 +42,10 @@ class CLIChannel(BaseChannel):
                 print(content[stats_start:])
             self._streamed_content = False
         else:
-            print(f"\n{content}\n")
+            print(f"\ntrio: {content}\n")
+
+        # Signal that response is complete
+        self._response_done.set()
 
     async def send_stream_chunk(self, chat_id: str, chunk: StreamChunk) -> None:
         """Print streaming chunks in real-time."""
@@ -49,10 +53,11 @@ class CLIChannel(BaseChannel):
             if self._streaming:
                 print()  # New line
                 self._streaming = False
-                self._current_response = ""
             return
 
         if chunk.chunk:
+            if not self._streaming:
+                print("\ntrio: ", end="", flush=True)
             print(chunk.chunk, end="", flush=True)
             self._streaming = True
             self._streamed_content = True
@@ -77,6 +82,9 @@ class CLIChannel(BaseChannel):
                 if not user_input.strip():
                     continue
 
+                # Reset response event
+                self._response_done.clear()
+
                 # Publish to bus
                 await self.publish_inbound(
                     chat_id="cli_user",
@@ -84,34 +92,27 @@ class CLIChannel(BaseChannel):
                     content=user_input.strip(),
                 )
 
-                # Wait a moment for processing to begin
-                await asyncio.sleep(0.1)
-
                 # Wait for response to complete
-                await self._wait_for_response()
+                try:
+                    await asyncio.wait_for(self._response_done.wait(), timeout=300)
+                except asyncio.TimeoutError:
+                    print("\n[timeout — no response after 5 minutes]\n")
+
+                print()  # Blank line before next prompt
 
             except (KeyboardInterrupt, EOFError):
                 print("\nGoodbye!")
                 self._running = False
                 break
 
+    def set_session_name(self, name: str | None):
+        """Set the current session name for the prompt."""
+        self._session_name = name
+
     def _get_input(self) -> str | None:
         """Read a line from stdin (blocking, runs in thread)."""
         try:
-            return input("You: ")
+            prompt = f"[{self._session_name}] You: " if self._session_name else "You: "
+            return input(prompt)
         except (KeyboardInterrupt, EOFError):
             return None
-
-    async def _wait_for_response(self) -> None:
-        """Wait until the agent finishes responding."""
-        # Simple approach: wait for a final outbound message
-        timeout = 180  # 3 minutes max
-        start = asyncio.get_event_loop().time()
-
-        while asyncio.get_event_loop().time() - start < timeout:
-            await asyncio.sleep(0.05)
-            # Check if we got a final response (indicated by non-streaming state)
-            if not self._streaming and self._current_response == "":
-                # Give a bit more time for the response to arrive
-                await asyncio.sleep(0.5)
-                break

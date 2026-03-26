@@ -140,6 +140,69 @@ async def run_gateway():
         except (ImportError, RuntimeError) as e:
             console.print(f"[yellow]iMessage: {e}[/yellow]")
 
+    if channels_config.get("matrix", {}).get("enabled"):
+        try:
+            from trio.channels.matrix_channel import MatrixChannel
+            mx = MatrixChannel(bus=bus, config=channels_config["matrix"])
+            channel_manager.register(mx)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]Matrix: install matrix-nio (pip install trio-ai[matrix])[/yellow]")
+
+    if channels_config.get("sms", {}).get("enabled"):
+        try:
+            from trio.channels.sms_channel import SMSChannel
+            sms = SMSChannel(bus=bus, config=channels_config["sms"])
+            channel_manager.register(sms)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]SMS: install twilio (pip install trio-ai[sms])[/yellow]")
+
+    if channels_config.get("instagram", {}).get("enabled"):
+        try:
+            from trio.channels.instagram_channel import InstagramChannel
+            ig = InstagramChannel(bus=bus, config=channels_config["instagram"])
+            channel_manager.register(ig)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]Instagram: install aiohttp (pip install aiohttp)[/yellow]")
+
+    if channels_config.get("messenger", {}).get("enabled"):
+        try:
+            from trio.channels.messenger_channel import MessengerChannel
+            fb = MessengerChannel(bus=bus, config=channels_config["messenger"])
+            channel_manager.register(fb)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]Messenger: install aiohttp (pip install aiohttp)[/yellow]")
+
+    if channels_config.get("line", {}).get("enabled"):
+        try:
+            from trio.channels.line_channel import LINEChannel
+            ln = LINEChannel(bus=bus, config=channels_config["line"])
+            channel_manager.register(ln)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]LINE: install aiohttp (pip install aiohttp)[/yellow]")
+
+    if channels_config.get("reddit", {}).get("enabled"):
+        try:
+            from trio.channels.reddit_channel import RedditChannel
+            rd = RedditChannel(bus=bus, config=channels_config["reddit"])
+            channel_manager.register(rd)
+            enabled_count += 1
+        except ImportError:
+            console.print("[yellow]Reddit: install praw (pip install trio-ai[reddit])[/yellow]")
+
+    if channels_config.get("email", {}).get("enabled"):
+        try:
+            from trio.channels.email_channel import EmailChannel
+            em = EmailChannel(bus=bus, config=channels_config["email"])
+            channel_manager.register(em)
+            enabled_count += 1
+        except (ImportError, RuntimeError) as e:
+            console.print(f"[yellow]Email: {e}[/yellow]")
+
     if enabled_count == 0:
         console.print("[red]No channels enabled. Edit ~/.trio/config.json or run 'trio onboard'.[/red]")
         return

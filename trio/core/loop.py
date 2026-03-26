@@ -21,6 +21,7 @@ from trio.core.session import Session, SessionManager
 from trio.providers.base import BaseProvider, LLMResponse
 from trio.shared.guardrails import check_input, filter_output
 from trio.shared.think_parser import ThinkTagParser
+from trio.core.subagent import SubAgentRegistry, register_default_subagents
 from trio.tools.base import ToolRegistry
 
 logger = logging.getLogger(__name__)
@@ -80,6 +81,21 @@ class AgentLoop:
                     logger.info(f"Plugin '{manifest.name}': {loaded} tools, {len(skill_paths)} skills")
         except Exception as e:
             logger.debug(f"Plugin loading skipped: {e}")
+
+        # Sub-agent system
+        self.subagent_registry = SubAgentRegistry()
+        register_default_subagents(self.subagent_registry)
+
+        enabled_tools = config.get("tools", {}).get("builtin", [])
+        if "delegate" in enabled_tools:
+            from trio.tools.subagent_tool import SubAgentTool
+            self.tools.register(SubAgentTool(
+                registry=self.subagent_registry,
+                provider=self.provider,
+                tools=self.tools,
+                memory=self.memory,
+            ))
+            logger.info("Registered delegate tool with %d sub-agents", len(self.subagent_registry.list_agents()))
 
     async def run(self) -> None:
         """Main loop — consume inbound messages and process them."""
@@ -227,8 +243,8 @@ class AgentLoop:
             is_final=True,
         ))
 
-        # 10. Save to session
-        if final_response:
+        # 10. Save to session (skip errors — don't pollute context)
+        if final_response and not final_response.startswith("Error:"):
             clean_response = ThinkTagParser.strip_think_tags(final_response) if mode == "reasoning" else final_response
             session.add_message("assistant", clean_response)
             self.sessions.save_message(session_key, session.history[-1])

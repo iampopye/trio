@@ -155,4 +155,10 @@ class ToolRegistry:
             except ImportError:
                 logger.warning("screenshot tool unavailable (install mss, Pillow)")
 
+        if "delegate" in enabled:
+            # Sub-agent tool requires extra dependencies — registered via
+            # register_subagent_tool() after the agent loop is constructed.
+            # We just note the intent here; actual registration happens in AgentLoop.__init__.
+            logger.debug("delegate tool enabled — will be registered by AgentLoop")
+
         logger.info(f"Registered {len(self._tools)} tools: {', '.join(self._tools.keys())}")

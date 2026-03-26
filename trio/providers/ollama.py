@@ -50,7 +50,11 @@ class OllamaProvider(BaseProvider):
 
     async def _get_session(self) -> aiohttp.ClientSession:
         if self._session is None or self._session.closed:
-            timeout = aiohttp.ClientTimeout(total=180)
+            timeout = aiohttp.ClientTimeout(
+                total=600,       # 10 min total (model loading can be slow)
+                sock_connect=30,
+                sock_read=300,   # 5 min read timeout for generation
+            )
             self._session = aiohttp.ClientSession(timeout=timeout)
         return self._session
 
