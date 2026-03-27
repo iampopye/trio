@@ -168,7 +168,7 @@ def main():
 
     # trio serve
     serve_parser = subparsers.add_parser("serve", help="Start browser-based chat UI")
-    serve_parser.add_argument("--port", type=int, default=7777, help="Port (default: 7777)")
+    serve_parser.add_argument("--port", type=int, default=28337, help="Port (default: 28337)")
     serve_parser.add_argument("--host", default="0.0.0.0", help="Host (default: 0.0.0.0)")
 
     # trio train

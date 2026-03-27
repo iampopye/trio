@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,17 +8,57 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg: #111;
-    --chat-bg: #111;
-    --input-bg: #1a1a1a;
-    --input-border: #333;
-    --input-focus: #555;
-    --text: #eee;
-    --text-secondary: #888;
+    --transition: 0.2s ease;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0c0c0c;
+    --sidebar-bg: #111;
+    --chat-bg: #0c0c0c;
+    --surface: #161616;
+    --surface-2: #1c1c1c;
+    --border: #222;
+    --border-light: #2a2a2a;
+    --text: #e8e8e8;
+    --text-secondary: #777;
+    --text-tertiary: #555;
     --accent: #7c6ef6;
-    --user-bubble: #2a2a2a;
-    --bot-text: #ddd;
-    --divider: #222;
+    --accent-light: #9d92f8;
+    --accent-bg: rgba(124,110,246,0.08);
+    --user-bg: #1a1a2e;
+    --input-bg: #161616;
+    --input-border: #2a2a2a;
+    --code-bg: #0a0a0a;
+    --hover: #1a1a1a;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+
+  [data-theme="light"] {
+    --bg: #fafafa;
+    --sidebar-bg: #fff;
+    --chat-bg: #fafafa;
+    --surface: #fff;
+    --surface-2: #f5f5f5;
+    --border: #e8e8e8;
+    --border-light: #eee;
+    --text: #1a1a1a;
+    --text-secondary: #666;
+    --text-tertiary: #999;
+    --accent: #6d5dd3;
+    --accent-light: #8577e0;
+    --accent-bg: rgba(109,93,211,0.06);
+    --user-bg: #eef;
+    --input-bg: #fff;
+    --input-border: #ddd;
+    --code-bg: #f0f0f0;
+    --hover: #f0f0f0;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
   body {
@@ -27,227 +67,287 @@
     color: var(--text);
     height: 100vh;
     display: flex;
-    flex-direction: column;
+    overflow: hidden;
   }
 
-  /* Header */
-  header {
-    height: 52px;
+  /* ── Sidebar ────────────────────────────── */
+  .sidebar {
+    width: 240px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: width var(--transition);
+  }
+
+  .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    border-bottom: 1px solid var(--divider);
-    flex-shrink: 0;
   }
 
-  .brand {
-    font-size: 15px;
+  .brand { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
+  .brand span { color: var(--accent); }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 8px;
+    overflow-y: auto;
+  }
+
+  .nav-section {
+    margin-bottom: 8px;
+  }
+
+  .nav-section-title {
+    font-size: 10px;
     font-weight: 600;
-    letter-spacing: -0.3px;
-    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-tertiary);
+    padding: 8px 10px 4px;
   }
 
-  .brand span { color: var(--accent); font-weight: 700; }
-
-  .header-right {
+  .nav-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-  }
-
-  .model-tag {
-    font-size: 11px;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
     color: var(--text-secondary);
-    background: #1a1a1a;
-    padding: 3px 10px;
-    border-radius: 4px;
-    border: 1px solid var(--divider);
-  }
-
-  .new-chat-btn {
+    cursor: pointer;
+    transition: all 0.1s;
+    border: none;
     background: none;
-    border: 1px solid var(--input-border);
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover { background: var(--hover); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent); font-weight: 500; }
+
+  .nav-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    opacity: 0.7;
+  }
+
+  .nav-item.active .nav-icon { opacity: 1; }
+
+  .sidebar-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .theme-toggle {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
     color: var(--text-secondary);
-    padding: 5px 12px;
+    padding: 5px 10px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11px;
     cursor: pointer;
     transition: all 0.15s;
   }
 
-  .new-chat-btn:hover { color: var(--text); border-color: var(--input-focus); }
+  .theme-toggle:hover { color: var(--text); border-color: var(--border-light); }
 
-  /* Chat */
-  .chat {
+  .version-tag {
+    font-size: 10px;
+    color: var(--text-tertiary);
+  }
+
+  /* ── Main Area ──────────────────────────── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .topbar-title {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .badge.online::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--success);
+    margin-right: 5px;
+  }
+
+  .top-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .top-btn:hover { color: var(--text); border-color: var(--border-light); }
+
+  /* ── Content Panels ─────────────────────── */
+  .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .panel.active { display: flex; }
+
+  /* ── Chat Panel ─────────────────────────── */
+  .chat-scroll {
     flex: 1;
     overflow-y: auto;
     padding: 0;
   }
 
-  .chat::-webkit-scrollbar { width: 4px; }
-  .chat::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-  .chat::-webkit-scrollbar-track { background: transparent; }
+  .chat-scroll::-webkit-scrollbar { width: 4px; }
+  .chat-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* Welcome */
-  .welcome {
+  .welcome-screen {
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 16px;
     padding: 40px;
   }
 
-  .welcome-mark {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #7c6ef6 0%, #a78bfa 100%);
+  .welcome-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     color: #fff;
   }
 
-  .welcome h1 {
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--text);
-    letter-spacing: -0.3px;
-  }
+  .welcome-screen h2 { font-size: 18px; font-weight: 500; }
+  .welcome-screen p { font-size: 13px; color: var(--text-secondary); max-width: 360px; text-align: center; line-height: 1.6; }
 
-  .welcome p {
-    font-size: 13px;
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+
+  .chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
     color: var(--text-secondary);
-    text-align: center;
-    max-width: 340px;
-    line-height: 1.6;
-  }
-
-  .suggestions {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 4px;
-  }
-
-  .suggestions button {
-    background: var(--input-bg);
-    border: 1px solid var(--divider);
-    color: var(--text-secondary);
-    padding: 7px 14px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 12px;
     cursor: pointer;
     transition: all 0.15s;
   }
 
-  .suggestions button:hover {
-    color: var(--text);
-    border-color: var(--input-border);
-  }
+  .chip:hover { color: var(--text); border-color: var(--accent); }
 
-  /* Messages */
-  .messages { max-width: 680px; margin: 0 auto; padding: 20px 20px 0; }
+  .messages { max-width: 720px; margin: 0 auto; padding: 20px 24px 0; width: 100%; }
 
-  .msg {
-    margin-bottom: 24px;
-    animation: fadeUp 0.2s ease;
-  }
+  .msg { margin-bottom: 24px; animation: fadeUp 0.2s ease; }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .msg-label {
+  .msg-head {
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
+    color: var(--text-tertiary);
     margin-bottom: 6px;
-    color: var(--text-secondary);
   }
 
-  .msg-label.you { color: var(--accent); }
+  .msg.user .msg-head { color: var(--accent); }
 
-  .msg-body {
+  .msg-text {
     font-size: 14px;
     line-height: 1.7;
-    color: var(--bot-text);
+    color: var(--text);
     word-wrap: break-word;
   }
 
-  .msg.user .msg-body {
-    color: var(--text);
-  }
+  .msg.assistant .msg-text { color: var(--text-secondary); }
 
-  .msg-body pre {
-    background: #0a0a0a;
-    border: 1px solid var(--divider);
+  .msg-text pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 12px 14px;
-    margin: 10px 0;
+    padding: 12px;
+    margin: 8px 0;
     overflow-x: auto;
     font-size: 12.5px;
-    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    line-height: 1.5;
+    font-family: 'SF Mono','Fira Code','Consolas',monospace;
   }
 
-  .msg-body code {
-    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    background: rgba(124, 110, 246, 0.1);
+  .msg-text code {
+    font-family: 'SF Mono','Fira Code','Consolas',monospace;
+    background: var(--accent-bg);
     padding: 1px 5px;
     border-radius: 3px;
     font-size: 12.5px;
   }
 
-  .msg-body pre code { background: none; padding: 0; }
+  .msg-text pre code { background: none; padding: 0; }
+  .msg-text strong { color: var(--text); }
 
-  .msg-body p { margin-bottom: 8px; }
-  .msg-body p:last-child { margin-bottom: 0; }
-
-  .msg-body ul, .msg-body ol { padding-left: 20px; margin: 8px 0; }
-  .msg-body li { margin-bottom: 4px; }
-
-  .msg-body strong { color: var(--text); }
-
-  /* Typing */
-  .typing {
-    display: inline-flex;
-    gap: 4px;
-    padding: 4px 0;
-  }
-
-  .typing span {
-    width: 5px;
-    height: 5px;
-    background: var(--text-secondary);
-    border-radius: 50%;
-    animation: pulse 1s infinite;
-  }
-
+  .typing { display: inline-flex; gap: 4px; }
+  .typing span { width: 5px; height: 5px; background: var(--text-tertiary); border-radius: 50%; animation: pulse 1s infinite; }
   .typing span:nth-child(2) { animation-delay: 0.15s; }
   .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse { 0%,100%{opacity:0.3}50%{opacity:1} }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
-  }
-
-  /* Input */
   .input-area {
     flex-shrink: 0;
     padding: 12px 20px 16px;
   }
 
   .input-wrap {
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
     position: relative;
   }
@@ -269,8 +369,8 @@
     transition: border-color 0.15s;
   }
 
-  .input-box:focus { border-color: var(--input-focus); }
-  .input-box::placeholder { color: #555; }
+  .input-box:focus { border-color: var(--accent); }
+  .input-box::placeholder { color: var(--text-tertiary); }
 
   .send-btn {
     position: absolute;
@@ -288,101 +388,419 @@
     transition: opacity 0.15s;
   }
 
-  .send-btn:disabled { opacity: 0.3; cursor: default; }
-  .send-btn:hover:not(:disabled) { opacity: 0.85; }
+  .send-btn:disabled { opacity: 0.3; }
+  .send-btn svg { width: 15px; height: 15px; color: #fff; }
 
-  .send-btn svg { width: 16px; height: 16px; color: #fff; }
+  /* ── Generic Panel Layout ───────────────── */
+  .panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
 
-  .footnote {
-    text-align: center;
+  .panel-body h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.15s;
+  }
+
+  .card:hover { border-color: var(--border-light); }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .card-tag {
+    display: inline-block;
     font-size: 10px;
-    color: #444;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--accent-bg);
+    color: var(--accent);
     margin-top: 8px;
   }
 
-  @media (max-width: 600px) {
-    .messages { padding: 16px 16px 0; }
-    .input-area { padding: 10px 12px 14px; }
-    header { padding: 0 14px; }
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toggle-row:last-child { border-bottom: none; }
+
+  .toggle-label { font-size: 13px; }
+  .toggle-desc { font-size: 11px; color: var(--text-secondary); }
+
+  .toggle {
+    width: 36px;
+    height: 20px;
+    background: var(--border);
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .toggle.on { background: var(--accent); }
+
+  .toggle::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+
+  .toggle.on::after { transform: translateX(16px); }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .stat-value { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  .search-box {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    margin-bottom: 16px;
+    font-family: inherit;
+  }
+
+  .search-box:focus { border-color: var(--accent); }
+  .search-box::placeholder { color: var(--text-tertiary); }
+
+  .list-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  .list-item:hover { background: var(--hover); }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .messages { padding: 16px; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">trio<span>.ai</span></div>
-  <div class="header-right">
-    <div class="model-tag" id="modelTag">loading...</div>
-    <button class="new-chat-btn" onclick="clearChat()">New chat</button>
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="brand">trio<span>.ai</span></div>
   </div>
-</header>
+  <div class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Main</div>
+      <button class="nav-item active" data-panel="chat"><span class="nav-icon">></span> Chat</button>
+      <button class="nav-item" data-panel="skills"><span class="nav-icon">#</span> Skills</button>
+      <button class="nav-item" data-panel="tools"><span class="nav-icon">*</span> Tools</button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Deploy</div>
+      <button class="nav-item" data-panel="channels"><span class="nav-icon">@</span> Channels</button>
+      <button class="nav-item" data-panel="agents"><span class="nav-icon">%</span> Sub-Agents</button>
+      <button class="nav-item" data-panel="daemon"><span class="nav-icon">~</span> Daemon</button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">System</div>
+      <button class="nav-item" data-panel="project"><span class="nav-icon">/</span> Project</button>
+      <button class="nav-item" data-panel="models"><span class="nav-icon">^</span> Models</button>
+      <button class="nav-item" data-panel="settings"><span class="nav-icon">=</span> Settings</button>
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <span class="version-tag">v0.1.1</span>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle theme</button>
+  </div>
+</div>
 
-<div class="chat" id="chat">
-  <div class="welcome" id="welcome">
-    <div class="welcome-mark">t</div>
-    <h1>What can I help with?</h1>
-    <p>I can code, write, analyze, research, and more. Powered by trio-max running locally on your machine.</p>
-    <div class="suggestions">
-      <button onclick="ask('Explain how async/await works in Python')">Async/await in Python</button>
-      <button onclick="ask('Write a REST API with FastAPI')">Build a REST API</button>
-      <button onclick="ask('What are the best practices for Git branching?')">Git best practices</button>
+<!-- Main Content -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topTitle">Chat</div>
+    <div class="topbar-right">
+      <span class="badge online" id="modelBadge">loading...</span>
+      <button class="top-btn" onclick="newChat()">New chat</button>
+    </div>
+  </div>
+
+  <!-- Chat Panel -->
+  <div class="panel active" id="panel-chat">
+    <div class="chat-scroll" id="chatScroll">
+      <div class="welcome-screen" id="welcome">
+        <div class="welcome-icon">t</div>
+        <h2>What can I help with?</h2>
+        <p>Code, write, analyze, research -- all running locally on your machine. Sandboxed to your project directory.</p>
+        <div class="chips">
+          <button class="chip" onclick="ask('Explain this project structure')">Explore project</button>
+          <button class="chip" onclick="ask('Write a function to parse JSON files')">Write code</button>
+          <button class="chip" onclick="ask('Find bugs in my code')">Find bugs</button>
+        </div>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea class="input-box" id="input" rows="1" placeholder="Ask anything..."
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,180)+'px'"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="send()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills Panel -->
+  <div class="panel" id="panel-skills">
+    <div class="panel-body">
+      <h3>TrioHub Skills</h3>
+      <input class="search-box" id="skillSearch" placeholder="Search 1,900+ skills..." oninput="filterSkills(this.value)">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-value">1,909</div><div class="stat-label">Total Skills</div></div>
+        <div class="stat-card"><div class="stat-value">13</div><div class="stat-label">Categories</div></div>
+        <div class="stat-card"><div class="stat-value">418</div><div class="stat-label">Coding</div></div>
+        <div class="stat-card"><div class="stat-value">204</div><div class="stat-label">SysAdmin</div></div>
+      </div>
+      <div class="card-grid" id="skillGrid">
+        <div class="card"><div class="card-title">Coding</div><div class="card-desc">Python, JS, TypeScript, Go, Rust, Java, API design, testing, debugging</div><div class="card-tag">418 skills</div></div>
+        <div class="card"><div class="card-title">Web Development</div><div class="card-desc">React, Next.js, Vue, Svelte, CSS, HTML, responsive design</div><div class="card-tag">159 skills</div></div>
+        <div class="card"><div class="card-title">DevOps / SysAdmin</div><div class="card-desc">Docker, K8s, CI/CD, Linux, Nginx, monitoring, cloud infra</div><div class="card-tag">204 skills</div></div>
+        <div class="card"><div class="card-title">Data Science</div><div class="card-desc">Pandas, ML, visualization, statistics, ETL pipelines</div><div class="card-tag">102 skills</div></div>
+        <div class="card"><div class="card-title">Security</div><div class="card-desc">Pentesting, auditing, OWASP, encryption, compliance</div><div class="card-tag">80 skills</div></div>
+        <div class="card"><div class="card-title">Marketing</div><div class="card-desc">SEO, content strategy, social media, analytics, email campaigns</div><div class="card-tag">163 skills</div></div>
+        <div class="card"><div class="card-title">Finance</div><div class="card-desc">Accounting, forecasting, tax, invoicing, budgeting</div><div class="card-tag">47 skills</div></div>
+        <div class="card"><div class="card-title">Creative</div><div class="card-desc">Writing, design, music, video scripts, storytelling</div><div class="card-tag">79 skills</div></div>
+        <div class="card"><div class="card-title">Productivity</div><div class="card-desc">Automation, scheduling, note-taking, project management</div><div class="card-tag">167 skills</div></div>
+        <div class="card"><div class="card-title">Education</div><div class="card-desc">Tutoring, curriculum design, flashcards, quizzes</div><div class="card-tag">25 skills</div></div>
+        <div class="card"><div class="card-title">Legal</div><div class="card-desc">Contract review, compliance, GDPR, terms of service</div><div class="card-tag">29 skills</div></div>
+        <div class="card"><div class="card-title">Healthcare</div><div class="card-desc">Medical info, patient management, HIPAA compliance</div><div class="card-tag">21 skills</div></div>
+        <div class="card"><div class="card-title">General</div><div class="card-desc">Research, summarization, translation, conversation</div><div class="card-tag">415 skills</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tools Panel -->
+  <div class="panel" id="panel-tools">
+    <div class="panel-body">
+      <h3>Available Tools</h3>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Tools the AI agent can use to interact with your system.</p>
+      <div id="toolsList"></div>
+    </div>
+  </div>
+
+  <!-- Channels Panel -->
+  <div class="panel" id="panel-channels">
+    <div class="panel-body">
+      <h3>Chat Channels</h3>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Deploy your AI to any platform. Configure API keys in settings.</p>
+      <div class="card-grid" id="channelGrid"></div>
+    </div>
+  </div>
+
+  <!-- Sub-Agents Panel -->
+  <div class="panel" id="panel-agents">
+    <div class="panel-body">
+      <h3>Sub-Agents</h3>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Specialized agents that handle focused tasks.</p>
+      <div class="card-grid" id="agentGrid"></div>
+    </div>
+  </div>
+
+  <!-- Daemon Panel -->
+  <div class="panel" id="panel-daemon">
+    <div class="panel-body">
+      <h3>Background Daemon</h3>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-value" id="daemonStatus">--</div><div class="stat-label">Status</div></div>
+        <div class="stat-card"><div class="stat-value" id="daemonUptime">--</div><div class="stat-label">Uptime</div></div>
+        <div class="stat-card"><div class="stat-value" id="daemonChannels">0</div><div class="stat-label">Active Channels</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="top-btn" onclick="daemonAction('start')">Start</button>
+        <button class="top-btn" onclick="daemonAction('stop')">Stop</button>
+        <button class="top-btn" onclick="daemonAction('restart')">Restart</button>
+        <button class="top-btn" onclick="daemonAction('install')">Install as Service</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Panel -->
+  <div class="panel" id="panel-project">
+    <div class="panel-body">
+      <h3>Project</h3>
+      <div class="stat-grid" id="projectStats"></div>
+      <h3 style="margin-top:20px;">Project Files</h3>
+      <div id="projectFiles" style="font-family:monospace;font-size:12px;color:var(--text-secondary);line-height:1.8;"></div>
+    </div>
+  </div>
+
+  <!-- Models Panel -->
+  <div class="panel" id="panel-models">
+    <div class="panel-body">
+      <h3>AI Models</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">trio-max</div>
+          <div class="card-desc">Qwen3-4B Q4_K_M -- 2.5GB, best quality for general tasks. Runs on CPU or GPU.</div>
+          <div class="card-tag">recommended</div>
+        </div>
+        <div class="card">
+          <div class="card-title">trio-nano</div>
+          <div class="card-desc">SmolLM2-1.7B Q4_K_M -- 1GB, ultra-fast for simple tasks. Low resource usage.</div>
+          <div class="card-tag">lightweight</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Custom GGUF</div>
+          <div class="card-desc">Drop any .gguf model in ~/.trio/models/ and it will be auto-detected.</div>
+          <div class="card-tag">bring your own</div>
+        </div>
+      </div>
+      <h3 style="margin-top:24px;">Provider Settings</h3>
+      <div class="toggle-row"><div><div class="toggle-label">Native Inference</div><div class="toggle-desc">Run models locally via llama-cpp (no Ollama)</div></div><div class="toggle on"></div></div>
+      <div class="toggle-row"><div><div class="toggle-label">GPU Acceleration</div><div class="toggle-desc">Offload layers to GPU when available</div></div><div class="toggle on"></div></div>
+      <div class="toggle-row"><div><div class="toggle-label">Streaming</div><div class="toggle-desc">Stream tokens as they generate</div></div><div class="toggle on"></div></div>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="panel" id="panel-settings">
+    <div class="panel-body">
+      <h3>Settings</h3>
+      <div class="toggle-row"><div><div class="toggle-label">Sandbox Mode</div><div class="toggle-desc">Restrict file access to project directory only</div></div><div class="toggle on"></div></div>
+      <div class="toggle-row"><div><div class="toggle-label">Guardrails</div><div class="toggle-desc">Filter unsafe inputs and outputs</div></div><div class="toggle on"></div></div>
+      <div class="toggle-row"><div><div class="toggle-label">Memory</div><div class="toggle-desc">Remember context across conversations</div></div><div class="toggle on"></div></div>
+      <div class="toggle-row"><div><div class="toggle-label">Auto-save Sessions</div><div class="toggle-desc">Persist chat history to disk</div></div><div class="toggle on"></div></div>
+      <div class="toggle-row"><div><div class="toggle-label">Deep Thinking</div><div class="toggle-desc">Show model reasoning process</div></div><div class="toggle"></div></div>
+      <div class="toggle-row"><div><div class="toggle-label">Dark Theme</div><div class="toggle-desc">Use dark color scheme</div></div><div class="toggle on" id="themeSettingToggle" onclick="toggleTheme()"></div></div>
     </div>
   </div>
 </div>
 
-<div class="input-area">
-  <div class="input-wrap">
-    <textarea class="input-box" id="input" rows="1" placeholder="Ask anything..."
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
-      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,180)+'px'"></textarea>
-    <button class="send-btn" id="sendBtn" onclick="send()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
-  </div>
-  <div class="footnote">trio.ai -- local AI, no cloud required</div>
-</div>
-
 <script>
-const chat = document.getElementById('chat');
-const input = document.getElementById('input');
-const sendBtn = document.getElementById('sendBtn');
-const welcome = document.getElementById('welcome');
+// ── State ──
 let sid = Date.now().toString(36) + Math.random().toString(36).slice(2);
 let busy = false;
-let messagesDiv = null;
+let msgContainer = null;
 
-function ensureMessages() {
-  if (!messagesDiv) {
-    messagesDiv = document.createElement('div');
-    messagesDiv.className = 'messages';
-    chat.appendChild(messagesDiv);
+// ── Navigation ──
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = btn.dataset.panel;
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + panel).classList.add('active');
+    document.getElementById('topTitle').textContent = btn.textContent.trim();
+  });
+});
+
+// ── Theme ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('trio-theme', next);
+  const st = document.getElementById('themeSettingToggle');
+  if (st) st.classList.toggle('on', next === 'dark');
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem('trio-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    const st = document.getElementById('themeSettingToggle');
+    if (st) st.classList.toggle('on', saved === 'dark');
+  }
+})();
+
+// ── Chat ──
+const chatScroll = document.getElementById('chatScroll');
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+
+function ensureMsg() {
+  if (!msgContainer) {
+    const w = document.getElementById('welcome');
+    if (w) w.remove();
+    msgContainer = document.createElement('div');
+    msgContainer.className = 'messages';
+    chatScroll.appendChild(msgContainer);
   }
 }
 
 function addMsg(role, html) {
-  if (welcome && welcome.parentNode) welcome.remove();
-  ensureMessages();
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-  div.innerHTML = '<div class="msg-label' + (role === 'user' ? ' you' : '') + '">' +
-    (role === 'user' ? 'You' : 'trio') + '</div><div class="msg-body">' + html + '</div>';
-  messagesDiv.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-  return div.querySelector('.msg-body');
+  ensureMsg();
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  d.innerHTML = '<div class="msg-head">' + (role==='user'?'You':'trio') + '</div><div class="msg-text">' + html + '</div>';
+  msgContainer.appendChild(d);
+  chatScroll.scrollTop = chatScroll.scrollHeight;
+  return d.querySelector('.msg-text');
 }
 
 function showTyping() {
-  if (welcome && welcome.parentNode) welcome.remove();
-  ensureMessages();
-  const div = document.createElement('div');
-  div.className = 'msg assistant';
-  div.id = 'typing';
-  div.innerHTML = '<div class="msg-label">trio</div><div class="msg-body"><div class="typing"><span></span><span></span><span></span></div></div>';
-  messagesDiv.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+  ensureMsg();
+  const d = document.createElement('div');
+  d.className = 'msg assistant'; d.id = 'typing';
+  d.innerHTML = '<div class="msg-head">trio</div><div class="msg-text"><div class="typing"><span></span><span></span><span></span></div></div>';
+  msgContainer.appendChild(d);
+  chatScroll.scrollTop = chatScroll.scrollHeight;
 }
 
-function hideTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
+function hideTyping() { const t = document.getElementById('typing'); if(t) t.remove(); }
 
 function fmt(t) {
   t = t.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
@@ -398,67 +816,144 @@ function ask(text) { input.value = text; send(); }
 async function send() {
   const text = input.value.trim();
   if (!text || busy) return;
-  busy = true;
-  sendBtn.disabled = true;
-  input.value = '';
-  input.style.height = 'auto';
-
+  busy = true; sendBtn.disabled = true;
+  input.value = ''; input.style.height = 'auto';
   addMsg('user', fmt(text));
   showTyping();
 
   try {
     const res = await fetch('/api/chat/stream', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({message: text, session_id: sid}),
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({message: text, session_id: sid})
     });
-
     hideTyping();
-
-    if (!res.ok) { addMsg('assistant', '<p>Error: server returned ' + res.status + '</p>'); return; }
-
+    if (!res.ok) { addMsg('assistant','<p>Error ' + res.status + '</p>'); return; }
     const reader = res.body.getReader();
     const dec = new TextDecoder();
     let full = '';
     const body = addMsg('assistant', '');
-
     while (true) {
-      const {done, value} = await reader.read();
+      const {done,value} = await reader.read();
       if (done) break;
-      for (const line of dec.decode(value, {stream: true}).split('\n')) {
+      for (const line of dec.decode(value,{stream:true}).split('\n')) {
         if (!line.startsWith('data: ')) continue;
         try {
           const d = JSON.parse(line.slice(6));
           if (d.done) break;
-          if (d.error) full += ' [Error: ' + d.error + ']';
-          else if (d.text) full += d.text;
+          if (d.text) full += d.text;
+          else if (d.error) full += '[Error: '+d.error+']';
           body.innerHTML = fmt(full);
-          chat.scrollTop = chat.scrollHeight;
-        } catch(e) {}
+          chatScroll.scrollTop = chatScroll.scrollHeight;
+        } catch(e){}
       }
     }
   } catch(e) {
     hideTyping();
-    addMsg('assistant', '<p>Connection error. Make sure the server is running.</p>');
-  } finally {
-    busy = false;
-    sendBtn.disabled = false;
-    input.focus();
-  }
+    addMsg('assistant','<p>Connection error. Is the server running?</p>');
+  } finally { busy=false; sendBtn.disabled=false; input.focus(); }
 }
 
-function clearChat() {
-  if (messagesDiv) { messagesDiv.remove(); messagesDiv = null; }
-  chat.innerHTML = '<div class="welcome" id="welcome"><div class="welcome-mark">t</div><h1>What can I help with?</h1><p>I can code, write, analyze, research, and more.</p><div class="suggestions"><button onclick="ask(\'Explain async/await in Python\')">Async/await</button><button onclick="ask(\'Write a REST API with FastAPI\')">REST API</button><button onclick="ask(\'Git best practices\')">Git tips</button></div></div>';
+function newChat() {
+  if (msgContainer) { msgContainer.remove(); msgContainer = null; }
+  chatScroll.innerHTML = '<div class="welcome-screen" id="welcome"><div class="welcome-icon">t</div><h2>What can I help with?</h2><p>Sandboxed to your project directory.</p><div class="chips"><button class="chip" onclick="ask(\'Explore project\')">Explore</button><button class="chip" onclick="ask(\'Write code\')">Code</button><button class="chip" onclick="ask(\'Find bugs\')">Debug</button></div></div>';
   sid = Date.now().toString(36) + Math.random().toString(36).slice(2);
-  fetch('/api/sessions/clear', {method: 'POST'});
+  fetch('/api/sessions/clear',{method:'POST'});
 }
 
-fetch('/api/status').then(r=>r.json()).then(d=>{
-  document.getElementById('modelTag').textContent = d.model;
-}).catch(()=>{
-  document.getElementById('modelTag').textContent = 'offline';
+// ── Populate panels ──
+const TOOLS = [
+  {name:'Shell',desc:'Execute shell commands in sandbox directory',on:true},
+  {name:'File Operations',desc:'Read, write, list files within project',on:true},
+  {name:'Browser',desc:'Navigate, click, fill, screenshot via Playwright',on:true},
+  {name:'Web Search',desc:'Search the internet via DuckDuckGo',on:true},
+  {name:'RAG Search',desc:'Semantic search over local documents',on:true},
+  {name:'Code Analysis',desc:'AST parsing, linting, dependency checking',on:true},
+  {name:'Screenshot',desc:'Capture screen regions',on:false},
+  {name:'Email',desc:'Send and receive emails via SMTP/IMAP',on:false},
+  {name:'Calculator',desc:'Math evaluation and symbolic computation',on:true},
+  {name:'Delegate',desc:'Spawn sub-agents for complex tasks',on:true},
+  {name:'MCP Client',desc:'Connect to external MCP tool servers',on:false},
+  {name:'Memory',desc:'Store and recall information across sessions',on:true},
+];
+
+const CHANNELS = [
+  {name:'CLI',desc:'Terminal chat interface',tag:'built-in'},
+  {name:'Web UI',desc:'Browser-based interface',tag:'built-in'},
+  {name:'Discord',desc:'Discord bot via discord.py',tag:'popular'},
+  {name:'Telegram',desc:'Telegram bot via pyTelegramBotAPI',tag:'popular'},
+  {name:'Slack',desc:'Slack app via Bolt SDK',tag:'popular'},
+  {name:'WhatsApp',desc:'WhatsApp Business API',tag:'enterprise'},
+  {name:'Teams',desc:'Microsoft Teams bot',tag:'enterprise'},
+  {name:'Signal',desc:'Signal messenger via signal-cli',tag:'secure'},
+  {name:'Matrix',desc:'Matrix/Element via matrix-nio',tag:'open'},
+  {name:'SMS',desc:'SMS messaging via Twilio',tag:'mobile'},
+  {name:'Instagram',desc:'Instagram DM via Meta Graph API',tag:'social'},
+  {name:'Messenger',desc:'Facebook Messenger',tag:'social'},
+  {name:'LINE',desc:'LINE messaging platform',tag:'asia'},
+  {name:'Reddit',desc:'Reddit bot via PRAW',tag:'social'},
+  {name:'Email',desc:'IMAP receive / SMTP send',tag:'classic'},
+  {name:'Google Chat',desc:'Google Workspace chat',tag:'enterprise'},
+  {name:'REST API',desc:'HTTP API gateway for custom integrations',tag:'developer'},
+];
+
+const AGENTS = [
+  {name:'Researcher',desc:'Web search, browsing, RAG -- gathers information',tag:'8 iterations'},
+  {name:'Coder',desc:'Shell commands, file operations -- writes and runs code',tag:'10 iterations'},
+  {name:'Reviewer',desc:'Code review, bug analysis -- no tool access',tag:'3 iterations'},
+  {name:'Planner',desc:'Task breakdown, architecture -- no tool access',tag:'3 iterations'},
+  {name:'Summarizer',desc:'Condenses long text into key points',tag:'2 iterations'},
+];
+
+document.getElementById('toolsList').innerHTML = TOOLS.map(t =>
+  '<div class="toggle-row"><div><div class="toggle-label">'+t.name+'</div><div class="toggle-desc">'+t.desc+'</div></div><div class="toggle'+(t.on?' on':'')+'"></div></div>'
+).join('');
+
+document.getElementById('channelGrid').innerHTML = CHANNELS.map(c =>
+  '<div class="card"><div class="card-title">'+c.name+'</div><div class="card-desc">'+c.desc+'</div><div class="card-tag">'+c.tag+'</div></div>'
+).join('');
+
+document.getElementById('agentGrid').innerHTML = AGENTS.map(a =>
+  '<div class="card"><div class="card-title">'+a.name+'</div><div class="card-desc">'+a.desc+'</div><div class="card-tag">'+a.tag+'</div></div>'
+).join('');
+
+// Toggles
+document.querySelectorAll('.toggle').forEach(t => {
+  if (t.id === 'themeSettingToggle') return;
+  t.addEventListener('click', () => t.classList.toggle('on'));
 });
+
+// ── Status ──
+fetch('/api/status').then(r=>r.json()).then(d=>{
+  document.getElementById('modelBadge').textContent = d.model;
+}).catch(()=>{
+  document.getElementById('modelBadge').textContent = 'offline';
+});
+
+// ── Project info ──
+fetch('/api/project').then(r=>r.json()).then(d=>{
+  if (d.root) {
+    document.getElementById('projectStats').innerHTML =
+      '<div class="stat-card"><div class="stat-value">'+d.name+'</div><div class="stat-label">Project</div></div>'+
+      '<div class="stat-card"><div class="stat-value">'+d.language+'</div><div class="stat-label">Language</div></div>'+
+      '<div class="stat-card"><div class="stat-value">'+(d.files_count||0)+'</div><div class="stat-label">Source Files</div></div>'+
+      '<div class="stat-card"><div class="stat-value">'+(d.has_git?'Yes':'No')+'</div><div class="stat-label">Git</div></div>';
+    if (d.files && d.files.length) {
+      document.getElementById('projectFiles').innerHTML = d.files.slice(0,50).join('<br>') + (d.files.length>50?'<br>... and '+(d.files.length-50)+' more':'');
+    }
+  }
+}).catch(()=>{});
+
+function filterSkills(q) {
+  const cards = document.querySelectorAll('#skillGrid .card');
+  q = q.toLowerCase();
+  cards.forEach(c => {
+    const text = c.textContent.toLowerCase();
+    c.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+function daemonAction(action) { alert('Run in terminal: trio daemon ' + action); }
 
 input.focus();
 </script>

@@ -191,6 +191,17 @@ async def api_sessions_clear(request):
     return web.json_response({"status": "cleared"})
 
 
+async def api_project(request):
+    """GET /api/project -- project/sandbox info."""
+    try:
+        from trio.core.sandbox import get_sandbox_root, get_project_info, list_project_files
+        info = get_project_info()
+        info["files"] = list_project_files(max_depth=3)
+        return web.json_response(info)
+    except Exception as e:
+        return web.json_response({"error": str(e), "root": os.getcwd(), "name": Path(os.getcwd()).name})
+
+
 # ── App Factory ──────────────────────────────────────────────────────────────
 
 def create_app(config: dict | None = None) -> web.Application:
@@ -206,6 +217,7 @@ def create_app(config: dict | None = None) -> web.Application:
     app.router.add_post("/api/chat", api_chat)
     app.router.add_post("/api/chat/stream", api_chat_stream)
     app.router.add_get("/api/status", api_status)
+    app.router.add_get("/api/project", api_project)
     app.router.add_post("/api/sessions/clear", api_sessions_clear)
 
     # Static files and index
