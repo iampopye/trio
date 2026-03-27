@@ -811,41 +811,94 @@ function newChat() {
   fetch('/api/sessions/clear',{method:'POST'});
 }
 
-// ── Load Skills from API ──
-let skillsCache = [];
+// ── Skills ──
+let installedSkills = new Set();
+let currentSkillCategory = '';
+
+async function loadInstalledSkills() {
+  try {
+    const r = await fetch('/api/skills/installed');
+    const d = await r.json();
+    installedSkills = new Set((d.installed||[]).map(s => s.name));
+  } catch(e) {}
+}
+
 async function loadSkills(category='') {
+  currentSkillCategory = category;
   const q = document.querySelector('#p-skills .search');
   const search = q ? q.value : '';
-  const url = '/api/skills?limit=100' + (category ? '&category='+category : '') + (search ? '&q='+encodeURIComponent(search) : '');
+  const url = '/api/skills?limit=200' + (category ? '&category='+encodeURIComponent(category) : '') + (search ? '&q='+encodeURIComponent(search) : '');
   try {
     const r = await fetch(url);
     const d = await r.json();
-    skillsCache = d.skills || [];
     const cats = d.categories || {};
-    // Render category cards if no search/filter
+    const grid = document.getElementById('skillGrid');
+
+    // Show categories overview
     if (!category && !search) {
-      document.getElementById('skillGrid').innerHTML = Object.entries(cats)
-        .sort((a,b) => b[1]-a[1])
-        .map(([cat,count]) => '<div class="card" style="cursor:pointer" onclick="loadSkills(\''+cat+'\')"><div class="card-name">'+cat.charAt(0).toUpperCase()+cat.slice(1)+'</div><div class="card-text">Click to browse skills in this category</div><div class="card-badge">'+count+' skills</div></div>')
-        .join('');
-    } else {
-      document.getElementById('skillGrid').innerHTML =
-        (category ? '<div style="margin-bottom:12px"><button class="btn" onclick="loadSkills()">Back to categories</button> <span style="color:var(--text-2);font-size:14px;">'+d.total+' skills in '+category+'</span></div>' : '') +
+      const totalInstalled = installedSkills.size;
+      grid.innerHTML =
+        '<div class="stats" style="margin-bottom:20px;"><div class="stat"><div class="stat-num">'+Object.values(cats).reduce((a,b)=>a+b,0)+'</div><div class="stat-lbl">Total Skills</div></div><div class="stat"><div class="stat-num">'+Object.keys(cats).length+'</div><div class="stat-lbl">Categories</div></div><div class="stat"><div class="stat-num">'+totalInstalled+'</div><div class="stat-lbl">Installed</div></div></div>' +
         '<div class="grid grid-2">' +
-        d.skills.map(s => '<div class="card"><div class="card-name">'+s.name+'</div><div class="card-text">'+(s.description||'').slice(0,100)+'</div><div style="display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap;">'+(s.tags||[]).slice(0,3).map(t=>'<span class="card-badge">'+t+'</span>').join('')+'<button class="btn" style="margin-left:auto;font-size:11px;padding:4px 10px;" onclick="installSkill(\''+s.name+'\')">Install</button></div></div>').join('') +
-        '</div>';
+        Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,count]) =>
+          '<div class="card" style="cursor:pointer" onclick="loadSkills(\''+cat.replace(/'/g,"\\'")+'\')">' +
+          '<div class="card-name">'+cat+'</div>' +
+          '<div class="card-text">'+count+' skills available</div>' +
+          '<div class="card-badge">Browse &rarr;</div></div>'
+        ).join('') + '</div>';
+    } else {
+      // Show individual skills in category
+      const skills = d.skills || [];
+      grid.innerHTML =
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
+        '<button class="btn" onclick="loadSkills()">&larr; All Categories</button>' +
+        '<span style="font-size:15px;font-weight:600;">'+(category||'Search Results')+'</span>' +
+        '<span style="color:var(--text-2);font-size:14px;">'+d.total+' skills</span></div>' +
+        '<div class="grid grid-2">' +
+        skills.map(s => {
+          const isInstalled = installedSkills.has(s.name);
+          return '<div class="card">' +
+            '<div style="display:flex;justify-content:space-between;align-items:start;">' +
+            '<div class="card-name">'+s.name.replace(/_/g,' ')+'</div>' +
+            (isInstalled
+              ? '<button class="btn" style="font-size:11px;padding:4px 10px;color:var(--red);border-color:var(--red);" onclick="uninstallSkill(\''+s.name+'\',this)">Uninstall</button>'
+              : '<button class="btn btn-accent" style="font-size:11px;padding:4px 10px;" onclick="installSkill(\''+s.name+'\',this)">Install</button>'
+            ) + '</div>' +
+            '<div class="card-text" style="margin-top:4px;">'+(s.description||'')+'</div>' +
+            '<div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;">' +
+            (s.tags||[]).slice(0,4).map(t=>'<span class="card-badge">'+t+'</span>').join('') +
+            (isInstalled ? '<span class="card-badge" style="background:rgba(52,211,153,0.1);color:var(--green);">Installed</span>' : '') +
+            '</div></div>';
+        }).join('') + '</div>';
     }
   } catch(e) { console.error('Skills load error:', e); }
 }
 
-async function installSkill(name) {
+async function installSkill(name, btn) {
+  btn.disabled = true; btn.textContent = 'Installing...';
   try {
     const r = await fetch('/api/skills/install', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})});
     const d = await r.json();
-    if (d.status === 'installed') alert('Skill "'+name+'" installed successfully!');
-    else if (d.status === 'registered') alert('Skill "'+name+'" registered.');
-    else alert(d.error || 'Unknown error');
-  } catch(e) { alert('Failed to install skill'); }
+    if (d.status === 'installed') {
+      installedSkills.add(name);
+      btn.textContent = 'Installed';
+      btn.style.color = 'var(--green)';
+      btn.style.borderColor = 'var(--green)';
+      loadSkills(currentSkillCategory); // Refresh to update buttons
+    } else {
+      btn.textContent = 'Error';
+      btn.disabled = false;
+    }
+  } catch(e) { btn.textContent = 'Failed'; btn.disabled = false; }
+}
+
+async function uninstallSkill(name, btn) {
+  btn.disabled = true; btn.textContent = 'Removing...';
+  try {
+    await fetch('/api/skills/uninstall', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})});
+    installedSkills.delete(name);
+    loadSkills(currentSkillCategory);
+  } catch(e) { btn.textContent = 'Failed'; btn.disabled = false; }
 }
 
 // ── Load Tools from API ──
@@ -873,7 +926,56 @@ async function toggleTool(el, key) {
   await fetch('/api/tools/toggle', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, enabled:on})});
 }
 
-// ── Load Channels from API ──
+// ── Channels with real connection ──
+const CHANNEL_SETUP = {
+  telegram: {
+    title: 'Connect Telegram Bot',
+    steps: ['1. Open Telegram and search for @BotFather','2. Send /newbot and follow the prompts','3. Copy the bot token and paste it below'],
+    fields: [{key:'bot_token', label:'Bot Token', placeholder:'123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11'}],
+  },
+  discord: {
+    title: 'Connect Discord Bot',
+    steps: ['1. Go to discord.com/developers/applications','2. Create a New Application, then go to Bot section','3. Click "Reset Token" and copy it below','4. Enable MESSAGE CONTENT intent in Bot settings'],
+    fields: [{key:'bot_token', label:'Bot Token', placeholder:'MTIzNDU2Nzg5MDEyMzQ1Njc4.X1X1X1.abcdefghijklmnop'}],
+  },
+  slack: {
+    title: 'Connect Slack App',
+    steps: ['1. Go to api.slack.com/apps and create a new app','2. Under OAuth, install to workspace and copy Bot Token','3. Under Socket Mode, enable it and generate App Token'],
+    fields: [
+      {key:'bot_token', label:'Bot Token', placeholder:'xoxb-your-bot-token-here'},
+      {key:'app_token', label:'App Token (Socket Mode)', placeholder:'xapp-your-app-token-here'},
+    ],
+  },
+  whatsapp: {
+    title: 'Connect WhatsApp Business',
+    steps: ['1. Go to developers.facebook.com and create an app','2. Add WhatsApp product to your app','3. In WhatsApp > API Setup, find your Phone Number ID and Access Token'],
+    fields: [
+      {key:'phone_number_id', label:'Phone Number ID', placeholder:'1234567890'},
+      {key:'access_token', label:'Permanent Access Token', placeholder:'EAABsbCS...'},
+    ],
+  },
+  reddit: {
+    title: 'Connect Reddit Bot',
+    steps: ['1. Go to reddit.com/prefs/apps','2. Create a "script" type application','3. Note the client ID (under app name) and secret'],
+    fields: [
+      {key:'client_id', label:'Client ID', placeholder:'abc123def456'},
+      {key:'client_secret', label:'Client Secret', placeholder:'your-client-secret'},
+      {key:'username', label:'Reddit Username', placeholder:'u/your_bot'},
+      {key:'password', label:'Reddit Password', placeholder:'password'},
+    ],
+  },
+  email: {
+    title: 'Connect Email',
+    steps: ['1. Use your email provider IMAP/SMTP settings','2. For Gmail: enable "Less secure apps" or use App Password'],
+    fields: [
+      {key:'imap_host', label:'IMAP Host', placeholder:'imap.gmail.com'},
+      {key:'smtp_host', label:'SMTP Host', placeholder:'smtp.gmail.com'},
+      {key:'username', label:'Email Address', placeholder:'your@email.com'},
+      {key:'password', label:'Password / App Password', placeholder:'password'},
+    ],
+  },
+};
+
 async function loadChannels() {
   try {
     const r = await fetch('/api/channels');
@@ -881,8 +983,23 @@ async function loadChannels() {
     const chs = d.channels || [];
     document.getElementById('channelGrid').innerHTML = chs.map(c => {
       const statusColor = c.enabled ? (c.configured ? 'var(--green)' : 'var(--orange)') : 'var(--text-3)';
-      const statusText = c.enabled ? (c.configured ? 'Active' : 'Needs config') : 'Disabled';
-      return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:start;"><div class="card-name">'+c.name+'</div>'+(c.configurable?'<div class="sw'+(c.enabled?' on':'')+'" onclick="toggleChannel(this,\''+c.key+'\')"></div>':'')+'</div><div class="card-text">'+c.desc+'</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;"><div class="card-badge">'+c.tag+'</div><span style="font-size:11px;color:'+statusColor+';">'+statusText+'</span></div>'+(c.configurable && c.enabled && !c.configured?'<button class="btn" style="width:100%;margin-top:10px;font-size:12px;" onclick="configChannel(\''+c.key+'\','+JSON.stringify(c.fields||[]).replace(/"/g,'&quot;')+')">Configure</button>':'')+'</div>';
+      const statusText = c.enabled ? (c.configured ? 'Connected' : 'Not configured') : 'Disabled';
+      const hasSetup = CHANNEL_SETUP[c.key];
+      return '<div class="card">' +
+        '<div style="display:flex;justify-content:space-between;align-items:start;">' +
+        '<div class="card-name">'+c.name+'</div>' +
+        (c.configurable ? '<div class="sw'+(c.enabled?' on':'')+'" onclick="toggleChannel(this,\''+c.key+'\')"></div>' : '<span style="font-size:11px;color:var(--green);">Always on</span>') +
+        '</div>' +
+        '<div class="card-text">'+c.desc+'</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">' +
+        '<div class="card-badge">'+c.tag+'</div>' +
+        '<span style="font-size:11px;color:'+statusColor+';">'+statusText+'</span></div>' +
+        (c.configurable && hasSetup
+          ? '<button class="btn'+(c.configured?'':' btn-accent')+'" style="width:100%;margin-top:12px;font-size:13px;" onclick="openChannelSetup(\''+c.key+'\')">'+(c.configured?'Reconfigure':'Connect')+'</button>'
+          : (c.configurable && !hasSetup
+            ? '<button class="btn" style="width:100%;margin-top:12px;font-size:13px;" onclick="simpleConfig(\''+c.key+'\','+JSON.stringify(c.fields||[]).replace(/"/g,'&quot;')+')">Configure</button>'
+            : '')
+        ) + '</div>';
     }).join('');
   } catch(e) { console.error('Channels load error:', e); }
 }
@@ -891,18 +1008,102 @@ async function toggleChannel(el, key) {
   const on = !el.classList.contains('on');
   el.classList.toggle('on', on);
   await fetch('/api/channels/toggle', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, enabled:on})});
-  loadChannels(); // reload to update status
+  setTimeout(loadChannels, 300);
 }
 
-function configChannel(key, fields) {
-  const values = {};
-  for (const f of fields) {
-    const v = prompt('Enter '+f.replace(/_/g,' ')+' for '+key+':');
-    if (v === null) return; // cancelled
-    values[f] = v;
+function openChannelSetup(key) {
+  const setup = CHANNEL_SETUP[key];
+  if (!setup) return;
+
+  // Create modal
+  const overlay = document.createElement('div');
+  overlay.id = 'channelModal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);';
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow);';
+
+  let html = '<div style="font-size:18px;font-weight:700;margin-bottom:16px;">'+setup.title+'</div>';
+  html += '<div style="background:var(--accent-soft);border-radius:10px;padding:14px;margin-bottom:20px;">';
+  html += setup.steps.map(s => '<div style="font-size:13px;color:var(--text-2);margin-bottom:4px;">'+s+'</div>').join('');
+  html += '</div>';
+
+  setup.fields.forEach(f => {
+    html += '<label style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">'+f.label+'</label>';
+    html += '<input class="search" id="field_'+f.key+'" placeholder="'+f.placeholder+'" style="margin-bottom:12px;">';
+  });
+
+  html += '<div id="verifyResult" style="margin-bottom:12px;"></div>';
+  html += '<div style="display:flex;gap:8px;justify-content:flex-end;">';
+  html += '<button class="btn" onclick="closeModal()">Cancel</button>';
+  html += '<button class="btn" onclick="verifyChannel(\''+key+'\')" id="verifyBtn">Test Connection</button>';
+  html += '<button class="btn btn-accent" onclick="saveChannel(\''+key+'\')" id="saveBtn" disabled>Save & Connect</button>';
+  html += '</div>';
+
+  modal.innerHTML = html;
+  overlay.appendChild(modal);
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
+  document.body.appendChild(overlay);
+}
+
+function closeModal() {
+  const m = document.getElementById('channelModal');
+  if (m) m.remove();
+}
+
+async function verifyChannel(key) {
+  const setup = CHANNEL_SETUP[key];
+  const fields = {};
+  setup.fields.forEach(f => {
+    fields[f.key] = document.getElementById('field_'+f.key).value.trim();
+  });
+
+  const result = document.getElementById('verifyResult');
+  const verifyBtn = document.getElementById('verifyBtn');
+  const saveBtn = document.getElementById('saveBtn');
+
+  verifyBtn.disabled = true;
+  verifyBtn.textContent = 'Verifying...';
+  result.innerHTML = '<span style="color:var(--text-2);font-size:13px;">Connecting...</span>';
+
+  try {
+    const r = await fetch('/api/channels/verify', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, fields})});
+    const d = await r.json();
+
+    if (d.valid) {
+      result.innerHTML = '<div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);border-radius:8px;padding:12px;font-size:13px;color:var(--green);">'+d.message+(d.invite_url?'<br><a href="'+d.invite_url+'" target="_blank" style="color:var(--accent);text-decoration:underline;">Add bot to server &rarr;</a>':'')+'</div>';
+      saveBtn.disabled = false;
+    } else {
+      result.innerHTML = '<div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px;font-size:13px;color:var(--red);">Failed: '+(d.error||'Unknown error')+'</div>';
+    }
+  } catch(e) {
+    result.innerHTML = '<div style="color:var(--red);font-size:13px;">Connection error: '+e.message+'</div>';
   }
-  fetch('/api/channels/config', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, fields:values})})
-    .then(() => { loadChannels(); alert(key+' configured!'); });
+  verifyBtn.disabled = false;
+  verifyBtn.textContent = 'Test Connection';
+}
+
+async function saveChannel(key) {
+  const setup = CHANNEL_SETUP[key];
+  const fields = {};
+  setup.fields.forEach(f => {
+    fields[f.key] = document.getElementById('field_'+f.key).value.trim();
+  });
+
+  await fetch('/api/channels/config', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, fields})});
+  closeModal();
+  loadChannels();
+}
+
+function simpleConfig(key, fieldNames) {
+  const fields = {};
+  for (const f of fieldNames) {
+    const v = prompt('Enter '+f.replace(/_/g,' ')+':');
+    if (v === null) return;
+    fields[f] = v;
+  }
+  fetch('/api/channels/config', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, fields})})
+    .then(() => loadChannels());
 }
 
 // ── Load Agents from API ──
@@ -1006,6 +1207,7 @@ async function init() {
     document.getElementById('modelName').textContent = 'offline';
   }
 
+  await loadInstalledSkills();
   loadSkills();
   loadTools();
   loadChannels();

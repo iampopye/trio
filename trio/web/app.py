@@ -239,7 +239,7 @@ async def api_skill_install(request):
     if not skill_name:
         return web.json_response({"error": "Skill name required"}, status=400)
 
-    # Check if skill exists in index
+    # Find skill in index
     index_path = Path(__file__).resolve().parent.parent.parent / "triohub" / "index.json"
     if not index_path.exists():
         return web.json_response({"error": "TrioHub index not found"}, status=404)
@@ -249,22 +249,100 @@ async def api_skill_install(request):
     except Exception:
         return web.json_response({"error": "Failed to read index"}, status=500)
 
-    skill = next((s for s in idx.get("skills", []) if s["name"] == skill_name), None)
+    # Search in all categories
+    skill = None
+    for cat in idx.get("categories", []):
+        for s in cat.get("skills", []):
+            if s["name"] == skill_name:
+                skill = s
+                skill["category"] = cat.get("name", "general")
+                break
+        if skill:
+            break
+
     if not skill:
         return web.json_response({"error": f"Skill '{skill_name}' not found"}, status=404)
 
-    # Copy skill file to user skills dir
+    # Install: copy skill file to user's ~/.trio/skills/
     skills_dir = Path.home() / ".trio" / "skills"
     skills_dir.mkdir(parents=True, exist_ok=True)
 
     src = Path(__file__).resolve().parent.parent / "skills" / "builtin" / skill.get("file", "")
-    if src.exists():
-        dst = skills_dir / src.name
-        dst.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
-        return web.json_response({"status": "installed", "name": skill_name, "path": str(dst)})
+    installed_path = skills_dir / skill.get("file", f"{skill_name}.md")
 
-    return web.json_response({"status": "registered", "name": skill_name,
-                              "note": "Skill metadata saved, source file not bundled"})
+    if src.exists():
+        installed_path.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+    else:
+        # Create skill stub if source not bundled
+        installed_path.write_text(
+            f"---\nname: {skill_name}\ndescription: {skill.get('description', '')}\n"
+            f"tags: {skill.get('tags', [])}\ncategory: {skill.get('category', 'general')}\n---\n\n"
+            f"# {skill.get('description', skill_name)}\n\n"
+            f"Installed from TrioHub.\n",
+            encoding="utf-8",
+        )
+
+    # Track installed skills in config
+    config = request.app["config"]
+    installed = config.setdefault("installed_skills", [])
+    if skill_name not in installed:
+        installed.append(skill_name)
+        _save_config(config)
+
+    return web.json_response({
+        "status": "installed",
+        "name": skill_name,
+        "path": str(installed_path),
+        "category": skill.get("category", ""),
+    })
+
+
+async def api_skills_installed(request):
+    """GET /api/skills/installed -- list installed skills."""
+    config = request.app["config"]
+    installed_names = config.get("installed_skills", [])
+
+    skills_dir = Path.home() / ".trio" / "skills"
+    installed = []
+    if skills_dir.is_dir():
+        for f in sorted(skills_dir.glob("*.md")):
+            installed.append({
+                "name": f.stem,
+                "file": f.name,
+                "path": str(f),
+                "size": f.stat().st_size,
+            })
+
+    return web.json_response({
+        "installed": installed,
+        "count": len(installed),
+    })
+
+
+async def api_skill_uninstall(request):
+    """POST /api/skills/uninstall -- remove an installed skill."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    skill_name = data.get("name", "")
+    skills_dir = Path.home() / ".trio" / "skills"
+    removed = False
+
+    for ext in (".md", ".py", ".yaml"):
+        path = skills_dir / f"{skill_name}{ext}"
+        if path.exists():
+            path.unlink()
+            removed = True
+
+    config = request.app["config"]
+    installed = config.get("installed_skills", [])
+    if skill_name in installed:
+        installed.remove(skill_name)
+        _save_config(config)
+
+    return web.json_response({"status": "removed" if removed else "not_found", "name": skill_name})
 
 
 # ── Tools ────────────────────────────────────────────────────────────────────
@@ -392,6 +470,118 @@ async def api_channels_config(request):
 
     _save_config(config)
     return web.json_response({"status": "ok", "key": key})
+
+
+async def api_channels_verify(request):
+    """POST /api/channels/verify -- verify channel credentials are valid."""
+    import aiohttp as aio_http
+
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    key = data.get("key", "")
+    fields = data.get("fields", {})
+
+    try:
+        async with aio_http.ClientSession() as session:
+            if key == "telegram":
+                token = fields.get("bot_token", "")
+                if not token:
+                    return web.json_response({"valid": False, "error": "Bot token required"})
+                async with session.get(f"https://api.telegram.org/bot{token}/getMe",
+                                       ssl=False) as resp:
+                    d = await resp.json()
+                    if d.get("ok"):
+                        bot = d["result"]
+                        return web.json_response({
+                            "valid": True,
+                            "bot_name": bot.get("first_name"),
+                            "bot_username": bot.get("username"),
+                            "message": f"Connected as @{bot.get('username')}",
+                        })
+                    return web.json_response({"valid": False, "error": d.get("description", "Invalid token")})
+
+            elif key == "discord":
+                token = fields.get("bot_token", "")
+                if not token:
+                    return web.json_response({"valid": False, "error": "Bot token required"})
+                async with session.get("https://discord.com/api/v10/users/@me",
+                                       headers={"Authorization": f"Bot {token}"},
+                                       ssl=False) as resp:
+                    if resp.status == 200:
+                        d = await resp.json()
+                        # Generate invite link
+                        invite = f"https://discord.com/api/oauth2/authorize?client_id={d['id']}&permissions=274877975552&scope=bot"
+                        return web.json_response({
+                            "valid": True,
+                            "bot_name": d.get("username"),
+                            "bot_id": d.get("id"),
+                            "invite_url": invite,
+                            "message": f"Connected as {d.get('username')}#{d.get('discriminator', '0')}",
+                        })
+                    return web.json_response({"valid": False, "error": "Invalid bot token"})
+
+            elif key == "slack":
+                bot_token = fields.get("bot_token", "")
+                if not bot_token:
+                    return web.json_response({"valid": False, "error": "Bot token (xoxb-) required"})
+                async with session.post("https://slack.com/api/auth.test",
+                                        headers={"Authorization": f"Bearer {bot_token}"},
+                                        ssl=False) as resp:
+                    d = await resp.json()
+                    if d.get("ok"):
+                        return web.json_response({
+                            "valid": True,
+                            "team": d.get("team"),
+                            "bot_name": d.get("user"),
+                            "message": f"Connected to {d.get('team')} as {d.get('user')}",
+                        })
+                    return web.json_response({"valid": False, "error": d.get("error", "Auth failed")})
+
+            elif key == "whatsapp":
+                # WhatsApp Business API verification
+                token = fields.get("access_token", "")
+                phone_id = fields.get("phone_number_id", "")
+                if not token or not phone_id:
+                    return web.json_response({"valid": False, "error": "Access token and phone number ID required"})
+                url = f"https://graph.facebook.com/v18.0/{phone_id}"
+                async with session.get(url, headers={"Authorization": f"Bearer {token}"},
+                                       ssl=False) as resp:
+                    if resp.status == 200:
+                        d = await resp.json()
+                        return web.json_response({
+                            "valid": True,
+                            "phone": d.get("display_phone_number", phone_id),
+                            "message": f"Connected: {d.get('display_phone_number', phone_id)}",
+                        })
+                    return web.json_response({"valid": False, "error": "Invalid credentials"})
+
+            elif key == "reddit":
+                client_id = fields.get("client_id", "")
+                client_secret = fields.get("client_secret", "")
+                username = fields.get("username", "")
+                password = fields.get("password", "")
+                if not all([client_id, client_secret, username, password]):
+                    return web.json_response({"valid": False, "error": "All 4 fields required"})
+                auth = aio_http.BasicAuth(client_id, client_secret)
+                async with session.post("https://www.reddit.com/api/v1/access_token",
+                                        auth=auth,
+                                        data={"grant_type": "password", "username": username, "password": password},
+                                        headers={"User-Agent": "trio.ai/0.1"},
+                                        ssl=False) as resp:
+                    d = await resp.json()
+                    if "access_token" in d:
+                        return web.json_response({"valid": True, "message": f"Connected as u/{username}"})
+                    return web.json_response({"valid": False, "error": d.get("error", "Auth failed")})
+
+            else:
+                # Generic: just save config, no verification available
+                return web.json_response({"valid": True, "message": "Configuration saved (no live verification for this channel)"})
+
+    except Exception as e:
+        return web.json_response({"valid": False, "error": str(e)})
 
 
 # ── Models ───────────────────────────────────────────────────────────────────
@@ -531,7 +721,9 @@ def create_app(config: dict | None = None) -> web.Application:
 
     # Skills
     app.router.add_get("/api/skills", api_skills)
+    app.router.add_get("/api/skills/installed", api_skills_installed)
     app.router.add_post("/api/skills/install", api_skill_install)
+    app.router.add_post("/api/skills/uninstall", api_skill_uninstall)
 
     # Tools
     app.router.add_get("/api/tools", api_tools)
@@ -541,6 +733,7 @@ def create_app(config: dict | None = None) -> web.Application:
     app.router.add_get("/api/channels", api_channels)
     app.router.add_post("/api/channels/toggle", api_channels_toggle)
     app.router.add_post("/api/channels/config", api_channels_config)
+    app.router.add_post("/api/channels/verify", api_channels_verify)
 
     # Models
     app.router.add_get("/api/models", api_models)
