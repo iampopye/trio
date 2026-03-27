@@ -221,7 +221,7 @@ class LocalProvider(BaseProvider):
         """Convert messages to llama-cpp chat format.
 
         Normalizes role names: user/human -> user, assistant/trio -> assistant.
-        Appends /no_think to the last user message to disable Qwen3's
+        Appends /no_think to the last user message to disable the model's
         internal reasoning mode, which produces <think> blocks and slows
         response time significantly.
         """
@@ -242,7 +242,7 @@ class LocalProvider(BaseProvider):
 
             formatted.append({"role": role, "content": content})
 
-        # Disable Qwen3 thinking mode for faster direct responses
+        # Disable thinking mode for faster direct responses
         if formatted and formatted[-1]["role"] == "user":
             formatted[-1]["content"] += " /no_think"
 

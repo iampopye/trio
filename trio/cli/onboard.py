@@ -195,7 +195,7 @@ def _pick_best_model(models: list[str]) -> str:
     """Pick the best available model from Ollama."""
     preferred = [
         "llama3.1:8b", "llama3.2:3b", "llama3.2:1b", "llama3:8b",
-        "mistral:7b", "gemma2:9b", "qwen2.5:7b", "phi3:3.8b",
+        "mistral:7b", "gemma2:9b", "phi3:3.8b",
     ]
     for p in preferred:
         if p in models:

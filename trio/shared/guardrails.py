@@ -83,7 +83,7 @@ PROBE_BLOCK_DURATION = 1800  # 30 minutes
 # --- Patterns for internal architecture leakage ---
 
 _INTERNAL_MODEL_NAMES = re.compile(
-    r'\b(ollama|llama[\s-]?3(\.\d)?|deepseek[\s-]?r1|qwen[\s-]?\d*[\s-]?coder|'
+    r'\b(ollama|llama[\s-]?3(\.\d)?|deepseek[\s-]?r1|'
     r'mistral|codellama|phi[\s-]?\d|gemma[\s-]?\d|vicuna|wizardlm)\b',
     re.IGNORECASE
 )

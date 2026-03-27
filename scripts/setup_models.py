@@ -28,14 +28,14 @@ MODELS = {
         "url": "https://huggingface.co/unsloth/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf",
         "filename": "trio-max-q4_k_m.gguf",
         "modelfile": "trio-max.Modelfile",
-        "description": "trio-max (Qwen3-4B Q4_K_M) — 4B parameter general-purpose model",
+        "description": "trio-max — 4B parameter general-purpose model by trio.ai",
         "expected_size_gb": 2.7,
     },
     "trio-nano": {
         "url": "https://huggingface.co/bartowski/SmolLM2-1.7B-Instruct-GGUF/resolve/main/SmolLM2-1.7B-Instruct-Q4_K_M.gguf",
         "filename": "trio-nano-q4_k_m.gguf",
         "modelfile": "trio-nano.Modelfile",
-        "description": "trio-nano (SmolLM2-1.7B Q4_K_M) — fast, lightweight model",
+        "description": "trio-nano — fast, lightweight model by trio.ai",
         "expected_size_gb": 1.0,
     },
 }
@@ -391,12 +391,12 @@ def main():
     parser.add_argument(
         "--max-only",
         action="store_true",
-        help="Only install trio-max (Qwen3-4B)",
+        help="Only install trio-max",
     )
     parser.add_argument(
         "--nano-only",
         action="store_true",
-        help="Only install trio-nano (SmolLM2-1.7B)",
+        help="Only install trio-nano",
     )
     args = parser.parse_args()
 
