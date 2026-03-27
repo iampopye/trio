@@ -5,349 +5,479 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>trio.ai</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root {
-    --transition: 0.2s ease;
-  }
-
   [data-theme="dark"] {
-    --bg: #0c0c0c;
-    --sidebar-bg: #111;
-    --chat-bg: #0c0c0c;
-    --surface: #161616;
-    --surface-2: #1c1c1c;
-    --border: #222;
-    --border-light: #2a2a2a;
-    --text: #e8e8e8;
-    --text-secondary: #777;
-    --text-tertiary: #555;
-    --accent: #7c6ef6;
-    --accent-light: #9d92f8;
-    --accent-bg: rgba(124,110,246,0.08);
-    --user-bg: #1a1a2e;
-    --input-bg: #161616;
-    --input-border: #2a2a2a;
-    --code-bg: #0a0a0a;
-    --hover: #1a1a1a;
-    --success: #34d399;
-    --warning: #fbbf24;
-    --danger: #f87171;
-    --shadow: 0 1px 3px rgba(0,0,0,0.4);
+    --bg: #09090b;
+    --sidebar: #0f0f12;
+    --surface: #16161a;
+    --surface-hover: #1c1c21;
+    --border: #27272a;
+    --text: #fafafa;
+    --text-2: #a1a1aa;
+    --text-3: #52525b;
+    --accent: #8b5cf6;
+    --accent-soft: rgba(139,92,246,0.1);
+    --accent-hover: #a78bfa;
+    --input-bg: #18181b;
+    --code-bg: #0c0c0f;
+    --green: #34d399;
+    --orange: #fb923c;
+    --red: #f87171;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    --toggle-bg: #27272a;
+    --toggle-circle: #fafafa;
   }
 
   [data-theme="light"] {
-    --bg: #fafafa;
-    --sidebar-bg: #fff;
-    --chat-bg: #fafafa;
-    --surface: #fff;
-    --surface-2: #f5f5f5;
-    --border: #e8e8e8;
-    --border-light: #eee;
-    --text: #1a1a1a;
-    --text-secondary: #666;
-    --text-tertiary: #999;
-    --accent: #6d5dd3;
-    --accent-light: #8577e0;
-    --accent-bg: rgba(109,93,211,0.06);
-    --user-bg: #eef;
-    --input-bg: #fff;
-    --input-border: #ddd;
-    --code-bg: #f0f0f0;
-    --hover: #f0f0f0;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --bg: #f8f9fa;
+    --sidebar: #ffffff;
+    --surface: #ffffff;
+    --surface-hover: #f4f4f5;
+    --border: #e4e4e7;
+    --text: #18181b;
+    --text-2: #71717a;
+    --text-3: #a1a1aa;
+    --accent: #7c3aed;
+    --accent-soft: rgba(124,58,237,0.08);
+    --accent-hover: #6d28d9;
+    --input-bg: #ffffff;
+    --code-bg: #f4f4f5;
+    --green: #10b981;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    --toggle-bg: #e4e4e7;
+    --toggle-circle: #ffffff;
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--text);
     height: 100vh;
     display: flex;
     overflow: hidden;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* ── Sidebar ────────────────────────────── */
+  /* ══════ Sidebar ══════ */
   .sidebar {
-    width: 240px;
-    background: var(--sidebar-bg);
+    width: 260px;
+    background: var(--sidebar);
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    transition: width var(--transition);
   }
 
-  .sidebar-header {
-    padding: 16px;
-    border-bottom: 1px solid var(--border);
+  .sidebar-head {
+    padding: 20px 20px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
-  .brand { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
-  .brand span { color: var(--accent); }
-
-  .sidebar-nav {
-    flex: 1;
-    padding: 8px;
-    overflow-y: auto;
-  }
-
-  .nav-section {
-    margin-bottom: 8px;
-  }
-
-  .nav-section-title {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--text-tertiary);
-    padding: 8px 10px 4px;
-  }
-
-  .nav-item {
+  .logo {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.1s;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
   }
 
-  .nav-item:hover { background: var(--hover); color: var(--text); }
-  .nav-item.active { background: var(--accent-bg); color: var(--accent); font-weight: 500; }
-
-  .nav-icon {
-    width: 18px;
-    height: 18px;
+  .logo-mark {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
-    opacity: 0.7;
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
   }
 
-  .nav-item.active .nav-icon { opacity: 1; }
+  .logo-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
 
-  .sidebar-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
+  .logo-name span { color: var(--accent); }
+
+  /* Theme toggle */
+  .theme-switch {
+    width: 48px; height: 26px;
+    background: var(--toggle-bg);
+    border-radius: 13px;
+    position: relative;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+
+  .theme-switch::after {
+    content: "";
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    background: var(--toggle-circle);
+    border-radius: 50%;
+    transition: transform 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  [data-theme="light"] .theme-switch::after {
+    transform: translateX(22px);
+  }
+
+  .theme-switch .icon-sun, .theme-switch .icon-moon {
+    position: absolute;
+    top: 5px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .theme-switch .icon-moon { left: 7px; }
+  .theme-switch .icon-sun { right: 7px; }
+
+  [data-theme="dark"] .theme-switch .icon-sun { opacity: 0.3; }
+  [data-theme="dark"] .theme-switch .icon-moon { opacity: 1; }
+  [data-theme="light"] .theme-switch .icon-sun { opacity: 1; }
+  [data-theme="light"] .theme-switch .icon-moon { opacity: 0.3; }
+
+  /* Nav */
+  .nav { flex: 1; padding: 4px 10px; overflow-y: auto; }
+
+  .nav-group { margin-bottom: 6px; }
+
+  .nav-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-3);
+    padding: 12px 12px 6px;
+  }
+
+  .nav-btn {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-  }
-
-  .theme-toggle {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 11px;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: none;
+    color: var(--text-2);
+    font-size: 14px;
+    font-family: inherit;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.15s;
+    text-align: left;
   }
 
-  .theme-toggle:hover { color: var(--text); border-color: var(--border-light); }
+  .nav-btn:hover { background: var(--surface-hover); color: var(--text); }
+  .nav-btn.active { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
 
-  .version-tag {
-    font-size: 10px;
-    color: var(--text-tertiary);
+  .nav-btn .ico {
+    width: 20px;
+    text-align: center;
+    font-size: 15px;
+    opacity: 0.6;
   }
 
-  /* ── Main Area ──────────────────────────── */
-  .main {
-    flex: 1;
+  .nav-btn.active .ico { opacity: 1; }
+
+  .sidebar-foot {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-3);
     display: flex;
-    flex-direction: column;
-    min-width: 0;
+    justify-content: space-between;
   }
+
+  /* ══════ Main ══════ */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
   .topbar {
-    height: 48px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 24px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
 
-  .topbar-title {
-    font-size: 13px;
-    font-weight: 500;
+  .topbar-left {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
   }
 
-  .topbar-right {
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+  .pill {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-2);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
   }
 
-  .badge {
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-  }
+  .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
 
-  .badge.online::before {
-    content: "";
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--success);
-    margin-right: 5px;
-  }
-
-  .top-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 11px;
+  .btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.15s;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
   }
 
-  .top-btn:hover { color: var(--text); border-color: var(--border-light); }
+  .btn:hover { color: var(--text); border-color: var(--text-3); }
 
-  /* ── Content Panels ─────────────────────── */
+  .btn-accent {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .btn-accent:hover { background: var(--accent-hover); color: #fff; }
+
+  /* ══════ Panels ══════ */
   .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
   .panel.active { display: flex; }
 
-  /* ── Chat Panel ─────────────────────────── */
-  .chat-scroll {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0;
+  .panel-scroll { flex: 1; overflow-y: auto; }
+  .panel-scroll::-webkit-scrollbar { width: 5px; }
+  .panel-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .panel-inner { max-width: 900px; margin: 0 auto; padding: 32px 28px; width: 100%; }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -0.4px;
   }
 
-  .chat-scroll::-webkit-scrollbar { width: 4px; }
-  .chat-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .section-desc {
+    font-size: 14px;
+    color: var(--text-2);
+    margin-bottom: 24px;
+  }
 
-  .welcome-screen {
+  /* Grid */
+  .grid { display: grid; gap: 14px; }
+  .grid-2 { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+
+  .card:hover { border-color: var(--text-3); transform: translateY(-1px); box-shadow: var(--shadow); }
+
+  .card-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .card-text { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+  .card-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); margin-top: 10px; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-bottom: 28px; }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .stat-lbl { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+
+  /* Toggle rows */
+  .opt-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .opt-row:last-child { border-bottom: none; }
+  .opt-name { font-size: 15px; font-weight: 500; }
+  .opt-desc { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+
+  .sw {
+    width: 44px; height: 24px;
+    background: var(--toggle-bg);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .sw.on { background: var(--accent); }
+  .sw::after {
+    content: "";
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 20px; height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .sw.on::after { transform: translateX(20px); }
+
+  /* Search */
+  .search {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    margin-bottom: 20px;
+    transition: border-color 0.15s;
+  }
+  .search:focus { border-color: var(--accent); }
+  .search::placeholder { color: var(--text-3); }
+
+  /* ══════ Chat ══════ */
+  .chat-area { flex: 1; overflow-y: auto; }
+  .chat-area::-webkit-scrollbar { width: 5px; }
+  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .welcome {
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    padding: 40px;
+    gap: 20px;
+    padding: 48px;
   }
 
-  .welcome-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent), #a78bfa);
+  .welcome-mark {
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
     color: #fff;
   }
 
-  .welcome-screen h2 { font-size: 18px; font-weight: 500; }
-  .welcome-screen p { font-size: 13px; color: var(--text-secondary); max-width: 360px; text-align: center; line-height: 1.6; }
+  .welcome h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+  .welcome p { font-size: 15px; color: var(--text-2); max-width: 400px; text-align: center; }
 
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
 
   .chip {
     background: var(--surface);
     border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
+    color: var(--text-2);
+    padding: 9px 18px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-family: inherit;
     cursor: pointer;
     transition: all 0.15s;
   }
 
-  .chip:hover { color: var(--text); border-color: var(--accent); }
+  .chip:hover { color: var(--text); border-color: var(--accent); background: var(--accent-soft); }
 
-  .messages { max-width: 720px; margin: 0 auto; padding: 20px 24px 0; width: 100%; }
+  /* Messages */
+  .msgs { max-width: 760px; margin: 0 auto; padding: 24px 28px 0; width: 100%; }
 
-  .msg { margin-bottom: 24px; animation: fadeUp 0.2s ease; }
+  .msg { margin-bottom: 28px; animation: up 0.25s ease; }
+  @keyframes up { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .msg-head {
-    font-size: 11px;
-    font-weight: 600;
+  .msg-who {
+    font-size: 12px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: var(--text-tertiary);
-    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    color: var(--text-3);
+    margin-bottom: 8px;
   }
 
-  .msg.user .msg-head { color: var(--accent); }
+  .msg.user .msg-who { color: var(--accent); }
 
-  .msg-text {
-    font-size: 14px;
-    line-height: 1.7;
+  .msg-body {
+    font-size: 15px;
+    line-height: 1.8;
     color: var(--text);
-    word-wrap: break-word;
   }
 
-  .msg.assistant .msg-text { color: var(--text-secondary); }
+  .msg.assistant .msg-body { color: var(--text-2); }
 
-  .msg-text pre {
+  .msg-body pre {
     background: var(--code-bg);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px;
-    margin: 8px 0;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 12px 0;
     overflow-x: auto;
-    font-size: 12.5px;
-    font-family: 'SF Mono','Fira Code','Consolas',monospace;
+    font-size: 13px;
+    font-family: 'SF Mono','JetBrains Mono','Fira Code','Consolas',monospace;
+    line-height: 1.6;
   }
 
-  .msg-text code {
-    font-family: 'SF Mono','Fira Code','Consolas',monospace;
-    background: var(--accent-bg);
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 12.5px;
+  .msg-body code {
+    font-family: 'SF Mono','JetBrains Mono','Fira Code','Consolas',monospace;
+    background: var(--accent-soft);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 13px;
   }
 
-  .msg-text pre code { background: none; padding: 0; }
-  .msg-text strong { color: var(--text); }
+  .msg-body pre code { background: none; padding: 0; }
+  .msg-body strong { color: var(--text); font-weight: 600; }
+  .msg-body ul, .msg-body ol { padding-left: 20px; margin: 8px 0; }
 
-  .typing { display: inline-flex; gap: 4px; }
-  .typing span { width: 5px; height: 5px; background: var(--text-tertiary); border-radius: 50%; animation: pulse 1s infinite; }
+  .typing { display: inline-flex; gap: 5px; }
+  .typing span { width: 6px; height: 6px; background: var(--text-3); border-radius: 50%; animation: blink 1.2s infinite; }
   .typing span:nth-child(2) { animation-delay: 0.15s; }
   .typing span:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes pulse { 0%,100%{opacity:0.3}50%{opacity:1} }
+  @keyframes blink { 0%,100%{opacity:0.25} 50%{opacity:1} }
 
-  .input-area {
+  /* Input */
+  .chat-input {
     flex-shrink: 0;
-    padding: 12px 20px 16px;
+    padding: 16px 24px 20px;
   }
 
   .input-wrap {
-    max-width: 720px;
+    max-width: 760px;
     margin: 0 auto;
     position: relative;
   }
@@ -355,607 +485,420 @@
   .input-box {
     width: 100%;
     background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 12px;
-    padding: 12px 48px 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 52px 14px 18px;
     color: var(--text);
-    font-size: 14px;
+    font-size: 15px;
     font-family: inherit;
     resize: none;
     outline: none;
-    min-height: 44px;
-    max-height: 180px;
+    min-height: 50px;
+    max-height: 200px;
     line-height: 1.5;
-    transition: border-color 0.15s;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
-  .input-box:focus { border-color: var(--accent); }
-  .input-box::placeholder { color: var(--text-tertiary); }
+  .input-box:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .input-box::placeholder { color: var(--text-3); }
 
-  .send-btn {
+  .send {
     position: absolute;
-    right: 8px;
-    bottom: 8px;
-    width: 32px;
-    height: 32px;
+    right: 10px; bottom: 10px;
+    width: 34px; height: 34px;
     background: var(--accent);
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.15s;
+    transition: all 0.15s;
   }
 
-  .send-btn:disabled { opacity: 0.3; }
-  .send-btn svg { width: 15px; height: 15px; color: #fff; }
+  .send:hover { background: var(--accent-hover); transform: scale(1.05); }
+  .send:disabled { opacity: 0.3; transform: none; }
+  .send svg { width: 16px; height: 16px; color: #fff; }
 
-  /* ── Generic Panel Layout ───────────────── */
-  .panel-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-  }
-
-  .panel-body h3 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    letter-spacing: -0.3px;
-  }
-
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 12px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    transition: border-color 0.15s;
-  }
-
-  .card:hover { border-color: var(--border-light); }
-
-  .card-title {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .card-desc {
-    font-size: 12px;
-    color: var(--text-secondary);
-    line-height: 1.5;
-  }
-
-  .card-tag {
-    display: inline-block;
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: var(--accent-bg);
-    color: var(--accent);
-    margin-top: 8px;
-  }
-
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .toggle-row:last-child { border-bottom: none; }
-
-  .toggle-label { font-size: 13px; }
-  .toggle-desc { font-size: 11px; color: var(--text-secondary); }
-
-  .toggle {
-    width: 36px;
-    height: 20px;
-    background: var(--border);
-    border-radius: 10px;
-    position: relative;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .toggle.on { background: var(--accent); }
-
-  .toggle::after {
-    content: "";
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 16px;
-    height: 16px;
-    background: #fff;
-    border-radius: 50%;
-    transition: transform 0.2s;
-  }
-
-  .toggle.on::after { transform: translateX(16px); }
-
-  .stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
+  .input-foot {
     text-align: center;
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 10px;
   }
 
-  .stat-value { font-size: 22px; font-weight: 700; color: var(--accent); }
-  .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
-
-  .search-box {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    color: var(--text);
-    font-size: 13px;
-    outline: none;
-    margin-bottom: 16px;
-    font-family: inherit;
-  }
-
-  .search-box:focus { border-color: var(--accent); }
-  .search-box::placeholder { color: var(--text-tertiary); }
-
-  .list-item {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 13px;
-  }
-
-  .list-item:hover { background: var(--hover); }
-
+  /* ══════ Mobile ══════ */
   @media (max-width: 768px) {
     .sidebar { display: none; }
-    .messages { padding: 16px; }
+    .msgs { padding: 16px; }
+    .panel-inner { padding: 20px 16px; }
+    .topbar { padding: 0 16px; }
   }
 </style>
 </head>
 <body>
 
-<!-- Sidebar -->
 <div class="sidebar">
-  <div class="sidebar-header">
-    <div class="brand">trio<span>.ai</span></div>
+  <div class="sidebar-head">
+    <div class="logo">
+      <div class="logo-mark">t</div>
+      <div class="logo-name">trio<span>.ai</span></div>
+    </div>
+    <button class="theme-switch" onclick="toggleTheme()" title="Toggle theme">
+      <span class="icon-moon">&#9790;</span>
+      <span class="icon-sun">&#9728;</span>
+    </button>
   </div>
-  <div class="sidebar-nav">
-    <div class="nav-section">
-      <div class="nav-section-title">Main</div>
-      <button class="nav-item active" data-panel="chat"><span class="nav-icon">></span> Chat</button>
-      <button class="nav-item" data-panel="skills"><span class="nav-icon">#</span> Skills</button>
-      <button class="nav-item" data-panel="tools"><span class="nav-icon">*</span> Tools</button>
+
+  <div class="nav">
+    <div class="nav-group">
+      <div class="nav-label">Main</div>
+      <button class="nav-btn active" data-p="chat"><span class="ico">&#9671;</span> Chat</button>
+      <button class="nav-btn" data-p="dashboard"><span class="ico">&#9632;</span> Dashboard</button>
     </div>
-    <div class="nav-section">
-      <div class="nav-section-title">Deploy</div>
-      <button class="nav-item" data-panel="channels"><span class="nav-icon">@</span> Channels</button>
-      <button class="nav-item" data-panel="agents"><span class="nav-icon">%</span> Sub-Agents</button>
-      <button class="nav-item" data-panel="daemon"><span class="nav-icon">~</span> Daemon</button>
+    <div class="nav-group">
+      <div class="nav-label">Build</div>
+      <button class="nav-btn" data-p="skills"><span class="ico">&#9733;</span> Skills</button>
+      <button class="nav-btn" data-p="tools"><span class="ico">&#9881;</span> Tools</button>
+      <button class="nav-btn" data-p="agents"><span class="ico">&#9672;</span> Sub-Agents</button>
     </div>
-    <div class="nav-section">
-      <div class="nav-section-title">System</div>
-      <button class="nav-item" data-panel="project"><span class="nav-icon">/</span> Project</button>
-      <button class="nav-item" data-panel="models"><span class="nav-icon">^</span> Models</button>
-      <button class="nav-item" data-panel="settings"><span class="nav-icon">=</span> Settings</button>
+    <div class="nav-group">
+      <div class="nav-label">Deploy</div>
+      <button class="nav-btn" data-p="channels"><span class="ico">&#9993;</span> Channels</button>
+      <button class="nav-btn" data-p="models"><span class="ico">&#9683;</span> Models</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <button class="nav-btn" data-p="project"><span class="ico">&#9783;</span> Project</button>
+      <button class="nav-btn" data-p="settings"><span class="ico">&#9881;</span> Settings</button>
     </div>
   </div>
-  <div class="sidebar-footer">
-    <span class="version-tag">v0.1.1</span>
-    <button class="theme-toggle" onclick="toggleTheme()">Toggle theme</button>
+
+  <div class="sidebar-foot">
+    <span>v0.1.1</span>
+    <span>localhost:28337</span>
   </div>
 </div>
 
-<!-- Main Content -->
 <div class="main">
   <div class="topbar">
-    <div class="topbar-title" id="topTitle">Chat</div>
+    <div class="topbar-left" id="topTitle">Chat</div>
     <div class="topbar-right">
-      <span class="badge online" id="modelBadge">loading...</span>
-      <button class="top-btn" onclick="newChat()">New chat</button>
+      <div class="pill"><span class="dot"></span><span id="modelName">loading...</span></div>
+      <button class="btn" onclick="newChat()">+ New chat</button>
     </div>
   </div>
 
-  <!-- Chat Panel -->
-  <div class="panel active" id="panel-chat">
-    <div class="chat-scroll" id="chatScroll">
-      <div class="welcome-screen" id="welcome">
-        <div class="welcome-icon">t</div>
+  <!-- ── Chat ── -->
+  <div class="panel active" id="p-chat">
+    <div class="chat-area" id="chatArea">
+      <div class="welcome" id="welcome">
+        <div class="welcome-mark">t</div>
         <h2>What can I help with?</h2>
-        <p>Code, write, analyze, research -- all running locally on your machine. Sandboxed to your project directory.</p>
+        <p>Code, write, analyze, debug -- powered by trio-max running locally on your machine. Sandboxed to your project.</p>
         <div class="chips">
           <button class="chip" onclick="ask('Explain this project structure')">Explore project</button>
-          <button class="chip" onclick="ask('Write a function to parse JSON files')">Write code</button>
-          <button class="chip" onclick="ask('Find bugs in my code')">Find bugs</button>
+          <button class="chip" onclick="ask('Write a Python REST API')">Write code</button>
+          <button class="chip" onclick="ask('Review my code for bugs')">Code review</button>
         </div>
       </div>
     </div>
-    <div class="input-area">
+    <div class="chat-input">
       <div class="input-wrap">
-        <textarea class="input-box" id="input" rows="1" placeholder="Ask anything..."
+        <textarea class="input-box" id="inp" rows="1" placeholder="Message trio.ai..."
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
-          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,180)+'px'"></textarea>
-        <button class="send-btn" id="sendBtn" onclick="send()">
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,200)+'px'"></textarea>
+        <button class="send" id="sendBtn" onclick="send()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
+      <div class="input-foot">trio.ai -- runs locally, your data stays on your machine</div>
     </div>
   </div>
 
-  <!-- Skills Panel -->
-  <div class="panel" id="panel-skills">
-    <div class="panel-body">
-      <h3>TrioHub Skills</h3>
-      <input class="search-box" id="skillSearch" placeholder="Search 1,900+ skills..." oninput="filterSkills(this.value)">
-      <div class="stat-grid">
-        <div class="stat-card"><div class="stat-value">1,909</div><div class="stat-label">Total Skills</div></div>
-        <div class="stat-card"><div class="stat-value">13</div><div class="stat-label">Categories</div></div>
-        <div class="stat-card"><div class="stat-value">418</div><div class="stat-label">Coding</div></div>
-        <div class="stat-card"><div class="stat-value">204</div><div class="stat-label">SysAdmin</div></div>
+  <!-- ── Dashboard ── -->
+  <div class="panel" id="p-dashboard">
+    <div class="panel-scroll"><div class="panel-inner">
+      <div class="section-title">Dashboard</div>
+      <div class="section-desc">Overview of your trio.ai instance</div>
+      <div class="stats">
+        <div class="stat"><div class="stat-num">1,909</div><div class="stat-lbl">Skills Available</div></div>
+        <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Active Tools</div></div>
+        <div class="stat"><div class="stat-num">17</div><div class="stat-lbl">Channels</div></div>
+        <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Sub-Agents</div></div>
+        <div class="stat"><div class="stat-num" id="dashModel">--</div><div class="stat-lbl">Active Model</div></div>
+        <div class="stat"><div class="stat-num" id="dashProvider">--</div><div class="stat-lbl">Provider</div></div>
       </div>
-      <div class="card-grid" id="skillGrid">
-        <div class="card"><div class="card-title">Coding</div><div class="card-desc">Python, JS, TypeScript, Go, Rust, Java, API design, testing, debugging</div><div class="card-tag">418 skills</div></div>
-        <div class="card"><div class="card-title">Web Development</div><div class="card-desc">React, Next.js, Vue, Svelte, CSS, HTML, responsive design</div><div class="card-tag">159 skills</div></div>
-        <div class="card"><div class="card-title">DevOps / SysAdmin</div><div class="card-desc">Docker, K8s, CI/CD, Linux, Nginx, monitoring, cloud infra</div><div class="card-tag">204 skills</div></div>
-        <div class="card"><div class="card-title">Data Science</div><div class="card-desc">Pandas, ML, visualization, statistics, ETL pipelines</div><div class="card-tag">102 skills</div></div>
-        <div class="card"><div class="card-title">Security</div><div class="card-desc">Pentesting, auditing, OWASP, encryption, compliance</div><div class="card-tag">80 skills</div></div>
-        <div class="card"><div class="card-title">Marketing</div><div class="card-desc">SEO, content strategy, social media, analytics, email campaigns</div><div class="card-tag">163 skills</div></div>
-        <div class="card"><div class="card-title">Finance</div><div class="card-desc">Accounting, forecasting, tax, invoicing, budgeting</div><div class="card-tag">47 skills</div></div>
-        <div class="card"><div class="card-title">Creative</div><div class="card-desc">Writing, design, music, video scripts, storytelling</div><div class="card-tag">79 skills</div></div>
-        <div class="card"><div class="card-title">Productivity</div><div class="card-desc">Automation, scheduling, note-taking, project management</div><div class="card-tag">167 skills</div></div>
-        <div class="card"><div class="card-title">Education</div><div class="card-desc">Tutoring, curriculum design, flashcards, quizzes</div><div class="card-tag">25 skills</div></div>
-        <div class="card"><div class="card-title">Legal</div><div class="card-desc">Contract review, compliance, GDPR, terms of service</div><div class="card-tag">29 skills</div></div>
-        <div class="card"><div class="card-title">Healthcare</div><div class="card-desc">Medical info, patient management, HIPAA compliance</div><div class="card-tag">21 skills</div></div>
-        <div class="card"><div class="card-title">General</div><div class="card-desc">Research, summarization, translation, conversation</div><div class="card-tag">415 skills</div></div>
+      <div class="section-title" style="font-size:17px;">Quick Actions</div>
+      <div class="grid grid-3" style="margin-top:14px;">
+        <div class="card" style="cursor:pointer" onclick="goPanel('chat')"><div class="card-name">Start Chatting</div><div class="card-text">Talk to your AI assistant</div></div>
+        <div class="card" style="cursor:pointer" onclick="goPanel('skills')"><div class="card-name">Browse Skills</div><div class="card-text">Explore 1,900+ capabilities</div></div>
+        <div class="card" style="cursor:pointer" onclick="goPanel('channels')"><div class="card-name">Deploy</div><div class="card-text">Connect to Discord, Telegram, etc.</div></div>
+        <div class="card" style="cursor:pointer" onclick="goPanel('tools')"><div class="card-name">Configure Tools</div><div class="card-text">Enable shell, browser, search</div></div>
+        <div class="card" style="cursor:pointer" onclick="goPanel('models')"><div class="card-name">Manage Models</div><div class="card-text">Switch between trio-max and nano</div></div>
+        <div class="card" style="cursor:pointer" onclick="goPanel('settings')"><div class="card-name">Settings</div><div class="card-text">Sandbox, guardrails, memory</div></div>
       </div>
-    </div>
+    </div></div>
   </div>
 
-  <!-- Tools Panel -->
-  <div class="panel" id="panel-tools">
-    <div class="panel-body">
-      <h3>Available Tools</h3>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Tools the AI agent can use to interact with your system.</p>
-      <div id="toolsList"></div>
-    </div>
+  <!-- ── Skills ── -->
+  <div class="panel" id="p-skills">
+    <div class="panel-scroll"><div class="panel-inner">
+      <div class="section-title">TrioHub Skills</div>
+      <div class="section-desc">Browse and install from 1,909 community skills across 13 categories</div>
+      <input class="search" placeholder="Search skills..." oninput="filterCards('skillGrid',this.value)">
+      <div class="grid grid-2" id="skillGrid"></div>
+    </div></div>
   </div>
 
-  <!-- Channels Panel -->
-  <div class="panel" id="panel-channels">
-    <div class="panel-body">
-      <h3>Chat Channels</h3>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Deploy your AI to any platform. Configure API keys in settings.</p>
-      <div class="card-grid" id="channelGrid"></div>
-    </div>
+  <!-- ── Tools ── -->
+  <div class="panel" id="p-tools">
+    <div class="panel-scroll"><div class="panel-inner">
+      <div class="section-title">Tools</div>
+      <div class="section-desc">Tools the agent uses to interact with your system. All sandboxed to project directory.</div>
+      <div id="toolList"></div>
+    </div></div>
   </div>
 
-  <!-- Sub-Agents Panel -->
-  <div class="panel" id="panel-agents">
-    <div class="panel-body">
-      <h3>Sub-Agents</h3>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Specialized agents that handle focused tasks.</p>
-      <div class="card-grid" id="agentGrid"></div>
-    </div>
+  <!-- ── Sub-Agents ── -->
+  <div class="panel" id="p-agents">
+    <div class="panel-scroll"><div class="panel-inner">
+      <div class="section-title">Sub-Agents</div>
+      <div class="section-desc">Specialized agents that handle focused tasks autonomously</div>
+      <div class="grid grid-2" id="agentGrid"></div>
+    </div></div>
   </div>
 
-  <!-- Daemon Panel -->
-  <div class="panel" id="panel-daemon">
-    <div class="panel-body">
-      <h3>Background Daemon</h3>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="stat-value" id="daemonStatus">--</div><div class="stat-label">Status</div></div>
-        <div class="stat-card"><div class="stat-value" id="daemonUptime">--</div><div class="stat-label">Uptime</div></div>
-        <div class="stat-card"><div class="stat-value" id="daemonChannels">0</div><div class="stat-label">Active Channels</div></div>
+  <!-- ── Channels ── -->
+  <div class="panel" id="p-channels">
+    <div class="panel-scroll"><div class="panel-inner">
+      <div class="section-title">Channels</div>
+      <div class="section-desc">Deploy your AI to any messaging platform</div>
+      <div class="grid grid-3" id="channelGrid"></div>
+    </div></div>
+  </div>
+
+  <!-- ── Models ── -->
+  <div class="panel" id="p-models">
+    <div class="panel-scroll"><div class="panel-inner">
+      <div class="section-title">AI Models</div>
+      <div class="section-desc">Manage local GGUF models -- no cloud, no API keys needed</div>
+      <div class="grid grid-2">
+        <div class="card"><div class="card-name">trio-max</div><div class="card-text">Qwen3-4B Q4_K_M -- 2.5GB. Best quality for coding, writing, reasoning. CPU or GPU.</div><div class="card-badge">recommended</div></div>
+        <div class="card"><div class="card-name">trio-nano</div><div class="card-text">SmolLM2-1.7B Q4_K_M -- 1GB. Ultra-fast for simple tasks. Minimal resources.</div><div class="card-badge">lightweight</div></div>
+        <div class="card"><div class="card-name">Custom Model</div><div class="card-text">Place any .gguf file in ~/.trio/models/ and it will be auto-detected.</div><div class="card-badge">bring your own</div></div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="top-btn" onclick="daemonAction('start')">Start</button>
-        <button class="top-btn" onclick="daemonAction('stop')">Stop</button>
-        <button class="top-btn" onclick="daemonAction('restart')">Restart</button>
-        <button class="top-btn" onclick="daemonAction('install')">Install as Service</button>
-      </div>
-    </div>
+      <div class="section-title" style="font-size:17px;margin-top:28px;">Inference Settings</div>
+      <div class="opt-row"><div><div class="opt-name">Native GGUF Inference</div><div class="opt-desc">Run models locally via llama-cpp -- no Ollama needed</div></div><div class="sw on"></div></div>
+      <div class="opt-row"><div><div class="opt-name">GPU Acceleration</div><div class="opt-desc">Offload layers to GPU when available</div></div><div class="sw on"></div></div>
+      <div class="opt-row"><div><div class="opt-name">Streaming Output</div><div class="opt-desc">Stream tokens as they generate for faster UX</div></div><div class="sw on"></div></div>
+    </div></div>
   </div>
 
-  <!-- Project Panel -->
-  <div class="panel" id="panel-project">
-    <div class="panel-body">
-      <h3>Project</h3>
-      <div class="stat-grid" id="projectStats"></div>
-      <h3 style="margin-top:20px;">Project Files</h3>
-      <div id="projectFiles" style="font-family:monospace;font-size:12px;color:var(--text-secondary);line-height:1.8;"></div>
-    </div>
+  <!-- ── Project ── -->
+  <div class="panel" id="p-project">
+    <div class="panel-scroll"><div class="panel-inner">
+      <div class="section-title">Project</div>
+      <div class="section-desc">Sandbox info -- agent is restricted to this directory</div>
+      <div class="stats" id="projectStats"></div>
+      <div class="section-title" style="font-size:17px;">Files</div>
+      <div id="projectFiles" style="font-family:'SF Mono','Consolas',monospace;font-size:13px;color:var(--text-2);line-height:2;margin-top:10px;"></div>
+    </div></div>
   </div>
 
-  <!-- Models Panel -->
-  <div class="panel" id="panel-models">
-    <div class="panel-body">
-      <h3>AI Models</h3>
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-title">trio-max</div>
-          <div class="card-desc">Qwen3-4B Q4_K_M -- 2.5GB, best quality for general tasks. Runs on CPU or GPU.</div>
-          <div class="card-tag">recommended</div>
-        </div>
-        <div class="card">
-          <div class="card-title">trio-nano</div>
-          <div class="card-desc">SmolLM2-1.7B Q4_K_M -- 1GB, ultra-fast for simple tasks. Low resource usage.</div>
-          <div class="card-tag">lightweight</div>
-        </div>
-        <div class="card">
-          <div class="card-title">Custom GGUF</div>
-          <div class="card-desc">Drop any .gguf model in ~/.trio/models/ and it will be auto-detected.</div>
-          <div class="card-tag">bring your own</div>
-        </div>
-      </div>
-      <h3 style="margin-top:24px;">Provider Settings</h3>
-      <div class="toggle-row"><div><div class="toggle-label">Native Inference</div><div class="toggle-desc">Run models locally via llama-cpp (no Ollama)</div></div><div class="toggle on"></div></div>
-      <div class="toggle-row"><div><div class="toggle-label">GPU Acceleration</div><div class="toggle-desc">Offload layers to GPU when available</div></div><div class="toggle on"></div></div>
-      <div class="toggle-row"><div><div class="toggle-label">Streaming</div><div class="toggle-desc">Stream tokens as they generate</div></div><div class="toggle on"></div></div>
-    </div>
-  </div>
-
-  <!-- Settings Panel -->
-  <div class="panel" id="panel-settings">
-    <div class="panel-body">
-      <h3>Settings</h3>
-      <div class="toggle-row"><div><div class="toggle-label">Sandbox Mode</div><div class="toggle-desc">Restrict file access to project directory only</div></div><div class="toggle on"></div></div>
-      <div class="toggle-row"><div><div class="toggle-label">Guardrails</div><div class="toggle-desc">Filter unsafe inputs and outputs</div></div><div class="toggle on"></div></div>
-      <div class="toggle-row"><div><div class="toggle-label">Memory</div><div class="toggle-desc">Remember context across conversations</div></div><div class="toggle on"></div></div>
-      <div class="toggle-row"><div><div class="toggle-label">Auto-save Sessions</div><div class="toggle-desc">Persist chat history to disk</div></div><div class="toggle on"></div></div>
-      <div class="toggle-row"><div><div class="toggle-label">Deep Thinking</div><div class="toggle-desc">Show model reasoning process</div></div><div class="toggle"></div></div>
-      <div class="toggle-row"><div><div class="toggle-label">Dark Theme</div><div class="toggle-desc">Use dark color scheme</div></div><div class="toggle on" id="themeSettingToggle" onclick="toggleTheme()"></div></div>
-    </div>
+  <!-- ── Settings ── -->
+  <div class="panel" id="p-settings">
+    <div class="panel-scroll"><div class="panel-inner">
+      <div class="section-title">Settings</div>
+      <div class="section-desc">Configure your trio.ai instance</div>
+      <div class="opt-row"><div><div class="opt-name">Sandbox Mode</div><div class="opt-desc">Restrict all file and shell access to project directory</div></div><div class="sw on"></div></div>
+      <div class="opt-row"><div><div class="opt-name">Guardrails</div><div class="opt-desc">Filter unsafe or harmful inputs and outputs</div></div><div class="sw on"></div></div>
+      <div class="opt-row"><div><div class="opt-name">Memory</div><div class="opt-desc">Remember context and facts across conversations</div></div><div class="sw on"></div></div>
+      <div class="opt-row"><div><div class="opt-name">Session Persistence</div><div class="opt-desc">Save chat history to disk automatically</div></div><div class="sw on"></div></div>
+      <div class="opt-row"><div><div class="opt-name">Deep Thinking</div><div class="opt-desc">Show the model's internal reasoning process</div></div><div class="sw"></div></div>
+      <div class="opt-row"><div><div class="opt-name">Dark Theme</div><div class="opt-desc">Switch between light and dark appearance</div></div><div class="sw on" id="settingsTheme" onclick="toggleTheme()"></div></div>
+    </div></div>
   </div>
 </div>
 
 <script>
-// ── State ──
-let sid = Date.now().toString(36) + Math.random().toString(36).slice(2);
-let busy = false;
-let msgContainer = null;
-
-// ── Navigation ──
-document.querySelectorAll('.nav-item').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const panel = btn.dataset.panel;
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('panel-' + panel).classList.add('active');
-    document.getElementById('topTitle').textContent = btn.textContent.trim();
+// ── Nav ──
+function goPanel(name) {
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.p === name);
   });
-});
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-'+name));
+  const btn = document.querySelector('[data-p="'+name+'"]');
+  document.getElementById('topTitle').textContent = btn ? btn.textContent.trim() : name;
+}
+document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => goPanel(b.dataset.p)));
 
 // ── Theme ──
 function toggleTheme() {
-  const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
+  const h = document.documentElement;
+  const next = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  h.setAttribute('data-theme', next);
   localStorage.setItem('trio-theme', next);
-  const st = document.getElementById('themeSettingToggle');
+  const st = document.getElementById('settingsTheme');
   if (st) st.classList.toggle('on', next === 'dark');
 }
-
-(function initTheme() {
-  const saved = localStorage.getItem('trio-theme');
-  if (saved) {
-    document.documentElement.setAttribute('data-theme', saved);
-    const st = document.getElementById('themeSettingToggle');
-    if (st) st.classList.toggle('on', saved === 'dark');
+(function() {
+  const s = localStorage.getItem('trio-theme');
+  if (s) {
+    document.documentElement.setAttribute('data-theme', s);
+    const st = document.getElementById('settingsTheme');
+    if (st) st.classList.toggle('on', s === 'dark');
   }
 })();
 
 // ── Chat ──
-const chatScroll = document.getElementById('chatScroll');
-const input = document.getElementById('input');
-const sendBtn = document.getElementById('sendBtn');
+const chatArea = document.getElementById('chatArea');
+const inp = document.getElementById('inp');
+let sid = Date.now().toString(36)+Math.random().toString(36).slice(2);
+let busy = false, mc = null;
 
-function ensureMsg() {
-  if (!msgContainer) {
-    const w = document.getElementById('welcome');
-    if (w) w.remove();
-    msgContainer = document.createElement('div');
-    msgContainer.className = 'messages';
-    chatScroll.appendChild(msgContainer);
-  }
+function ensureMc() { if(!mc){const w=document.getElementById('welcome');if(w)w.remove();mc=document.createElement('div');mc.className='msgs';chatArea.appendChild(mc);} }
+
+function addMsg(r,h) {
+  ensureMc();
+  const d=document.createElement('div');d.className='msg '+r;
+  d.innerHTML='<div class="msg-who">'+(r==='user'?'You':'trio')+'</div><div class="msg-body">'+h+'</div>';
+  mc.appendChild(d);chatArea.scrollTop=chatArea.scrollHeight;
+  return d.querySelector('.msg-body');
 }
 
-function addMsg(role, html) {
-  ensureMsg();
-  const d = document.createElement('div');
-  d.className = 'msg ' + role;
-  d.innerHTML = '<div class="msg-head">' + (role==='user'?'You':'trio') + '</div><div class="msg-text">' + html + '</div>';
-  msgContainer.appendChild(d);
-  chatScroll.scrollTop = chatScroll.scrollHeight;
-  return d.querySelector('.msg-text');
-}
-
-function showTyping() {
-  ensureMsg();
-  const d = document.createElement('div');
-  d.className = 'msg assistant'; d.id = 'typing';
-  d.innerHTML = '<div class="msg-head">trio</div><div class="msg-text"><div class="typing"><span></span><span></span><span></span></div></div>';
-  msgContainer.appendChild(d);
-  chatScroll.scrollTop = chatScroll.scrollHeight;
-}
-
-function hideTyping() { const t = document.getElementById('typing'); if(t) t.remove(); }
+function showTy(){ ensureMc();const d=document.createElement('div');d.className='msg assistant';d.id='ty';d.innerHTML='<div class="msg-who">trio</div><div class="msg-body"><div class="typing"><span></span><span></span><span></span></div></div>';mc.appendChild(d);chatArea.scrollTop=chatArea.scrollHeight; }
+function hideTy(){ const t=document.getElementById('ty');if(t)t.remove(); }
 
 function fmt(t) {
-  t = t.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-  t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
-  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  t = t.replace(/\n\n/g, '</p><p>');
-  t = t.replace(/\n/g, '<br>');
-  return '<p>' + t + '</p>';
+  t=t.replace(/```(\w*)\n([\s\S]*?)```/g,'<pre><code>$2</code></pre>');
+  t=t.replace(/`([^`]+)`/g,'<code>$1</code>');
+  t=t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  t=t.replace(/\n\n/g,'</p><p>');
+  t=t.replace(/\n/g,'<br>');
+  return '<p>'+t+'</p>';
 }
 
-function ask(text) { input.value = text; send(); }
+function ask(t){ inp.value=t; send(); }
 
 async function send() {
-  const text = input.value.trim();
-  if (!text || busy) return;
-  busy = true; sendBtn.disabled = true;
-  input.value = ''; input.style.height = 'auto';
-  addMsg('user', fmt(text));
-  showTyping();
-
+  const t=inp.value.trim(); if(!t||busy)return;
+  busy=true;document.getElementById('sendBtn').disabled=true;
+  inp.value='';inp.style.height='auto';
+  goPanel('chat');
+  addMsg('user',fmt(t)); showTy();
   try {
-    const res = await fetch('/api/chat/stream', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({message: text, session_id: sid})
-    });
-    hideTyping();
-    if (!res.ok) { addMsg('assistant','<p>Error ' + res.status + '</p>'); return; }
-    const reader = res.body.getReader();
-    const dec = new TextDecoder();
-    let full = '';
-    const body = addMsg('assistant', '');
-    while (true) {
-      const {done,value} = await reader.read();
-      if (done) break;
-      for (const line of dec.decode(value,{stream:true}).split('\n')) {
-        if (!line.startsWith('data: ')) continue;
-        try {
-          const d = JSON.parse(line.slice(6));
-          if (d.done) break;
-          if (d.text) full += d.text;
-          else if (d.error) full += '[Error: '+d.error+']';
-          body.innerHTML = fmt(full);
-          chatScroll.scrollTop = chatScroll.scrollHeight;
-        } catch(e){}
+    const res=await fetch('/api/chat/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,session_id:sid})});
+    hideTy();
+    if(!res.ok){addMsg('assistant','<p>Error '+res.status+'</p>');return;}
+    const reader=res.body.getReader(),dec=new TextDecoder();
+    let full='';const body=addMsg('assistant','');
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      for(const line of dec.decode(value,{stream:true}).split('\n')){
+        if(!line.startsWith('data: '))continue;
+        try{const d=JSON.parse(line.slice(6));if(d.done)break;if(d.text)full+=d.text;body.innerHTML=fmt(full);chatArea.scrollTop=chatArea.scrollHeight;}catch(e){}
       }
     }
-  } catch(e) {
-    hideTyping();
-    addMsg('assistant','<p>Connection error. Is the server running?</p>');
-  } finally { busy=false; sendBtn.disabled=false; input.focus(); }
+  } catch(e){ hideTy(); addMsg('assistant','<p>Connection error.</p>'); }
+  finally{ busy=false;document.getElementById('sendBtn').disabled=false;inp.focus(); }
 }
 
 function newChat() {
-  if (msgContainer) { msgContainer.remove(); msgContainer = null; }
-  chatScroll.innerHTML = '<div class="welcome-screen" id="welcome"><div class="welcome-icon">t</div><h2>What can I help with?</h2><p>Sandboxed to your project directory.</p><div class="chips"><button class="chip" onclick="ask(\'Explore project\')">Explore</button><button class="chip" onclick="ask(\'Write code\')">Code</button><button class="chip" onclick="ask(\'Find bugs\')">Debug</button></div></div>';
-  sid = Date.now().toString(36) + Math.random().toString(36).slice(2);
+  if(mc){mc.remove();mc=null;}
+  chatArea.innerHTML='<div class="welcome" id="welcome"><div class="welcome-mark">t</div><h2>What can I help with?</h2><p>Sandboxed to your project directory.</p><div class="chips"><button class="chip" onclick="ask(\'Explore project\')">Explore</button><button class="chip" onclick="ask(\'Write code\')">Code</button><button class="chip" onclick="ask(\'Debug\')">Debug</button></div></div>';
+  sid=Date.now().toString(36)+Math.random().toString(36).slice(2);
   fetch('/api/sessions/clear',{method:'POST'});
 }
 
-// ── Populate panels ──
-const TOOLS = [
-  {name:'Shell',desc:'Execute shell commands in sandbox directory',on:true},
-  {name:'File Operations',desc:'Read, write, list files within project',on:true},
-  {name:'Browser',desc:'Navigate, click, fill, screenshot via Playwright',on:true},
-  {name:'Web Search',desc:'Search the internet via DuckDuckGo',on:true},
-  {name:'RAG Search',desc:'Semantic search over local documents',on:true},
-  {name:'Code Analysis',desc:'AST parsing, linting, dependency checking',on:true},
-  {name:'Screenshot',desc:'Capture screen regions',on:false},
-  {name:'Email',desc:'Send and receive emails via SMTP/IMAP',on:false},
-  {name:'Calculator',desc:'Math evaluation and symbolic computation',on:true},
-  {name:'Delegate',desc:'Spawn sub-agents for complex tasks',on:true},
-  {name:'MCP Client',desc:'Connect to external MCP tool servers',on:false},
-  {name:'Memory',desc:'Store and recall information across sessions',on:true},
+// ── Populate ──
+const SKILLS=[
+  {n:'Coding',d:'Python, JS, TypeScript, Go, Rust, Java, API design, testing',c:418},
+  {n:'Web Development',d:'React, Next.js, Vue, Svelte, HTML, CSS, responsive design',c:159},
+  {n:'DevOps & SysAdmin',d:'Docker, K8s, CI/CD, Linux, Nginx, cloud infrastructure',c:204},
+  {n:'Data Science',d:'Pandas, ML, visualization, statistics, ETL pipelines',c:102},
+  {n:'Security',d:'Pentesting, auditing, OWASP, encryption, compliance',c:80},
+  {n:'Marketing',d:'SEO, content strategy, social media, analytics, campaigns',c:163},
+  {n:'Finance',d:'Accounting, forecasting, invoicing, budgeting, tax',c:47},
+  {n:'Creative',d:'Writing, design, music, video scripts, storytelling',c:79},
+  {n:'Productivity',d:'Automation, scheduling, note-taking, project management',c:167},
+  {n:'Education',d:'Tutoring, curriculum, flashcards, quiz generation',c:25},
+  {n:'Legal',d:'Contract review, compliance, GDPR, terms of service',c:29},
+  {n:'Healthcare',d:'Medical info, patient management, HIPAA',c:21},
+  {n:'General',d:'Research, summarization, translation, conversation',c:415},
 ];
 
-const CHANNELS = [
-  {name:'CLI',desc:'Terminal chat interface',tag:'built-in'},
-  {name:'Web UI',desc:'Browser-based interface',tag:'built-in'},
-  {name:'Discord',desc:'Discord bot via discord.py',tag:'popular'},
-  {name:'Telegram',desc:'Telegram bot via pyTelegramBotAPI',tag:'popular'},
-  {name:'Slack',desc:'Slack app via Bolt SDK',tag:'popular'},
-  {name:'WhatsApp',desc:'WhatsApp Business API',tag:'enterprise'},
-  {name:'Teams',desc:'Microsoft Teams bot',tag:'enterprise'},
-  {name:'Signal',desc:'Signal messenger via signal-cli',tag:'secure'},
-  {name:'Matrix',desc:'Matrix/Element via matrix-nio',tag:'open'},
-  {name:'SMS',desc:'SMS messaging via Twilio',tag:'mobile'},
-  {name:'Instagram',desc:'Instagram DM via Meta Graph API',tag:'social'},
-  {name:'Messenger',desc:'Facebook Messenger',tag:'social'},
-  {name:'LINE',desc:'LINE messaging platform',tag:'asia'},
-  {name:'Reddit',desc:'Reddit bot via PRAW',tag:'social'},
-  {name:'Email',desc:'IMAP receive / SMTP send',tag:'classic'},
-  {name:'Google Chat',desc:'Google Workspace chat',tag:'enterprise'},
-  {name:'REST API',desc:'HTTP API gateway for custom integrations',tag:'developer'},
+const TOOLS=[
+  {n:'Shell',d:'Execute commands in sandbox directory',on:1},
+  {n:'File Operations',d:'Read, write, list files within project',on:1},
+  {n:'Browser',d:'Navigate, click, fill, screenshot via Playwright',on:1},
+  {n:'Web Search',d:'Search the internet via DuckDuckGo',on:1},
+  {n:'RAG Search',d:'Semantic search over local documents',on:1},
+  {n:'Code Analysis',d:'AST parsing, linting, dependency checking',on:1},
+  {n:'Screenshot',d:'Capture screen regions',on:0},
+  {n:'Email',d:'Send and receive emails via SMTP/IMAP',on:0},
+  {n:'Calculator',d:'Math and symbolic computation',on:1},
+  {n:'Delegate',d:'Spawn sub-agents for complex tasks',on:1},
+  {n:'MCP Client',d:'Connect to external MCP tool servers',on:0},
+  {n:'Memory',d:'Store and recall info across sessions',on:1},
 ];
 
-const AGENTS = [
-  {name:'Researcher',desc:'Web search, browsing, RAG -- gathers information',tag:'8 iterations'},
-  {name:'Coder',desc:'Shell commands, file operations -- writes and runs code',tag:'10 iterations'},
-  {name:'Reviewer',desc:'Code review, bug analysis -- no tool access',tag:'3 iterations'},
-  {name:'Planner',desc:'Task breakdown, architecture -- no tool access',tag:'3 iterations'},
-  {name:'Summarizer',desc:'Condenses long text into key points',tag:'2 iterations'},
+const CHANNELS=[
+  {n:'CLI',d:'Terminal interface',t:'built-in'},
+  {n:'Web UI',d:'Browser interface',t:'built-in'},
+  {n:'Discord',d:'discord.py bot',t:'popular'},
+  {n:'Telegram',d:'Telegram bot',t:'popular'},
+  {n:'Slack',d:'Slack Bolt app',t:'popular'},
+  {n:'WhatsApp',d:'Business API',t:'enterprise'},
+  {n:'Teams',d:'Microsoft Teams',t:'enterprise'},
+  {n:'Signal',d:'Signal messenger',t:'secure'},
+  {n:'Matrix',d:'Matrix/Element',t:'open'},
+  {n:'SMS',d:'Twilio messaging',t:'mobile'},
+  {n:'Instagram',d:'Instagram DM',t:'social'},
+  {n:'Messenger',d:'Facebook Messenger',t:'social'},
+  {n:'LINE',d:'LINE platform',t:'asia'},
+  {n:'Reddit',d:'Reddit via PRAW',t:'social'},
+  {n:'Email',d:'IMAP / SMTP',t:'classic'},
+  {n:'Google Chat',d:'Google Workspace',t:'enterprise'},
+  {n:'REST API',d:'HTTP gateway',t:'developer'},
 ];
 
-document.getElementById('toolsList').innerHTML = TOOLS.map(t =>
-  '<div class="toggle-row"><div><div class="toggle-label">'+t.name+'</div><div class="toggle-desc">'+t.desc+'</div></div><div class="toggle'+(t.on?' on':'')+'"></div></div>'
-).join('');
+const AGENTS=[
+  {n:'Researcher',d:'Web search, browsing, RAG -- gathers and synthesizes information from multiple sources',t:'8 max iterations'},
+  {n:'Coder',d:'Shell commands, file operations -- writes, runs, and debugs code autonomously',t:'10 max iterations'},
+  {n:'Reviewer',d:'Code review, bug detection, best practices analysis -- read-only, no tool access',t:'3 max iterations'},
+  {n:'Planner',d:'Task breakdown, architecture design, project planning -- strategic thinking',t:'3 max iterations'},
+  {n:'Summarizer',d:'Condenses long documents, conversations, and data into key points',t:'2 max iterations'},
+];
 
-document.getElementById('channelGrid').innerHTML = CHANNELS.map(c =>
-  '<div class="card"><div class="card-title">'+c.name+'</div><div class="card-desc">'+c.desc+'</div><div class="card-tag">'+c.tag+'</div></div>'
-).join('');
+document.getElementById('skillGrid').innerHTML=SKILLS.map(s=>'<div class="card"><div class="card-name">'+s.n+'</div><div class="card-text">'+s.d+'</div><div class="card-badge">'+s.c+' skills</div></div>').join('');
+document.getElementById('toolList').innerHTML=TOOLS.map(t=>'<div class="opt-row"><div><div class="opt-name">'+t.n+'</div><div class="opt-desc">'+t.d+'</div></div><div class="sw'+(t.on?' on':'')+'"></div></div>').join('');
+document.getElementById('channelGrid').innerHTML=CHANNELS.map(c=>'<div class="card"><div class="card-name">'+c.n+'</div><div class="card-text">'+c.d+'</div><div class="card-badge">'+c.t+'</div></div>').join('');
+document.getElementById('agentGrid').innerHTML=AGENTS.map(a=>'<div class="card"><div class="card-name">'+a.n+'</div><div class="card-text">'+a.d+'</div><div class="card-badge">'+a.t+'</div></div>').join('');
 
-document.getElementById('agentGrid').innerHTML = AGENTS.map(a =>
-  '<div class="card"><div class="card-title">'+a.name+'</div><div class="card-desc">'+a.desc+'</div><div class="card-tag">'+a.tag+'</div></div>'
-).join('');
+document.querySelectorAll('.sw').forEach(s=>{if(s.id==='settingsTheme')return;s.addEventListener('click',()=>s.classList.toggle('on'));});
 
-// Toggles
-document.querySelectorAll('.toggle').forEach(t => {
-  if (t.id === 'themeSettingToggle') return;
-  t.addEventListener('click', () => t.classList.toggle('on'));
-});
+function filterCards(id,q){q=q.toLowerCase();document.querySelectorAll('#'+id+' .card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q)?'':'none');}
 
-// ── Status ──
+// ── API ──
 fetch('/api/status').then(r=>r.json()).then(d=>{
-  document.getElementById('modelBadge').textContent = d.model;
-}).catch(()=>{
-  document.getElementById('modelBadge').textContent = 'offline';
-});
+  document.getElementById('modelName').textContent=d.model;
+  document.getElementById('dashModel').textContent=d.model;
+  document.getElementById('dashProvider').textContent=d.provider;
+}).catch(()=>{ document.getElementById('modelName').textContent='offline'; });
 
-// ── Project info ──
 fetch('/api/project').then(r=>r.json()).then(d=>{
-  if (d.root) {
-    document.getElementById('projectStats').innerHTML =
-      '<div class="stat-card"><div class="stat-value">'+d.name+'</div><div class="stat-label">Project</div></div>'+
-      '<div class="stat-card"><div class="stat-value">'+d.language+'</div><div class="stat-label">Language</div></div>'+
-      '<div class="stat-card"><div class="stat-value">'+(d.files_count||0)+'</div><div class="stat-label">Source Files</div></div>'+
-      '<div class="stat-card"><div class="stat-value">'+(d.has_git?'Yes':'No')+'</div><div class="stat-label">Git</div></div>';
-    if (d.files && d.files.length) {
-      document.getElementById('projectFiles').innerHTML = d.files.slice(0,50).join('<br>') + (d.files.length>50?'<br>... and '+(d.files.length-50)+' more':'');
-    }
+  if(d.root){
+    document.getElementById('projectStats').innerHTML=
+      '<div class="stat"><div class="stat-num">'+d.name+'</div><div class="stat-lbl">Project</div></div>'+
+      '<div class="stat"><div class="stat-num">'+d.language+'</div><div class="stat-lbl">Language</div></div>'+
+      '<div class="stat"><div class="stat-num">'+(d.files_count||0)+'</div><div class="stat-lbl">Files</div></div>'+
+      '<div class="stat"><div class="stat-num">'+(d.has_git?'Yes':'No')+'</div><div class="stat-lbl">Git</div></div>';
+    if(d.files)document.getElementById('projectFiles').innerHTML=d.files.slice(0,60).join('<br>')+(d.files.length>60?'<br><span style="color:var(--text-3)">...and '+(d.files.length-60)+' more</span>':'');
   }
 }).catch(()=>{});
 
-function filterSkills(q) {
-  const cards = document.querySelectorAll('#skillGrid .card');
-  q = q.toLowerCase();
-  cards.forEach(c => {
-    const text = c.textContent.toLowerCase();
-    c.style.display = text.includes(q) ? '' : 'none';
-  });
-}
-
-function daemonAction(action) { alert('Run in terminal: trio daemon ' + action); }
-
-input.focus();
+inp.focus();
 </script>
 </body>
 </html>
