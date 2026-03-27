@@ -811,93 +811,211 @@ function newChat() {
   fetch('/api/sessions/clear',{method:'POST'});
 }
 
-// ── Populate ──
-const SKILLS=[
-  {n:'Coding',d:'Python, JS, TypeScript, Go, Rust, Java, API design, testing',c:418},
-  {n:'Web Development',d:'React, Next.js, Vue, Svelte, HTML, CSS, responsive design',c:159},
-  {n:'DevOps & SysAdmin',d:'Docker, K8s, CI/CD, Linux, Nginx, cloud infrastructure',c:204},
-  {n:'Data Science',d:'Pandas, ML, visualization, statistics, ETL pipelines',c:102},
-  {n:'Security',d:'Pentesting, auditing, OWASP, encryption, compliance',c:80},
-  {n:'Marketing',d:'SEO, content strategy, social media, analytics, campaigns',c:163},
-  {n:'Finance',d:'Accounting, forecasting, invoicing, budgeting, tax',c:47},
-  {n:'Creative',d:'Writing, design, music, video scripts, storytelling',c:79},
-  {n:'Productivity',d:'Automation, scheduling, note-taking, project management',c:167},
-  {n:'Education',d:'Tutoring, curriculum, flashcards, quiz generation',c:25},
-  {n:'Legal',d:'Contract review, compliance, GDPR, terms of service',c:29},
-  {n:'Healthcare',d:'Medical info, patient management, HIPAA',c:21},
-  {n:'General',d:'Research, summarization, translation, conversation',c:415},
-];
+// ── Load Skills from API ──
+let skillsCache = [];
+async function loadSkills(category='') {
+  const q = document.querySelector('#p-skills .search');
+  const search = q ? q.value : '';
+  const url = '/api/skills?limit=100' + (category ? '&category='+category : '') + (search ? '&q='+encodeURIComponent(search) : '');
+  try {
+    const r = await fetch(url);
+    const d = await r.json();
+    skillsCache = d.skills || [];
+    const cats = d.categories || {};
+    // Render category cards if no search/filter
+    if (!category && !search) {
+      document.getElementById('skillGrid').innerHTML = Object.entries(cats)
+        .sort((a,b) => b[1]-a[1])
+        .map(([cat,count]) => '<div class="card" style="cursor:pointer" onclick="loadSkills(\''+cat+'\')"><div class="card-name">'+cat.charAt(0).toUpperCase()+cat.slice(1)+'</div><div class="card-text">Click to browse skills in this category</div><div class="card-badge">'+count+' skills</div></div>')
+        .join('');
+    } else {
+      document.getElementById('skillGrid').innerHTML =
+        (category ? '<div style="margin-bottom:12px"><button class="btn" onclick="loadSkills()">Back to categories</button> <span style="color:var(--text-2);font-size:14px;">'+d.total+' skills in '+category+'</span></div>' : '') +
+        '<div class="grid grid-2">' +
+        d.skills.map(s => '<div class="card"><div class="card-name">'+s.name+'</div><div class="card-text">'+(s.description||'').slice(0,100)+'</div><div style="display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap;">'+(s.tags||[]).slice(0,3).map(t=>'<span class="card-badge">'+t+'</span>').join('')+'<button class="btn" style="margin-left:auto;font-size:11px;padding:4px 10px;" onclick="installSkill(\''+s.name+'\')">Install</button></div></div>').join('') +
+        '</div>';
+    }
+  } catch(e) { console.error('Skills load error:', e); }
+}
 
-const TOOLS=[
-  {n:'Shell',d:'Execute commands in sandbox directory',on:1},
-  {n:'File Operations',d:'Read, write, list files within project',on:1},
-  {n:'Browser',d:'Navigate, click, fill, screenshot via Playwright',on:1},
-  {n:'Web Search',d:'Search the internet via DuckDuckGo',on:1},
-  {n:'RAG Search',d:'Semantic search over local documents',on:1},
-  {n:'Code Analysis',d:'AST parsing, linting, dependency checking',on:1},
-  {n:'Screenshot',d:'Capture screen regions',on:0},
-  {n:'Email',d:'Send and receive emails via SMTP/IMAP',on:0},
-  {n:'Calculator',d:'Math and symbolic computation',on:1},
-  {n:'Delegate',d:'Spawn sub-agents for complex tasks',on:1},
-  {n:'MCP Client',d:'Connect to external MCP tool servers',on:0},
-  {n:'Memory',d:'Store and recall info across sessions',on:1},
-];
+async function installSkill(name) {
+  try {
+    const r = await fetch('/api/skills/install', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})});
+    const d = await r.json();
+    if (d.status === 'installed') alert('Skill "'+name+'" installed successfully!');
+    else if (d.status === 'registered') alert('Skill "'+name+'" registered.');
+    else alert(d.error || 'Unknown error');
+  } catch(e) { alert('Failed to install skill'); }
+}
 
-const CHANNELS=[
-  {n:'CLI',d:'Terminal interface',t:'built-in'},
-  {n:'Web UI',d:'Browser interface',t:'built-in'},
-  {n:'Discord',d:'discord.py bot',t:'popular'},
-  {n:'Telegram',d:'Telegram bot',t:'popular'},
-  {n:'Slack',d:'Slack Bolt app',t:'popular'},
-  {n:'WhatsApp',d:'Business API',t:'enterprise'},
-  {n:'Teams',d:'Microsoft Teams',t:'enterprise'},
-  {n:'Signal',d:'Signal messenger',t:'secure'},
-  {n:'Matrix',d:'Matrix/Element',t:'open'},
-  {n:'SMS',d:'Twilio messaging',t:'mobile'},
-  {n:'Instagram',d:'Instagram DM',t:'social'},
-  {n:'Messenger',d:'Facebook Messenger',t:'social'},
-  {n:'LINE',d:'LINE platform',t:'asia'},
-  {n:'Reddit',d:'Reddit via PRAW',t:'social'},
-  {n:'Email',d:'IMAP / SMTP',t:'classic'},
-  {n:'Google Chat',d:'Google Workspace',t:'enterprise'},
-  {n:'REST API',d:'HTTP gateway',t:'developer'},
-];
+// ── Load Tools from API ──
+async function loadTools() {
+  try {
+    const r = await fetch('/api/tools');
+    const d = await r.json();
+    const tools = d.tools || [];
+    document.getElementById('toolList').innerHTML = tools.map(t =>
+      '<div class="opt-row"><div><div class="opt-name">'+t.name+'</div><div class="opt-desc">'+t.desc+'</div></div><div class="sw'+(t.enabled?' on':'')+'" data-tool="'+t.key+'" onclick="toggleTool(this,\''+t.key+'\')"></div></div>'
+    ).join('');
+    // Update dashboard
+    const enabledCount = tools.filter(t => t.enabled).length;
+    const dashTools = document.querySelector('#p-dashboard .stats');
+    if (dashTools) {
+      const statEls = dashTools.querySelectorAll('.stat-num');
+      if (statEls[1]) statEls[1].textContent = enabledCount;
+    }
+  } catch(e) { console.error('Tools load error:', e); }
+}
 
-const AGENTS=[
-  {n:'Researcher',d:'Web search, browsing, RAG -- gathers and synthesizes information from multiple sources',t:'8 max iterations'},
-  {n:'Coder',d:'Shell commands, file operations -- writes, runs, and debugs code autonomously',t:'10 max iterations'},
-  {n:'Reviewer',d:'Code review, bug detection, best practices analysis -- read-only, no tool access',t:'3 max iterations'},
-  {n:'Planner',d:'Task breakdown, architecture design, project planning -- strategic thinking',t:'3 max iterations'},
-  {n:'Summarizer',d:'Condenses long documents, conversations, and data into key points',t:'2 max iterations'},
-];
+async function toggleTool(el, key) {
+  const on = !el.classList.contains('on');
+  el.classList.toggle('on', on);
+  await fetch('/api/tools/toggle', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, enabled:on})});
+}
 
-document.getElementById('skillGrid').innerHTML=SKILLS.map(s=>'<div class="card"><div class="card-name">'+s.n+'</div><div class="card-text">'+s.d+'</div><div class="card-badge">'+s.c+' skills</div></div>').join('');
-document.getElementById('toolList').innerHTML=TOOLS.map(t=>'<div class="opt-row"><div><div class="opt-name">'+t.n+'</div><div class="opt-desc">'+t.d+'</div></div><div class="sw'+(t.on?' on':'')+'"></div></div>').join('');
-document.getElementById('channelGrid').innerHTML=CHANNELS.map(c=>'<div class="card"><div class="card-name">'+c.n+'</div><div class="card-text">'+c.d+'</div><div class="card-badge">'+c.t+'</div></div>').join('');
-document.getElementById('agentGrid').innerHTML=AGENTS.map(a=>'<div class="card"><div class="card-name">'+a.n+'</div><div class="card-text">'+a.d+'</div><div class="card-badge">'+a.t+'</div></div>').join('');
+// ── Load Channels from API ──
+async function loadChannels() {
+  try {
+    const r = await fetch('/api/channels');
+    const d = await r.json();
+    const chs = d.channels || [];
+    document.getElementById('channelGrid').innerHTML = chs.map(c => {
+      const statusColor = c.enabled ? (c.configured ? 'var(--green)' : 'var(--orange)') : 'var(--text-3)';
+      const statusText = c.enabled ? (c.configured ? 'Active' : 'Needs config') : 'Disabled';
+      return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:start;"><div class="card-name">'+c.name+'</div>'+(c.configurable?'<div class="sw'+(c.enabled?' on':'')+'" onclick="toggleChannel(this,\''+c.key+'\')"></div>':'')+'</div><div class="card-text">'+c.desc+'</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;"><div class="card-badge">'+c.tag+'</div><span style="font-size:11px;color:'+statusColor+';">'+statusText+'</span></div>'+(c.configurable && c.enabled && !c.configured?'<button class="btn" style="width:100%;margin-top:10px;font-size:12px;" onclick="configChannel(\''+c.key+'\','+JSON.stringify(c.fields||[]).replace(/"/g,'&quot;')+')">Configure</button>':'')+'</div>';
+    }).join('');
+  } catch(e) { console.error('Channels load error:', e); }
+}
 
-document.querySelectorAll('.sw').forEach(s=>{if(s.id==='settingsTheme')return;s.addEventListener('click',()=>s.classList.toggle('on'));});
+async function toggleChannel(el, key) {
+  const on = !el.classList.contains('on');
+  el.classList.toggle('on', on);
+  await fetch('/api/channels/toggle', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, enabled:on})});
+  loadChannels(); // reload to update status
+}
 
-function filterCards(id,q){q=q.toLowerCase();document.querySelectorAll('#'+id+' .card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q)?'':'none');}
-
-// ── API ──
-fetch('/api/status').then(r=>r.json()).then(d=>{
-  document.getElementById('modelName').textContent=d.model;
-  document.getElementById('dashModel').textContent=d.model;
-  document.getElementById('dashProvider').textContent=d.provider;
-}).catch(()=>{ document.getElementById('modelName').textContent='offline'; });
-
-fetch('/api/project').then(r=>r.json()).then(d=>{
-  if(d.root){
-    document.getElementById('projectStats').innerHTML=
-      '<div class="stat"><div class="stat-num">'+d.name+'</div><div class="stat-lbl">Project</div></div>'+
-      '<div class="stat"><div class="stat-num">'+d.language+'</div><div class="stat-lbl">Language</div></div>'+
-      '<div class="stat"><div class="stat-num">'+(d.files_count||0)+'</div><div class="stat-lbl">Files</div></div>'+
-      '<div class="stat"><div class="stat-num">'+(d.has_git?'Yes':'No')+'</div><div class="stat-lbl">Git</div></div>';
-    if(d.files)document.getElementById('projectFiles').innerHTML=d.files.slice(0,60).join('<br>')+(d.files.length>60?'<br><span style="color:var(--text-3)">...and '+(d.files.length-60)+' more</span>':'');
+function configChannel(key, fields) {
+  const values = {};
+  for (const f of fields) {
+    const v = prompt('Enter '+f.replace(/_/g,' ')+' for '+key+':');
+    if (v === null) return; // cancelled
+    values[f] = v;
   }
-}).catch(()=>{});
+  fetch('/api/channels/config', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, fields:values})})
+    .then(() => { loadChannels(); alert(key+' configured!'); });
+}
 
+// ── Load Agents from API ──
+async function loadAgents() {
+  try {
+    const r = await fetch('/api/agents');
+    const d = await r.json();
+    document.getElementById('agentGrid').innerHTML = (d.agents||[]).map(a =>
+      '<div class="card"><div class="card-name">'+a.name.charAt(0).toUpperCase()+a.name.slice(1)+'</div><div class="card-text">'+a.role+'</div><div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">'+(a.tools||[]).map(t=>'<span class="card-badge">'+t+'</span>').join('')+'<span class="card-badge" style="background:var(--surface-hover);">max '+a.max_iterations+' iterations</span></div></div>'
+    ).join('');
+  } catch(e) { console.error('Agents load error:', e); }
+}
+
+// ── Load Models from API ──
+async function loadModels() {
+  try {
+    const r = await fetch('/api/models');
+    const d = await r.json();
+    const models = d.models || [];
+    const grid = document.querySelector('#p-models .grid');
+    if (grid && models.length) {
+      grid.innerHTML = models.map(m =>
+        '<div class="card'+(m.active?' active-model':'')+'" style="'+(m.active?'border-color:var(--accent);':'')+'cursor:pointer;" onclick="switchModel(\''+m.name.replace('.gguf','').replace(/-q4_k_m/,'')+'\')">' +
+        '<div class="card-name">'+m.name+'</div>' +
+        '<div class="card-text">'+m.size_mb+' MB'+(m.active?' -- Currently active':'')+'</div>' +
+        '<div class="card-badge">'+(m.active?'active':'click to activate')+'</div></div>'
+      ).join('') + '<div class="card"><div class="card-name">Custom Model</div><div class="card-text">Place any .gguf file in ~/.trio/models/</div><div class="card-badge">bring your own</div></div>';
+    }
+  } catch(e) { console.error('Models load error:', e); }
+}
+
+async function switchModel(name) {
+  try {
+    await fetch('/api/models/switch', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({model:name})});
+    document.getElementById('modelName').textContent = name;
+    document.getElementById('dashModel').textContent = name;
+    loadModels();
+    alert('Switched to '+name+'. Next message will use the new model.');
+  } catch(e) { alert('Failed to switch model'); }
+}
+
+// ── Load Settings from API ──
+async function loadSettings() {
+  try {
+    const r = await fetch('/api/settings');
+    const d = await r.json();
+    const container = document.querySelector('#p-settings .panel-inner');
+    if (!container) return;
+    const rows = container.querySelectorAll('.opt-row');
+    const keys = ['sandbox','guardrails','memory','session_persistence','deep_thinking'];
+    keys.forEach((k,i) => {
+      if (rows[i]) {
+        const sw = rows[i].querySelector('.sw');
+        if (sw && sw.id !== 'settingsTheme') {
+          sw.classList.toggle('on', !!d[k]);
+          sw.setAttribute('data-setting', k);
+          sw.onclick = function() {
+            this.classList.toggle('on');
+            const val = this.classList.contains('on');
+            fetch('/api/settings', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({[k]:val})});
+          };
+        }
+      }
+    });
+  } catch(e) { console.error('Settings load error:', e); }
+}
+
+// ── Load Project from API ──
+async function loadProject() {
+  try {
+    const r = await fetch('/api/project');
+    const d = await r.json();
+    if (d.root) {
+      document.getElementById('projectStats').innerHTML =
+        '<div class="stat"><div class="stat-num">'+d.name+'</div><div class="stat-lbl">Project</div></div>'+
+        '<div class="stat"><div class="stat-num">'+d.language+'</div><div class="stat-lbl">Language</div></div>'+
+        '<div class="stat"><div class="stat-num">'+(d.files_count||0)+'</div><div class="stat-lbl">Files</div></div>'+
+        '<div class="stat"><div class="stat-num">'+(d.has_git?'Yes':'No')+'</div><div class="stat-lbl">Git</div></div>';
+      if (d.files) document.getElementById('projectFiles').innerHTML =
+        d.files.slice(0,60).join('<br>') +
+        (d.files.length>60 ? '<br><span style="color:var(--text-3)">...and '+(d.files.length-60)+' more</span>' : '');
+    }
+  } catch(e) {}
+}
+
+// ── Skills search ──
+let skillSearchTimer;
+document.querySelector('#p-skills .search').addEventListener('input', function() {
+  clearTimeout(skillSearchTimer);
+  skillSearchTimer = setTimeout(() => loadSkills(), 300);
+});
+
+// ── Init: load all data from APIs ──
+async function init() {
+  try {
+    const status = await fetch('/api/status').then(r=>r.json());
+    document.getElementById('modelName').textContent = status.model;
+    document.getElementById('dashModel').textContent = status.model;
+    document.getElementById('dashProvider').textContent = status.provider;
+  } catch(e) {
+    document.getElementById('modelName').textContent = 'offline';
+  }
+
+  loadSkills();
+  loadTools();
+  loadChannels();
+  loadAgents();
+  loadModels();
+  loadSettings();
+  loadProject();
+}
+
+init();
 inp.focus();
 </script>
 </body>

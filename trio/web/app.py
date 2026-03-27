@@ -1,4 +1,4 @@
-"""trio.ai web UI -- browser-based chat interface.
+"""trio.ai web UI -- browser-based chat interface with full dashboard.
 
 Run with:  trio serve
 Or:        python -m trio.web.app
@@ -18,6 +18,7 @@ from trio.core.config import load_config, get_workspace_dir
 logger = logging.getLogger(__name__)
 
 STATIC_DIR = Path(__file__).parent / "static"
+CONFIG_PATH = Path.home() / ".trio" / "config.json"
 
 SYSTEM_PROMPT = (
     "You are trio-max, an advanced AI assistant created by trio.ai. "
@@ -28,7 +29,6 @@ SYSTEM_PROMPT = (
 
 
 def _load_workspace_prompt():
-    """Load SOUL.md and USER.md from workspace if available."""
     workspace = get_workspace_dir()
     parts = [SYSTEM_PROMPT]
     for fname in ("SOUL.md", "USER.md"):
@@ -42,40 +42,32 @@ def _load_workspace_prompt():
 
 
 def _create_provider(config: dict):
-    """Create the appropriate LLM provider based on config."""
     provider_name = config.get("provider", "local")
-
     if provider_name == "local":
         from trio.providers.local import LocalProvider
-        provider_config = config.get("providers", {}).get("local", {})
-        provider_config.setdefault("default_model", "trio-max")
-        return LocalProvider(provider_config)
-
+        pc = config.get("providers", {}).get("local", {})
+        pc.setdefault("default_model", "trio-max")
+        return LocalProvider(pc)
     elif provider_name in ("ollama", "trio"):
         from trio.providers.ollama import OllamaProvider
-        provider_config = config.get("providers", {}).get("ollama", {})
-        return OllamaProvider(provider_config)
-
-    elif provider_name == "openai":
-        from trio.providers.openai import OpenAIProvider
-        provider_config = config.get("providers", {}).get("openai", {})
-        return OpenAIProvider(provider_config)
-
+        return OllamaProvider(config.get("providers", {}).get("ollama", {}))
     else:
-        # Fallback to local
         from trio.providers.local import LocalProvider
         return LocalProvider(config.get("providers", {}).get("local", {}))
 
 
-# ── Routes ───────────────────────────────────────────────────────────────────
+def _save_config(config: dict):
+    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+
+# ── Chat Routes ──────────────────────────────────────────────────────────────
 
 async def index(request):
-    """Serve the main chat UI."""
     return web.FileResponse(STATIC_DIR / "index.html")
 
 
 async def api_chat(request):
-    """POST /api/chat -- send a message, get a response."""
     try:
         data = await request.json()
     except Exception:
@@ -89,34 +81,25 @@ async def api_chat(request):
     provider = request.app["provider"]
     system_prompt = request.app["system_prompt"]
 
-    # Get or create session history
     sessions = request.app["sessions"]
     if session_id not in sessions:
         sessions[session_id] = []
 
     history = sessions[session_id]
     history.append({"role": "user", "content": message})
-
-    # Build messages for LLM
     messages = [{"role": "system", "content": system_prompt}] + history[-20:]
 
     try:
         response = await provider.generate(messages=messages)
         content = response.content or "I couldn't generate a response."
     except Exception as e:
-        logger.error(f"Provider error: {e}")
         content = f"Error: {e}"
 
     history.append({"role": "assistant", "content": content})
-
-    return web.json_response({
-        "response": content,
-        "session_id": session_id,
-    })
+    return web.json_response({"response": content, "session_id": session_id})
 
 
 async def api_chat_stream(request):
-    """POST /api/chat/stream -- SSE streaming response."""
     try:
         data = await request.json()
     except Exception:
@@ -136,19 +119,12 @@ async def api_chat_stream(request):
 
     history = sessions[session_id]
     history.append({"role": "user", "content": message})
-
-    # Build messages for LLM
     messages = [{"role": "system", "content": system_prompt}] + history[-20:]
 
     resp = web.StreamResponse(
-        status=200,
-        reason="OK",
-        headers={
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Session-Id": session_id,
-        },
+        status=200, reason="OK",
+        headers={"Content-Type": "text/event-stream", "Cache-Control": "no-cache",
+                 "Connection": "keep-alive", "X-Session-Id": session_id},
     )
     await resp.prepare(request)
 
@@ -157,24 +133,26 @@ async def api_chat_stream(request):
         async for chunk in provider.stream_generate(messages=messages):
             if chunk.text:
                 content += chunk.text
-                event = f"data: {json.dumps({'text': chunk.text})}\n\n"
-                await resp.write(event.encode("utf-8"))
+                await resp.write(f"data: {json.dumps({'text': chunk.text})}\n\n".encode())
             if chunk.is_final:
                 break
-
-        await resp.write(f"data: {json.dumps({'done': True})}\n\n".encode("utf-8"))
+        await resp.write(f"data: {json.dumps({'done': True})}\n\n".encode())
     except Exception as e:
-        logger.error(f"Stream error: {e}")
-        error_msg = str(e)
-        content = f"Error: {error_msg}"
-        await resp.write(f"data: {json.dumps({'error': error_msg})}\n\n".encode("utf-8"))
+        content = f"Error: {e}"
+        await resp.write(f"data: {json.dumps({'error': str(e)})}\n\n".encode())
 
     history.append({"role": "assistant", "content": content})
     return resp
 
 
+async def api_sessions_clear(request):
+    request.app["sessions"].clear()
+    return web.json_response({"status": "cleared"})
+
+
+# ── Status & Project ─────────────────────────────────────────────────────────
+
 async def api_status(request):
-    """GET /api/status -- system info."""
     config = request.app["config"]
     return web.json_response({
         "status": "running",
@@ -185,27 +163,356 @@ async def api_status(request):
     })
 
 
-async def api_sessions_clear(request):
-    """POST /api/sessions/clear -- clear all sessions."""
-    request.app["sessions"].clear()
-    return web.json_response({"status": "cleared"})
-
-
 async def api_project(request):
-    """GET /api/project -- project/sandbox info."""
     try:
-        from trio.core.sandbox import get_sandbox_root, get_project_info, list_project_files
+        from trio.core.sandbox import get_project_info, list_project_files
         info = get_project_info()
         info["files"] = list_project_files(max_depth=3)
         return web.json_response(info)
     except Exception as e:
-        return web.json_response({"error": str(e), "root": os.getcwd(), "name": Path(os.getcwd()).name})
+        return web.json_response({
+            "error": str(e), "root": os.getcwd(),
+            "name": Path(os.getcwd()).name,
+            "language": "unknown", "files_count": 0,
+            "has_git": False, "files": [],
+        })
+
+
+# ── Skills ───────────────────────────────────────────────────────────────────
+
+async def api_skills(request):
+    """GET /api/skills -- list skills from triohub index."""
+    category = request.query.get("category", "")
+    search = request.query.get("q", "").lower()
+    limit = int(request.query.get("limit", "50"))
+    offset = int(request.query.get("offset", "0"))
+
+    index_path = Path(__file__).resolve().parent.parent.parent / "triohub" / "index.json"
+    if not index_path.exists():
+        return web.json_response({"skills": [], "total": 0, "categories": {}})
+
+    try:
+        data = json.loads(index_path.read_text(encoding="utf-8"))
+    except Exception:
+        return web.json_response({"skills": [], "total": 0, "categories": {}})
+
+    # Index has categories as list with nested skills
+    categories_list = data.get("categories", [])
+    cat_counts = {}
+    all_skills = []
+
+    for cat in categories_list:
+        cat_name = cat.get("name", "general")
+        cat_skills = cat.get("skills", [])
+        cat_counts[cat_name] = len(cat_skills)
+        for s in cat_skills:
+            s["category"] = cat_name
+            all_skills.append(s)
+
+    # Filter
+    skills = all_skills
+    if category:
+        skills = [s for s in skills if s.get("category") == category]
+    if search:
+        skills = [s for s in skills if search in s.get("name", "").lower()
+                  or search in s.get("description", "").lower()
+                  or any(search in t.lower() for t in s.get("tags", []))]
+
+    total = len(skills)
+    skills = skills[offset:offset + limit]
+
+    return web.json_response({
+        "skills": skills,
+        "total": total,
+        "categories": cat_counts,
+    })
+
+
+async def api_skill_install(request):
+    """POST /api/skills/install -- install a skill by name."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    skill_name = data.get("name", "")
+    if not skill_name:
+        return web.json_response({"error": "Skill name required"}, status=400)
+
+    # Check if skill exists in index
+    index_path = Path(__file__).resolve().parent.parent.parent / "triohub" / "index.json"
+    if not index_path.exists():
+        return web.json_response({"error": "TrioHub index not found"}, status=404)
+
+    try:
+        idx = json.loads(index_path.read_text(encoding="utf-8"))
+    except Exception:
+        return web.json_response({"error": "Failed to read index"}, status=500)
+
+    skill = next((s for s in idx.get("skills", []) if s["name"] == skill_name), None)
+    if not skill:
+        return web.json_response({"error": f"Skill '{skill_name}' not found"}, status=404)
+
+    # Copy skill file to user skills dir
+    skills_dir = Path.home() / ".trio" / "skills"
+    skills_dir.mkdir(parents=True, exist_ok=True)
+
+    src = Path(__file__).resolve().parent.parent / "skills" / "builtin" / skill.get("file", "")
+    if src.exists():
+        dst = skills_dir / src.name
+        dst.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+        return web.json_response({"status": "installed", "name": skill_name, "path": str(dst)})
+
+    return web.json_response({"status": "registered", "name": skill_name,
+                              "note": "Skill metadata saved, source file not bundled"})
+
+
+# ── Tools ────────────────────────────────────────────────────────────────────
+
+async def api_tools(request):
+    """GET /api/tools -- list tools with enabled status."""
+    config = request.app["config"]
+    enabled = config.get("tools", {}).get("builtin", [])
+
+    all_tools = [
+        {"key": "shell", "name": "Shell", "desc": "Execute commands in sandbox directory"},
+        {"key": "file_ops", "name": "File Operations", "desc": "Read, write, list files within project"},
+        {"key": "browser", "name": "Browser", "desc": "Navigate, click, fill, screenshot via Playwright"},
+        {"key": "web_search", "name": "Web Search", "desc": "Search the internet via DuckDuckGo"},
+        {"key": "rag_search", "name": "RAG Search", "desc": "Semantic search over local documents"},
+        {"key": "code_analysis", "name": "Code Analysis", "desc": "AST parsing, linting, dependency checking"},
+        {"key": "screenshot", "name": "Screenshot", "desc": "Capture screen regions"},
+        {"key": "email", "name": "Email", "desc": "Send and receive emails via SMTP/IMAP"},
+        {"key": "calculator", "name": "Calculator", "desc": "Math and symbolic computation"},
+        {"key": "delegate", "name": "Delegate", "desc": "Spawn sub-agents for complex tasks"},
+        {"key": "mcp_client", "name": "MCP Client", "desc": "Connect to external MCP tool servers"},
+        {"key": "memory", "name": "Memory", "desc": "Store and recall info across sessions"},
+    ]
+
+    for t in all_tools:
+        t["enabled"] = t["key"] in enabled
+
+    return web.json_response({"tools": all_tools})
+
+
+async def api_tools_toggle(request):
+    """POST /api/tools/toggle -- enable/disable a tool."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    key = data.get("key", "")
+    enabled = data.get("enabled", True)
+
+    config = request.app["config"]
+    tools_config = config.setdefault("tools", {})
+    builtin = tools_config.setdefault("builtin", [])
+
+    if enabled and key not in builtin:
+        builtin.append(key)
+    elif not enabled and key in builtin:
+        builtin.remove(key)
+
+    _save_config(config)
+    return web.json_response({"status": "ok", "key": key, "enabled": enabled})
+
+
+# ── Channels ─────────────────────────────────────────────────────────────────
+
+async def api_channels(request):
+    """GET /api/channels -- list channels with config status."""
+    config = request.app["config"]
+    channels_cfg = config.get("channels", {})
+
+    all_channels = [
+        {"key": "cli", "name": "CLI", "desc": "Terminal interface", "tag": "built-in", "configurable": False},
+        {"key": "web", "name": "Web UI", "desc": "Browser interface", "tag": "built-in", "configurable": False},
+        {"key": "discord", "name": "Discord", "desc": "discord.py bot", "tag": "popular", "configurable": True, "fields": ["bot_token"]},
+        {"key": "telegram", "name": "Telegram", "desc": "Telegram bot", "tag": "popular", "configurable": True, "fields": ["bot_token"]},
+        {"key": "slack", "name": "Slack", "desc": "Slack Bolt app", "tag": "popular", "configurable": True, "fields": ["bot_token", "app_token"]},
+        {"key": "whatsapp", "name": "WhatsApp", "desc": "Business API", "tag": "enterprise", "configurable": True, "fields": ["api_token", "phone_number_id"]},
+        {"key": "teams", "name": "Teams", "desc": "Microsoft Teams", "tag": "enterprise", "configurable": True, "fields": ["app_id", "app_password"]},
+        {"key": "signal", "name": "Signal", "desc": "Signal messenger", "tag": "secure", "configurable": True, "fields": ["phone_number"]},
+        {"key": "matrix", "name": "Matrix", "desc": "Matrix/Element", "tag": "open", "configurable": True, "fields": ["homeserver", "access_token"]},
+        {"key": "sms", "name": "SMS", "desc": "Twilio messaging", "tag": "mobile", "configurable": True, "fields": ["account_sid", "auth_token", "phone_number"]},
+        {"key": "instagram", "name": "Instagram", "desc": "Instagram DM", "tag": "social", "configurable": True, "fields": ["access_token", "page_id"]},
+        {"key": "messenger", "name": "Messenger", "desc": "Facebook Messenger", "tag": "social", "configurable": True, "fields": ["access_token", "verify_token"]},
+        {"key": "line", "name": "LINE", "desc": "LINE platform", "tag": "asia", "configurable": True, "fields": ["channel_secret", "channel_access_token"]},
+        {"key": "reddit", "name": "Reddit", "desc": "Reddit via PRAW", "tag": "social", "configurable": True, "fields": ["client_id", "client_secret", "username", "password"]},
+        {"key": "email", "name": "Email", "desc": "IMAP / SMTP", "tag": "classic", "configurable": True, "fields": ["imap_host", "smtp_host", "username", "password"]},
+        {"key": "google_chat", "name": "Google Chat", "desc": "Google Workspace", "tag": "enterprise", "configurable": True, "fields": ["service_account_key"]},
+        {"key": "rest_api", "name": "REST API", "desc": "HTTP gateway", "tag": "developer", "configurable": True, "fields": ["port", "api_key"]},
+    ]
+
+    for ch in all_channels:
+        ch_cfg = channels_cfg.get(ch["key"], {})
+        ch["enabled"] = ch_cfg.get("enabled", ch["key"] in ("cli", "web"))
+        ch["configured"] = bool(ch_cfg.get("bot_token") or ch_cfg.get("access_token")
+                                or ch_cfg.get("api_token") or ch_cfg.get("account_sid")
+                                or not ch.get("configurable", True))
+
+    return web.json_response({"channels": all_channels})
+
+
+async def api_channels_toggle(request):
+    """POST /api/channels/toggle -- enable/disable a channel."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    key = data.get("key", "")
+    enabled = data.get("enabled", True)
+
+    config = request.app["config"]
+    channels = config.setdefault("channels", {})
+    ch = channels.setdefault(key, {})
+    ch["enabled"] = enabled
+
+    _save_config(config)
+    return web.json_response({"status": "ok", "key": key, "enabled": enabled})
+
+
+async def api_channels_config(request):
+    """POST /api/channels/config -- save channel configuration."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    key = data.get("key", "")
+    fields = data.get("fields", {})
+
+    config = request.app["config"]
+    channels = config.setdefault("channels", {})
+    ch = channels.setdefault(key, {})
+    ch.update(fields)
+    ch["enabled"] = True
+
+    _save_config(config)
+    return web.json_response({"status": "ok", "key": key})
+
+
+# ── Models ───────────────────────────────────────────────────────────────────
+
+async def api_models(request):
+    """GET /api/models -- list available models."""
+    from trio.providers.local import _list_gguf_models
+    gguf = _list_gguf_models()
+
+    config = request.app["config"]
+    active = config.get("model", "trio-max")
+
+    models = []
+    for name in gguf:
+        model_path = None
+        for d in [Path.home() / ".trio" / "models",
+                  Path(__file__).resolve().parent.parent.parent / "models"]:
+            p = d / name
+            if p.is_file():
+                model_path = str(p)
+                break
+        size_mb = os.path.getsize(model_path) / (1024 * 1024) if model_path else 0
+        models.append({
+            "name": name,
+            "size_mb": round(size_mb),
+            "active": name.startswith(active.replace("-", "_")) or active in name,
+            "path": model_path,
+        })
+
+    return web.json_response({"models": models, "active": active})
+
+
+async def api_models_switch(request):
+    """POST /api/models/switch -- switch active model."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    model = data.get("model", "")
+    if not model:
+        return web.json_response({"error": "Model name required"}, status=400)
+
+    config = request.app["config"]
+    config["model"] = model
+    _save_config(config)
+
+    # Reload provider with new model
+    provider = request.app["provider"]
+    if hasattr(provider, '_model'):
+        provider._model = None  # Force reload on next request
+        provider.default_model = model
+
+    return web.json_response({"status": "ok", "model": model})
+
+
+# ── Settings ─────────────────────────────────────────────────────────────────
+
+async def api_settings(request):
+    """GET /api/settings -- get current settings."""
+    config = request.app["config"]
+    return web.json_response({
+        "sandbox": config.get("sandbox", True),
+        "guardrails": config.get("guardrails", {}).get("enabled", True),
+        "memory": config.get("memory", {}).get("enabled", True),
+        "session_persistence": config.get("sessions", {}).get("persist", True),
+        "deep_thinking": config.get("deep_thinking", False),
+        "provider": config.get("provider", "local"),
+        "model": config.get("model", "trio-max"),
+    })
+
+
+async def api_settings_update(request):
+    """POST /api/settings -- update settings."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    config = request.app["config"]
+
+    if "sandbox" in data:
+        config["sandbox"] = data["sandbox"]
+    if "guardrails" in data:
+        config.setdefault("guardrails", {})["enabled"] = data["guardrails"]
+    if "memory" in data:
+        config.setdefault("memory", {})["enabled"] = data["memory"]
+    if "session_persistence" in data:
+        config.setdefault("sessions", {})["persist"] = data["session_persistence"]
+    if "deep_thinking" in data:
+        config["deep_thinking"] = data["deep_thinking"]
+    if "provider" in data:
+        config["provider"] = data["provider"]
+    if "model" in data:
+        config["model"] = data["model"]
+
+    _save_config(config)
+    return web.json_response({"status": "ok"})
+
+
+# ── Sub-Agents ───────────────────────────────────────────────────────────────
+
+async def api_agents(request):
+    """GET /api/agents -- list sub-agents."""
+    return web.json_response({"agents": [
+        {"name": "researcher", "role": "Web search, browsing, RAG -- gathers and synthesizes information",
+         "tools": ["web_search", "browser", "rag_search"], "max_iterations": 8},
+        {"name": "coder", "role": "Shell commands, file operations -- writes, runs, and debugs code",
+         "tools": ["shell", "file_ops"], "max_iterations": 10},
+        {"name": "reviewer", "role": "Code review, bug detection, best practices -- read-only analysis",
+         "tools": [], "max_iterations": 3},
+        {"name": "planner", "role": "Task breakdown, architecture design, strategic planning",
+         "tools": [], "max_iterations": 3},
+        {"name": "summarizer", "role": "Condenses long documents, conversations, data into key points",
+         "tools": [], "max_iterations": 2},
+    ]})
 
 
 # ── App Factory ──────────────────────────────────────────────────────────────
 
 def create_app(config: dict | None = None) -> web.Application:
-    """Create the aiohttp web application."""
     app = web.Application()
     cfg = config or load_config()
     app["config"] = cfg
@@ -213,22 +520,47 @@ def create_app(config: dict | None = None) -> web.Application:
     app["system_prompt"] = _load_workspace_prompt()
     app["provider"] = _create_provider(cfg)
 
-    # API routes
+    # Chat
     app.router.add_post("/api/chat", api_chat)
     app.router.add_post("/api/chat/stream", api_chat_stream)
-    app.router.add_get("/api/status", api_status)
-    app.router.add_get("/api/project", api_project)
     app.router.add_post("/api/sessions/clear", api_sessions_clear)
 
-    # Static files and index
+    # Status & Project
+    app.router.add_get("/api/status", api_status)
+    app.router.add_get("/api/project", api_project)
+
+    # Skills
+    app.router.add_get("/api/skills", api_skills)
+    app.router.add_post("/api/skills/install", api_skill_install)
+
+    # Tools
+    app.router.add_get("/api/tools", api_tools)
+    app.router.add_post("/api/tools/toggle", api_tools_toggle)
+
+    # Channels
+    app.router.add_get("/api/channels", api_channels)
+    app.router.add_post("/api/channels/toggle", api_channels_toggle)
+    app.router.add_post("/api/channels/config", api_channels_config)
+
+    # Models
+    app.router.add_get("/api/models", api_models)
+    app.router.add_post("/api/models/switch", api_models_switch)
+
+    # Settings
+    app.router.add_get("/api/settings", api_settings)
+    app.router.add_post("/api/settings", api_settings_update)
+
+    # Sub-agents
+    app.router.add_get("/api/agents", api_agents)
+
+    # Static
     app.router.add_get("/", index)
     app.router.add_static("/static", STATIC_DIR, show_index=False)
 
     return app
 
 
-def run_server(host: str = "0.0.0.0", port: int = 3000, config: dict | None = None):
-    """Start the web server."""
+def run_server(host: str = "0.0.0.0", port: int = 28337, config: dict | None = None):
     app = create_app(config)
     print(f"\n  trio.ai web UI")
     print(f"  ----------------------")
