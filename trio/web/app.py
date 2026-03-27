@@ -700,6 +700,96 @@ async def api_agents(request):
     ]})
 
 
+# ── WhatsApp QR ──────────────────────────────────────────────────────────────
+
+async def api_whatsapp_status(request):
+    """GET /api/whatsapp/status -- get QR code or connection status."""
+    from trio.channels.whatsapp_web import get_bridge_status, is_node_available
+    port = request.app.get("wa_port", 28338)
+
+    if not is_node_available():
+        return web.json_response({
+            "ready": False, "qr": None, "bridge_running": False,
+            "error": "Node.js not installed. Install from https://nodejs.org",
+        })
+
+    status = await get_bridge_status(port)
+    return web.json_response(status)
+
+
+async def api_whatsapp_start(request):
+    """POST /api/whatsapp/start -- start the WhatsApp bridge."""
+    import subprocess as sp
+    from trio.channels.whatsapp_web import _ensure_bridge, BRIDGE_DIR, BRIDGE_SCRIPT, SESSION_DIR, is_node_available
+
+    if not is_node_available():
+        return web.json_response({"error": "Node.js not installed"}, status=400)
+
+    port = request.app.get("wa_port", 28338)
+
+    # Check if already running
+    from trio.channels.whatsapp_web import get_bridge_status
+    status = await get_bridge_status(port)
+    if status.get("bridge_running") or status.get("ready") or status.get("qr"):
+        return web.json_response({"status": "already_running"})
+
+    # Ensure bridge files exist
+    has_modules = _ensure_bridge()
+
+    if not has_modules:
+        # Run npm install
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                "npm", "install", "--production",
+                cwd=str(BRIDGE_DIR),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            await asyncio.wait_for(proc.wait(), timeout=120)
+        except Exception as e:
+            return web.json_response({"error": f"npm install failed: {e}"}, status=500)
+
+    # Start bridge in background
+    try:
+        process = sp.Popen(
+            ["node", str(BRIDGE_SCRIPT), str(SESSION_DIR), str(port)],
+            cwd=str(BRIDGE_DIR),
+            stdout=sp.DEVNULL, stderr=sp.DEVNULL,
+            creationflags=sp.CREATE_NO_WINDOW if os.name == 'nt' else 0,
+        )
+        request.app["wa_process"] = process
+        request.app["wa_port"] = port
+
+        # Wait for bridge to start
+        await asyncio.sleep(3)
+        return web.json_response({"status": "started", "pid": process.pid, "port": port})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+
+async def api_whatsapp_logout(request):
+    """POST /api/whatsapp/logout -- disconnect and clear session."""
+    import aiohttp as aio_http
+    port = request.app.get("wa_port", 28338)
+
+    try:
+        async with aio_http.ClientSession() as session:
+            async with session.get(f"http://localhost:{port}/logout", timeout=aio_http.ClientTimeout(total=5)) as resp:
+                await resp.json()
+    except Exception:
+        pass
+
+    # Kill bridge process
+    proc = request.app.get("wa_process")
+    if proc:
+        try:
+            proc.terminate()
+        except Exception:
+            pass
+
+    return web.json_response({"status": "logged_out"})
+
+
 # ── App Factory ──────────────────────────────────────────────────────────────
 
 def create_app(config: dict | None = None) -> web.Application:
@@ -745,6 +835,11 @@ def create_app(config: dict | None = None) -> web.Application:
 
     # Sub-agents
     app.router.add_get("/api/agents", api_agents)
+
+    # WhatsApp QR
+    app.router.add_get("/api/whatsapp/status", api_whatsapp_status)
+    app.router.add_post("/api/whatsapp/start", api_whatsapp_start)
+    app.router.add_post("/api/whatsapp/logout", api_whatsapp_logout)
 
     # Static
     app.router.add_get("/", index)

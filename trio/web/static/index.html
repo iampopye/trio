@@ -947,8 +947,11 @@ const CHANNEL_SETUP = {
     ],
   },
   whatsapp: {
-    title: 'Connect WhatsApp Business',
-    steps: ['1. Go to developers.facebook.com and create an app','2. Add WhatsApp product to your app','3. In WhatsApp > API Setup, find your Phone Number ID and Access Token'],
+    title: 'Connect WhatsApp',
+    hasQR: true,
+    tabs: ['QR Code (Personal)', 'Business API'],
+    steps: ['1. Click "Start WhatsApp Bridge" below','2. Open WhatsApp on your phone','3. Go to Settings > Linked Devices > Link a Device','4. Scan the QR code that appears'],
+    businessSteps: ['1. Go to developers.facebook.com and create an app','2. Add WhatsApp product to your app','3. In WhatsApp > API Setup, find your Phone Number ID and Access Token'],
     fields: [
       {key:'phone_number_id', label:'Phone Number ID', placeholder:'1234567890'},
       {key:'access_token', label:'Permanent Access Token', placeholder:'EAABsbCS...'},
@@ -1015,35 +1018,167 @@ function openChannelSetup(key) {
   const setup = CHANNEL_SETUP[key];
   if (!setup) return;
 
-  // Create modal
   const overlay = document.createElement('div');
   overlay.id = 'channelModal';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);';
 
   const modal = document.createElement('div');
-  modal.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow);';
+  modal.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:520px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow);';
 
   let html = '<div style="font-size:18px;font-weight:700;margin-bottom:16px;">'+setup.title+'</div>';
-  html += '<div style="background:var(--accent-soft);border-radius:10px;padding:14px;margin-bottom:20px;">';
-  html += setup.steps.map(s => '<div style="font-size:13px;color:var(--text-2);margin-bottom:4px;">'+s+'</div>').join('');
-  html += '</div>';
 
-  setup.fields.forEach(f => {
-    html += '<label style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">'+f.label+'</label>';
-    html += '<input class="search" id="field_'+f.key+'" placeholder="'+f.placeholder+'" style="margin-bottom:12px;">';
-  });
+  // WhatsApp has tabs for QR and Business API
+  if (setup.hasQR) {
+    html += '<div style="display:flex;gap:0;margin-bottom:20px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">';
+    html += '<button class="wa-tab active" onclick="switchWaTab(0)" style="flex:1;padding:10px;font-size:13px;font-weight:500;background:var(--accent);color:#fff;border:none;cursor:pointer;">QR Code (Personal)</button>';
+    html += '<button class="wa-tab" onclick="switchWaTab(1)" style="flex:1;padding:10px;font-size:13px;font-weight:500;background:var(--surface);color:var(--text-2);border:none;cursor:pointer;">Business API</button>';
+    html += '</div>';
 
-  html += '<div id="verifyResult" style="margin-bottom:12px;"></div>';
-  html += '<div style="display:flex;gap:8px;justify-content:flex-end;">';
-  html += '<button class="btn" onclick="closeModal()">Cancel</button>';
-  html += '<button class="btn" onclick="verifyChannel(\''+key+'\')" id="verifyBtn">Test Connection</button>';
-  html += '<button class="btn btn-accent" onclick="saveChannel(\''+key+'\')" id="saveBtn" disabled>Save & Connect</button>';
-  html += '</div>';
+    // QR Tab
+    html += '<div id="waTab0">';
+    html += '<div style="background:var(--accent-soft);border-radius:10px;padding:14px;margin-bottom:16px;">';
+    html += setup.steps.map(s => '<div style="font-size:13px;color:var(--text-2);margin-bottom:4px;">'+s+'</div>').join('');
+    html += '</div>';
+    html += '<div id="waQrArea" style="text-align:center;padding:20px;">';
+    html += '<button class="btn btn-accent" style="font-size:14px;padding:10px 24px;" onclick="startWhatsApp()">Start WhatsApp Bridge</button>';
+    html += '<div style="font-size:12px;color:var(--text-3);margin-top:8px;">Requires Node.js installed</div>';
+    html += '</div>';
+    html += '<div id="waStatus" style="margin-top:12px;"></div>';
+    html += '</div>';
+
+    // Business API Tab (hidden)
+    html += '<div id="waTab1" style="display:none;">';
+    html += '<div style="background:var(--accent-soft);border-radius:10px;padding:14px;margin-bottom:16px;">';
+    html += setup.businessSteps.map(s => '<div style="font-size:13px;color:var(--text-2);margin-bottom:4px;">'+s+'</div>').join('');
+    html += '</div>';
+    setup.fields.forEach(f => {
+      html += '<label style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">'+f.label+'</label>';
+      html += '<input class="search" id="field_'+f.key+'" placeholder="'+f.placeholder+'" style="margin-bottom:12px;">';
+    });
+    html += '<div id="verifyResult" style="margin-bottom:12px;"></div>';
+    html += '<div style="display:flex;gap:8px;justify-content:flex-end;">';
+    html += '<button class="btn" onclick="verifyChannel(\''+key+'\')" id="verifyBtn">Test Connection</button>';
+    html += '<button class="btn btn-accent" onclick="saveChannel(\''+key+'\')" id="saveBtn" disabled>Save & Connect</button>';
+    html += '</div>';
+    html += '</div>';
+  } else {
+    // Standard channel setup
+    html += '<div style="background:var(--accent-soft);border-radius:10px;padding:14px;margin-bottom:20px;">';
+    html += setup.steps.map(s => '<div style="font-size:13px;color:var(--text-2);margin-bottom:4px;">'+s+'</div>').join('');
+    html += '</div>';
+
+    setup.fields.forEach(f => {
+      html += '<label style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">'+f.label+'</label>';
+      html += '<input class="search" id="field_'+f.key+'" placeholder="'+f.placeholder+'" style="margin-bottom:12px;">';
+    });
+
+    html += '<div id="verifyResult" style="margin-bottom:12px;"></div>';
+    html += '<div style="display:flex;gap:8px;justify-content:flex-end;">';
+    html += '<button class="btn" onclick="verifyChannel(\''+key+'\')" id="verifyBtn">Test Connection</button>';
+    html += '<button class="btn btn-accent" onclick="saveChannel(\''+key+'\')" id="saveBtn" disabled>Save & Connect</button>';
+    html += '</div>';
+  }
+
+  html += '<div style="display:flex;justify-content:flex-end;margin-top:12px;"><button class="btn" onclick="closeModal()">Close</button></div>';
 
   modal.innerHTML = html;
   overlay.appendChild(modal);
   overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
   document.body.appendChild(overlay);
+}
+
+// WhatsApp tab switching
+function switchWaTab(idx) {
+  document.getElementById('waTab0').style.display = idx===0 ? '' : 'none';
+  document.getElementById('waTab1').style.display = idx===1 ? '' : 'none';
+  const tabs = document.querySelectorAll('.wa-tab');
+  tabs.forEach((t,i) => {
+    t.style.background = i===idx ? 'var(--accent)' : 'var(--surface)';
+    t.style.color = i===idx ? '#fff' : 'var(--text-2)';
+  });
+}
+
+// WhatsApp QR flow
+let waPolling = null;
+
+async function startWhatsApp() {
+  const area = document.getElementById('waQrArea');
+  const status = document.getElementById('waStatus');
+
+  area.innerHTML = '<div style="color:var(--text-2);font-size:14px;">Starting WhatsApp bridge...</div>';
+
+  try {
+    const r = await fetch('/api/whatsapp/start', {method:'POST'});
+    const d = await r.json();
+
+    if (d.error) {
+      area.innerHTML = '<div style="color:var(--red);font-size:14px;">'+d.error+'</div>' +
+        '<button class="btn" style="margin-top:12px;" onclick="startWhatsApp()">Retry</button>';
+      return;
+    }
+
+    area.innerHTML = '<div style="color:var(--text-2);font-size:14px;">Waiting for QR code...</div>';
+
+    // Start polling for QR
+    pollWhatsApp();
+  } catch(e) {
+    area.innerHTML = '<div style="color:var(--red);font-size:14px;">Failed to start: '+e.message+'</div>';
+  }
+}
+
+async function pollWhatsApp() {
+  if (waPolling) clearInterval(waPolling);
+
+  waPolling = setInterval(async () => {
+    try {
+      const r = await fetch('/api/whatsapp/status');
+      const d = await r.json();
+      const area = document.getElementById('waQrArea');
+      const status = document.getElementById('waStatus');
+
+      if (!area) { clearInterval(waPolling); return; }
+
+      if (d.ready) {
+        // Connected!
+        clearInterval(waPolling);
+        area.innerHTML =
+          '<div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);border-radius:12px;padding:20px;text-align:center;">' +
+          '<div style="font-size:28px;margin-bottom:8px;">&#10003;</div>' +
+          '<div style="font-size:16px;font-weight:600;color:var(--green);">Connected!</div>' +
+          '<div style="font-size:14px;color:var(--text-2);margin-top:4px;">'+d.info.name+' ('+d.info.phone+')</div>' +
+          '</div>';
+        status.innerHTML = '<button class="btn" style="width:100%;margin-top:8px;" onclick="logoutWhatsApp()">Disconnect</button>';
+
+        // Save to config
+        fetch('/api/channels/config', {method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({key:'whatsapp', fields:{connection:'qr', phone:d.info.phone, name:d.info.name}})});
+        loadChannels();
+      }
+      else if (d.qr) {
+        // Show QR code
+        area.innerHTML =
+          '<div style="background:#fff;border-radius:12px;padding:16px;display:inline-block;">' +
+          '<img src="'+d.qr+'" style="width:240px;height:240px;" alt="Scan with WhatsApp">' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--text-2);margin-top:12px;">Open WhatsApp &gt; Linked Devices &gt; Scan this code</div>';
+      }
+      else if (d.error) {
+        clearInterval(waPolling);
+        area.innerHTML = '<div style="color:var(--red);font-size:14px;">'+d.error+'</div>';
+      }
+    } catch(e) {}
+  }, 2000);
+}
+
+async function logoutWhatsApp() {
+  await fetch('/api/whatsapp/logout', {method:'POST'});
+  const area = document.getElementById('waQrArea');
+  if (area) {
+    area.innerHTML = '<button class="btn btn-accent" style="font-size:14px;padding:10px 24px;" onclick="startWhatsApp()">Start WhatsApp Bridge</button>';
+  }
+  const status = document.getElementById('waStatus');
+  if (status) status.innerHTML = '';
+  loadChannels();
 }
 
 function closeModal() {
