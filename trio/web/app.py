@@ -150,6 +150,84 @@ async def api_sessions_clear(request):
     return web.json_response({"status": "cleared"})
 
 
+async def api_upload(request):
+    """POST /api/upload -- upload a file, extract text, return content."""
+    reader = await request.multipart()
+    field = await reader.next()
+
+    if not field or field.name != "file":
+        return web.json_response({"error": "No file uploaded"}, status=400)
+
+    filename = field.filename or "unknown"
+    data = await field.read()  # read full file
+
+    from trio.web.file_handler import extract_text
+    result = extract_text(data, filename)
+
+    # Save to temp uploads dir
+    uploads_dir = Path.home() / ".trio" / "uploads"
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+    save_path = uploads_dir / filename
+    save_path.write_bytes(data)
+    result["saved_path"] = str(save_path)
+
+    return web.json_response(result)
+
+
+async def api_chat_with_file(request):
+    """POST /api/chat/file -- send message with file context."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    message = data.get("message", "").strip()
+    file_content = data.get("file_content", "")
+    filename = data.get("filename", "")
+    session_id = data.get("session_id", str(uuid.uuid4()))
+
+    provider = request.app["provider"]
+    system_prompt = request.app["system_prompt"]
+
+    sessions = request.app["sessions"]
+    if session_id not in sessions:
+        sessions[session_id] = []
+
+    history = sessions[session_id]
+
+    # Build message with file context
+    user_msg = message or f"I've uploaded a file: {filename}. Please analyze it."
+    if file_content:
+        user_msg = f"[Uploaded file: {filename}]\n\n```\n{file_content[:30000]}\n```\n\n{user_msg}"
+
+    history.append({"role": "user", "content": user_msg})
+    messages = [{"role": "system", "content": system_prompt}] + history[-20:]
+
+    # Stream response
+    resp = web.StreamResponse(
+        status=200, reason="OK",
+        headers={"Content-Type": "text/event-stream", "Cache-Control": "no-cache",
+                 "Connection": "keep-alive"},
+    )
+    await resp.prepare(request)
+
+    content = ""
+    try:
+        async for chunk in provider.stream_generate(messages=messages, max_tokens=2048):
+            if chunk.text:
+                content += chunk.text
+                await resp.write(f"data: {json.dumps({'text': chunk.text})}\n\n".encode())
+            if chunk.is_final:
+                break
+        await resp.write(f"data: {json.dumps({'done': True})}\n\n".encode())
+    except Exception as e:
+        content = f"Error: {e}"
+        await resp.write(f"data: {json.dumps({'error': str(e)})}\n\n".encode())
+
+    history.append({"role": "assistant", "content": content})
+    return resp
+
+
 # ── Status & Project ─────────────────────────────────────────────────────────
 
 async def api_status(request):
@@ -803,6 +881,8 @@ def create_app(config: dict | None = None) -> web.Application:
     # Chat
     app.router.add_post("/api/chat", api_chat)
     app.router.add_post("/api/chat/stream", api_chat_stream)
+    app.router.add_post("/api/chat/file", api_chat_with_file)
+    app.router.add_post("/api/upload", api_upload)
     app.router.add_post("/api/sessions/clear", api_sessions_clear)
 
     # Status & Project

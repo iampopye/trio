@@ -520,6 +520,58 @@
   .send:disabled { opacity: 0.3; transform: none; }
   .send svg { width: 16px; height: 16px; color: #fff; }
 
+  .attach-btn {
+    position: absolute;
+    left: 10px; bottom: 10px;
+    width: 32px; height: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-3);
+    border-radius: 8px;
+    transition: all 0.15s;
+    z-index: 2;
+  }
+  .attach-btn:hover { color: var(--accent); background: var(--accent-soft); }
+
+  .file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .file-chip .file-icon {
+    width: 28px; height: 28px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .file-chip .remove-file {
+    background: none;
+    border: none;
+    color: var(--text-3);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 2px;
+    line-height: 1;
+  }
+  .file-chip .remove-file:hover { color: var(--red); }
+
   .input-foot {
     text-align: center;
     font-size: 11px;
@@ -604,15 +656,25 @@
       </div>
     </div>
     <div class="chat-input">
+      <div id="filePreview" style="max-width:760px;margin:0 auto 8px;display:none;"></div>
       <div class="input-wrap">
+        <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(this)"
+          accept=".pdf,.docx,.xlsx,.csv,.txt,.md,.py,.js,.ts,.json,.yaml,.html,.css,.png,.jpg,.jpeg,.gif,.xml,.sql,.go,.rs,.java,.rb,.c,.cpp,.sh">
+        <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Upload file">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+        </button>
         <textarea class="input-box" id="inp" rows="1" placeholder="Message trio.ai..."
+          style="padding-left:44px;"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
-          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,200)+'px'"></textarea>
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,200)+'px'"
+          ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+          ondragleave="this.style.borderColor=''"
+          ondrop="event.preventDefault();this.style.borderColor='';handleDrop(event)"></textarea>
         <button class="send" id="sendBtn" onclick="send()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
-      <div class="input-foot">trio.ai -- runs locally, your data stays on your machine</div>
+      <div class="input-foot">Drop files here or click the paperclip to upload -- PDF, DOCX, images, code, and more</div>
     </div>
   </div>
 
@@ -781,14 +843,88 @@ function fmt(t) {
 
 function ask(t){ inp.value=t; send(); }
 
+// ── File upload ──
+let pendingFile = null;
+
+function handleFileSelect(input) {
+  if (input.files && input.files[0]) processFile(input.files[0]);
+  input.value = '';
+}
+
+function handleDrop(e) {
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+}
+
+async function processFile(file) {
+  if (file.size > 25 * 1024 * 1024) { alert('File too large. Max 25MB.'); return; }
+
+  const preview = document.getElementById('filePreview');
+  const ext = file.name.split('.').pop().toUpperCase();
+  const sizeKB = Math.round(file.size / 1024);
+  const sizeStr = sizeKB > 1024 ? (sizeKB/1024).toFixed(1)+'MB' : sizeKB+'KB';
+
+  preview.style.display = '';
+  preview.innerHTML = '<div class="file-chip"><div class="file-icon">'+ext+'</div><div><div style="font-weight:500;">'+file.name+'</div><div style="font-size:11px;color:var(--text-3);">'+sizeStr+' -- uploading...</div></div></div>';
+
+  // Upload and extract
+  const form = new FormData();
+  form.append('file', file);
+  try {
+    const r = await fetch('/api/upload', {method:'POST', body: form});
+    const d = await r.json();
+    if (d.error) {
+      preview.innerHTML = '<div class="file-chip" style="border-color:var(--red);"><div class="file-icon" style="background:rgba(248,113,113,0.1);color:var(--red);">ERR</div><div>'+file.name+': '+d.error+'</div><button class="remove-file" onclick="clearFile()">&times;</button></div>';
+      return;
+    }
+    pendingFile = { name: file.name, content: d.content, type: d.type, pages: d.pages };
+    const info = d.pages ? d.pages+' pages' : sizeStr;
+    preview.innerHTML = '<div class="file-chip"><div class="file-icon">'+ext+'</div><div><div style="font-weight:500;">'+file.name+'</div><div style="font-size:11px;color:var(--green);">Ready -- '+info+'</div></div><button class="remove-file" onclick="clearFile()">&times;</button></div>';
+  } catch(e) {
+    preview.innerHTML = '<div class="file-chip" style="border-color:var(--red);"><div class="file-icon">ERR</div><div>Upload failed</div><button class="remove-file" onclick="clearFile()">&times;</button></div>';
+  }
+}
+
+function clearFile() {
+  pendingFile = null;
+  document.getElementById('filePreview').style.display = 'none';
+  document.getElementById('filePreview').innerHTML = '';
+}
+
 async function send() {
-  const t=inp.value.trim(); if(!t||busy)return;
+  const t=inp.value.trim();
+  if((!t && !pendingFile)||busy) return;
   busy=true;document.getElementById('sendBtn').disabled=true;
   inp.value='';inp.style.height='auto';
   goPanel('chat');
-  addMsg('user',fmt(t)); showTy();
+
+  // Show user message with file attachment
+  let userHtml = '';
+  if (pendingFile) {
+    userHtml += '<div class="file-chip" style="margin-bottom:8px;"><div class="file-icon">'+pendingFile.type.toUpperCase()+'</div><div style="font-weight:500;">'+pendingFile.name+'</div></div>';
+  }
+  if (t) userHtml += fmt(t);
+  else if (pendingFile) userHtml += fmt('Analyze this file: '+pendingFile.name);
+  addMsg('user', userHtml);
+  showTy();
+
   try {
-    const res=await fetch('/api/chat/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,session_id:sid})});
+    let res;
+    if (pendingFile) {
+      // Send with file context
+      res = await fetch('/api/chat/file', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          message: t || 'Please analyze this file.',
+          file_content: pendingFile.content,
+          filename: pendingFile.name,
+          session_id: sid
+        })
+      });
+      clearFile();
+    } else {
+      res = await fetch('/api/chat/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,session_id:sid})});
+    }
     hideTy();
     if(!res.ok){addMsg('assistant','<p>Error '+res.status+'</p>');return;}
     const reader=res.body.getReader(),dec=new TextDecoder();
