@@ -367,7 +367,7 @@ def setup(models_to_install: list[str] | None = None):
             continue
 
         print(f"\n  Downloading {info['description']}...")
-        print(f"  URL: {info['url']}")
+        print(f"  Source: trio.ai model registry")
         if download_file(info["url"], dest, description=""):
             downloaded.append(name)
         else:
