@@ -41,78 +41,24 @@ def _load_workspace_prompt():
     return "\n\n".join(parts)
 
 
-def _get_active_provider_settings(config: dict) -> tuple[str, str, dict]:
-    defaults = config.get("agents", {}).get("defaults", {})
-    provider_name = defaults.get("provider") or config.get("provider", "local")
-    model_name = defaults.get("model") or config.get("model", "trio-max")
-    provider_config = dict(config.get("providers", {}).get(provider_name, {}))
-    provider_config.setdefault("default_model", model_name)
-    provider_config["provider_name"] = provider_name
-    return provider_name, model_name, provider_config
-
-
 def _create_provider(config: dict):
-    from trio.providers.base import ProviderRegistry, register_all_providers
-
-    provider_name, model_name, provider_config = _get_active_provider_settings(config)
-    register_all_providers()
-
-    if provider_name == "local" and not provider_config.get("model_path"):
-        try:
-            from trio.providers.local import _find_gguf_model
-            detected = _find_gguf_model(model_name=model_name)
-            if detected:
-                provider_config["model_path"] = detected
-        except Exception:
-            pass
-
-    try:
-        return ProviderRegistry.create(provider_name, provider_config)
-    except ValueError:
-        fallback = dict(config.get("providers", {}).get("local", {}))
-        fallback.setdefault("default_model", model_name)
-        return ProviderRegistry.create("local", fallback)
+    provider_name = config.get("provider", "local")
+    if provider_name == "local":
+        from trio.providers.local import LocalProvider
+        pc = config.get("providers", {}).get("local", {})
+        pc.setdefault("default_model", "trio-max")
+        return LocalProvider(pc)
+    elif provider_name in ("ollama", "trio"):
+        from trio.providers.ollama import OllamaProvider
+        return OllamaProvider(config.get("providers", {}).get("ollama", {}))
+    else:
+        from trio.providers.local import LocalProvider
+        return LocalProvider(config.get("providers", {}).get("local", {}))
 
 
 def _save_config(config: dict):
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
     CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
-
-
-def _normalize_provider_fields(provider_key: str, fields: dict, model: str = "") -> dict:
-    """Normalize WebUI provider fields to the config schema used by providers."""
-    normalized = dict(fields)
-
-    if "api_key" in normalized and "apiKey" not in normalized:
-        normalized["apiKey"] = normalized.pop("api_key")
-    if "base_url" in normalized and provider_key != "ollama" and "apiBase" not in normalized:
-        normalized["apiBase"] = normalized.pop("base_url")
-
-    if model:
-        normalized["default_model"] = model
-
-    if provider_key not in ("local", "ollama"):
-        normalized["provider_name"] = provider_key
-
-    return normalized
-
-
-def _normalize_channel_fields(channel_key: str, fields: dict) -> dict:
-    """Normalize WebUI channel fields to the config schema used by channels."""
-    normalized = dict(fields)
-
-    alias_map = {
-        "telegram": {"bot_token": "token"},
-        "discord": {"bot_token": "token"},
-        "google_chat": {"service_account_key": "service_account_file"},
-        "matrix": {"homeserver": "homeserver_url"},
-    }
-
-    for src, dst in alias_map.get(channel_key, {}).items():
-        if src in normalized and dst not in normalized:
-            normalized[dst] = normalized.pop(src)
-
-    return normalized
 
 
 # ── Chat Routes ──────────────────────────────────────────────────────────────
@@ -286,11 +232,10 @@ async def api_chat_with_file(request):
 
 async def api_status(request):
     config = request.app["config"]
-    provider_name, model_name, _ = _get_active_provider_settings(config)
     return web.json_response({
         "status": "running",
-        "provider": provider_name,
-        "model": model_name,
+        "provider": config.get("provider", "local"),
+        "model": config.get("model", "trio-max"),
         "sessions": len(request.app["sessions"]),
         "version": "0.1.1",
     })
@@ -486,18 +431,18 @@ async def api_tools(request):
     enabled = config.get("tools", {}).get("builtin", [])
 
     all_tools = [
-        {"key": "url_reader", "name": "URL Reader", "desc": "Fetch and extract readable text from a URL"},
         {"key": "shell", "name": "Shell", "desc": "Execute commands in sandbox directory"},
         {"key": "file_ops", "name": "File Operations", "desc": "Read, write, list files within project"},
         {"key": "browser", "name": "Browser", "desc": "Navigate, click, fill, screenshot via Playwright"},
         {"key": "web_search", "name": "Web Search", "desc": "Search the internet via DuckDuckGo"},
         {"key": "rag_search", "name": "RAG Search", "desc": "Semantic search over local documents"},
+        {"key": "code_analysis", "name": "Code Analysis", "desc": "AST parsing, linting, dependency checking"},
         {"key": "screenshot", "name": "Screenshot", "desc": "Capture screen regions"},
         {"key": "email", "name": "Email", "desc": "Send and receive emails via SMTP/IMAP"},
-        {"key": "calendar", "name": "Calendar", "desc": "Manage calendar events"},
-        {"key": "notes", "name": "Notes", "desc": "Persistent note-taking"},
-        {"key": "math_solver", "name": "Math", "desc": "Math and symbolic computation"},
+        {"key": "calculator", "name": "Calculator", "desc": "Math and symbolic computation"},
         {"key": "delegate", "name": "Delegate", "desc": "Spawn sub-agents for complex tasks"},
+        {"key": "mcp_client", "name": "MCP Client", "desc": "Connect to external MCP tool servers"},
+        {"key": "memory", "name": "Memory", "desc": "Store and recall info across sessions"},
     ]
 
     for t in all_tools:
@@ -558,18 +503,10 @@ async def api_channels(request):
 
     for ch in all_channels:
         ch_cfg = channels_cfg.get(ch["key"], {})
-        normalized_cfg = _normalize_channel_fields(ch["key"], ch_cfg)
-        ch["enabled"] = normalized_cfg.get("enabled", ch["key"] in ("cli", "web"))
-        ch["configured"] = bool(
-            normalized_cfg.get("token")
-            or normalized_cfg.get("bot_token")
-            or normalized_cfg.get("access_token")
-            or normalized_cfg.get("api_token")
-            or normalized_cfg.get("account_sid")
-            or normalized_cfg.get("service_account_file")
-            or normalized_cfg.get("homeserver_url")
-            or not ch.get("configurable", True)
-        )
+        ch["enabled"] = ch_cfg.get("enabled", ch["key"] in ("cli", "web"))
+        ch["configured"] = bool(ch_cfg.get("bot_token") or ch_cfg.get("access_token")
+                                or ch_cfg.get("api_token") or ch_cfg.get("account_sid")
+                                or not ch.get("configurable", True))
 
     return web.json_response({"channels": all_channels})
 
@@ -606,7 +543,7 @@ async def api_channels_config(request):
     config = request.app["config"]
     channels = config.setdefault("channels", {})
     ch = channels.setdefault(key, {})
-    ch.update(_normalize_channel_fields(key, fields))
+    ch.update(fields)
     ch["enabled"] = True
 
     _save_config(config)
@@ -733,7 +670,7 @@ async def api_models(request):
     gguf = _list_gguf_models()
 
     config = request.app["config"]
-    _, active, _ = _get_active_provider_settings(config)
+    active = config.get("model", "trio-max")
 
     models = []
     for name in gguf:
@@ -767,15 +704,14 @@ async def api_models_switch(request):
         return web.json_response({"error": "Model name required"}, status=400)
 
     config = request.app["config"]
-    defaults = config.setdefault("agents", {}).setdefault("defaults", {})
-    defaults["model"] = model
+    config["model"] = model
     _save_config(config)
 
     # Reload provider with new model
     provider = request.app["provider"]
     if hasattr(provider, '_model'):
         provider._model = None  # Force reload on next request
-    provider.default_model = model
+        provider.default_model = model
 
     return web.json_response({"status": "ok", "model": model})
 
@@ -785,15 +721,14 @@ async def api_models_switch(request):
 async def api_settings(request):
     """GET /api/settings -- get current settings."""
     config = request.app["config"]
-    provider_name, model_name, _ = _get_active_provider_settings(config)
     return web.json_response({
         "sandbox": config.get("sandbox", True),
         "guardrails": config.get("guardrails", {}).get("enabled", True),
         "memory": config.get("memory", {}).get("enabled", True),
         "session_persistence": config.get("sessions", {}).get("persist", True),
         "deep_thinking": config.get("deep_thinking", False),
-        "provider": provider_name,
-        "model": model_name,
+        "provider": config.get("provider", "local"),
+        "model": config.get("model", "trio-max"),
     })
 
 
@@ -805,8 +740,6 @@ async def api_settings_update(request):
         return web.json_response({"error": "Invalid JSON"}, status=400)
 
     config = request.app["config"]
-    defaults = config.setdefault("agents", {}).setdefault("defaults", {})
-    refresh_provider = False
 
     if "sandbox" in data:
         config["sandbox"] = data["sandbox"]
@@ -819,22 +752,11 @@ async def api_settings_update(request):
     if "deep_thinking" in data:
         config["deep_thinking"] = data["deep_thinking"]
     if "provider" in data:
-        defaults["provider"] = data["provider"]
-        refresh_provider = True
+        config["provider"] = data["provider"]
     if "model" in data:
-        defaults["model"] = data["model"]
-        refresh_provider = True
+        config["model"] = data["model"]
 
     _save_config(config)
-
-    if refresh_provider:
-        old_provider = request.app.get("provider")
-        if old_provider is not None:
-            try:
-                await old_provider.close()
-            except Exception:
-                pass
-        request.app["provider"] = _create_provider(config)
 
     return web.json_response({"status": "ok"})
 
@@ -955,6 +877,7 @@ async def api_memory_import(request):
             }
             (MEMORY_DIR / f"{entry_id}.json").write_text(json.dumps(entry, indent=2), encoding="utf-8")
             imported += 1
+            time.sleep(0.01)
 
     elif raw_text:
         entry_id = f"{int(time.time())}_{uuid.uuid4().hex[:6]}"
@@ -990,9 +913,10 @@ async def api_chat_history(request):
 
 SUPPORTED_PROVIDERS = {
     "local": {
-        "name": "trio-max (Local)",
-        "desc": "Free, runs on your machine. No API key needed.",
+        "name": "trio models (Local)",
+        "desc": "Free, runs on your machine. 6 tiers: nano (3B), small (4B), medium (8B), high (9B), max (12B), pro (30B MoE).",
         "fields": [],
+        "models": ["trio-nano", "trio-small", "trio-medium", "trio-high", "trio-max", "trio-pro"],
         "free": True,
     },
     "openai": {
@@ -1044,18 +968,13 @@ SUPPORTED_PROVIDERS = {
 async def api_providers(request):
     """GET /api/providers -- list all supported providers with config status."""
     config = request.app["config"]
-    current, _, _ = _get_active_provider_settings(config)
+    current = config.get("provider", "local")
     providers_cfg = config.get("providers", {})
 
     result = []
     for key, info in SUPPORTED_PROVIDERS.items():
-        p_cfg = _normalize_provider_fields(key, providers_cfg.get(key, {}))
-        has_key = bool(
-            p_cfg.get("apiKey")
-            or p_cfg.get("apiBase")
-            or p_cfg.get("base_url")
-            or info.get("free")
-        )
+        p_cfg = providers_cfg.get(key, {})
+        has_key = bool(p_cfg.get("api_key") or p_cfg.get("base_url") or info.get("free"))
         result.append({
             "key": key,
             "name": info["name"],
@@ -1088,32 +1007,22 @@ async def api_providers_save(request):
     config = request.app["config"]
     providers = config.setdefault("providers", {})
     p_cfg = providers.setdefault(key, {})
-    normalized_fields = _normalize_provider_fields(key, fields, model=model)
-    p_cfg.update(normalized_fields)
+    p_cfg.update(fields)
 
     if activate:
-        defaults = config.setdefault("agents", {}).setdefault("defaults", {})
-        defaults["provider"] = key
+        config["provider"] = key
         if model:
-            defaults["model"] = model
+            config["model"] = model
 
     _save_config(config)
 
-    # Reload provider if activated
     if activate:
         try:
-            old_provider = request.app.get("provider")
-            if old_provider is not None:
-                try:
-                    await old_provider.close()
-                except Exception:
-                    pass
             request.app["provider"] = _create_provider(config)
         except Exception as e:
             return web.json_response({"status": "saved", "warning": f"Key saved but provider load failed: {e}"})
 
-    active_provider, _, _ = _get_active_provider_settings(config)
-    return web.json_response({"status": "saved", "active": active_provider})
+    return web.json_response({"status": "saved", "active": config.get("provider")})
 
 
 async def api_providers_verify(request):
@@ -1344,7 +1253,7 @@ def create_app(config: dict | None = None) -> web.Application:
     return app
 
 
-def run_server(host: str = "127.0.0.1", port: int = 28337, config: dict | None = None):
+def run_server(host: str = "0.0.0.0", port: int = 28337, config: dict | None = None):
     app = create_app(config)
     print(f"\n  trio.ai web UI")
     print(f"  ----------------------")

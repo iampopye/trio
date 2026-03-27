@@ -32,17 +32,23 @@ logger = logging.getLogger(__name__)
 
 # Known trio model filenames, in preference order per model name
 KNOWN_MODELS = {
-    "trio-max": [
-        "trio-max-q4_k_m.gguf",
-        "trio-max-q5_k_m.gguf",
-        "trio-max-q8_0.gguf",
-        "trio-max.gguf",
-    ],
     "trio-nano": [
-        "trio-nano-q4_k_m.gguf",
-        "trio-nano-q5_k_m.gguf",
-        "trio-nano-q8_0.gguf",
-        "trio-nano.gguf",
+        "trio-nano-q4_k_m.gguf", "trio-nano.gguf",
+    ],
+    "trio-small": [
+        "trio-small-q4_k_m.gguf", "trio-small.gguf",
+    ],
+    "trio-medium": [
+        "trio-medium-q4_k_m.gguf", "trio-medium.gguf",
+    ],
+    "trio-high": [
+        "trio-high-q4_k_m.gguf", "trio-high.gguf",
+    ],
+    "trio-max": [
+        "trio-max-q4_k_m.gguf", "trio-max.gguf",
+    ],
+    "trio-pro": [
+        "trio-pro-q4_k_m.gguf", "trio-pro.gguf",
     ],
 }
 

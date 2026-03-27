@@ -24,19 +24,53 @@ from argparse import ArgumentParser
 # ── Model definitions ────────────────────────────────────────────────────────
 
 MODELS = {
-    "trio-max": {
-        "url": "https://huggingface.co/unsloth/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf",
-        "filename": "trio-max-q4_k_m.gguf",
-        "modelfile": "trio-max.Modelfile",
-        "description": "trio-max — 4B parameter general-purpose model by trio.ai",
-        "expected_size_gb": 2.7,
-    },
     "trio-nano": {
-        "url": "https://huggingface.co/bartowski/SmolLM2-1.7B-Instruct-GGUF/resolve/main/SmolLM2-1.7B-Instruct-Q4_K_M.gguf",
+        "url": "https://huggingface.co/ggml-org/SmolLM3-3B-GGUF/resolve/main/SmolLM3-3B-Q4_K_M.gguf",
         "filename": "trio-nano-q4_k_m.gguf",
         "modelfile": "trio-nano.Modelfile",
-        "description": "trio-nano — fast, lightweight model by trio.ai",
-        "expected_size_gb": 1.0,
+        "description": "trio-nano -- ultra-fast 3B model for edge and mobile",
+        "expected_size_gb": 1.8,
+        "tier": "nano",
+    },
+    "trio-small": {
+        "url": "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf",
+        "filename": "trio-small-q4_k_m.gguf",
+        "modelfile": "trio-small.Modelfile",
+        "description": "trio-small -- lightweight 4B model for everyday tasks",
+        "expected_size_gb": 2.8,
+        "tier": "small",
+    },
+    "trio-medium": {
+        "url": "https://huggingface.co/unsloth/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf",
+        "filename": "trio-medium-q4_k_m.gguf",
+        "modelfile": "trio-medium.Modelfile",
+        "description": "trio-medium -- balanced 8B model for quality and speed",
+        "expected_size_gb": 5.0,
+        "tier": "medium",
+    },
+    "trio-high": {
+        "url": "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf",
+        "filename": "trio-high-q4_k_m.gguf",
+        "modelfile": "trio-high.Modelfile",
+        "description": "trio-high -- high quality 9B model with multimodal support",
+        "expected_size_gb": 5.5,
+        "tier": "high",
+    },
+    "trio-max": {
+        "url": "https://huggingface.co/bartowski/Mistral-Nemo-Instruct-2407-GGUF/resolve/main/Mistral-Nemo-Instruct-2407-Q4_K_M.gguf",
+        "filename": "trio-max-q4_k_m.gguf",
+        "modelfile": "trio-max.Modelfile",
+        "description": "trio-max -- best quality 12B model for consumer GPU",
+        "expected_size_gb": 7.0,
+        "tier": "max",
+    },
+    "trio-pro": {
+        "url": "https://huggingface.co/unsloth/Qwen3-30B-A3B-GGUF/resolve/main/Qwen3-30B-A3B-Q4_K_M.gguf",
+        "filename": "trio-pro-q4_k_m.gguf",
+        "modelfile": "trio-pro.Modelfile",
+        "description": "trio-pro -- premium 30B MoE model for pro workloads",
+        "expected_size_gb": 17.0,
+        "tier": "pro",
     },
 }
 
@@ -387,25 +421,40 @@ def setup(models_to_install: list[str] | None = None):
 # ── CLI entry point ──────────────────────────────────────────────────────────
 
 def main():
-    parser = ArgumentParser(description="Download and install trio.ai models via Ollama")
+    parser = ArgumentParser(description="Download and install trio.ai models")
     parser.add_argument(
-        "--max-only",
-        action="store_true",
-        help="Only install trio-max",
+        "--model",
+        choices=list(MODELS.keys()),
+        help="Install a specific model (e.g. trio-small, trio-max)",
     )
     parser.add_argument(
-        "--nano-only",
+        "--tier",
+        choices=["nano", "small", "medium", "high", "max", "pro"],
+        help="Install by tier name",
+    )
+    parser.add_argument(
+        "--all",
         action="store_true",
-        help="Only install trio-nano",
+        help="Install all 6 models",
+    )
+    parser.add_argument(
+        "--recommended",
+        action="store_true",
+        help="Install trio-nano + trio-small (lightweight, runs on any machine)",
     )
     args = parser.parse_args()
 
-    if args.max_only:
-        models = ["trio-max"]
-    elif args.nano_only:
-        models = ["trio-nano"]
+    if args.model:
+        models = [args.model]
+    elif args.tier:
+        models = [f"trio-{args.tier}"]
+    elif args.all:
+        models = list(MODELS.keys())
+    elif args.recommended:
+        models = ["trio-nano", "trio-small"]
     else:
-        models = None  # all
+        # Default: install trio-small (best balance for most users)
+        models = ["trio-small"]
 
     success = setup(models_to_install=models)
     sys.exit(0 if success else 1)
