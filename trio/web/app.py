@@ -41,24 +41,78 @@ def _load_workspace_prompt():
     return "\n\n".join(parts)
 
 
+def _get_active_provider_settings(config: dict) -> tuple[str, str, dict]:
+    defaults = config.get("agents", {}).get("defaults", {})
+    provider_name = defaults.get("provider") or config.get("provider", "local")
+    model_name = defaults.get("model") or config.get("model", "trio-max")
+    provider_config = dict(config.get("providers", {}).get(provider_name, {}))
+    provider_config.setdefault("default_model", model_name)
+    provider_config["provider_name"] = provider_name
+    return provider_name, model_name, provider_config
+
+
 def _create_provider(config: dict):
-    provider_name = config.get("provider", "local")
-    if provider_name == "local":
-        from trio.providers.local import LocalProvider
-        pc = config.get("providers", {}).get("local", {})
-        pc.setdefault("default_model", "trio-max")
-        return LocalProvider(pc)
-    elif provider_name in ("ollama", "trio"):
-        from trio.providers.ollama import OllamaProvider
-        return OllamaProvider(config.get("providers", {}).get("ollama", {}))
-    else:
-        from trio.providers.local import LocalProvider
-        return LocalProvider(config.get("providers", {}).get("local", {}))
+    from trio.providers.base import ProviderRegistry, register_all_providers
+
+    provider_name, model_name, provider_config = _get_active_provider_settings(config)
+    register_all_providers()
+
+    if provider_name == "local" and not provider_config.get("model_path"):
+        try:
+            from trio.providers.local import _find_gguf_model
+            detected = _find_gguf_model(model_name=model_name)
+            if detected:
+                provider_config["model_path"] = detected
+        except Exception:
+            pass
+
+    try:
+        return ProviderRegistry.create(provider_name, provider_config)
+    except ValueError:
+        fallback = dict(config.get("providers", {}).get("local", {}))
+        fallback.setdefault("default_model", model_name)
+        return ProviderRegistry.create("local", fallback)
 
 
 def _save_config(config: dict):
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
     CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+
+def _normalize_provider_fields(provider_key: str, fields: dict, model: str = "") -> dict:
+    """Normalize WebUI provider fields to the config schema used by providers."""
+    normalized = dict(fields)
+
+    if "api_key" in normalized and "apiKey" not in normalized:
+        normalized["apiKey"] = normalized.pop("api_key")
+    if "base_url" in normalized and provider_key != "ollama" and "apiBase" not in normalized:
+        normalized["apiBase"] = normalized.pop("base_url")
+
+    if model:
+        normalized["default_model"] = model
+
+    if provider_key not in ("local", "ollama"):
+        normalized["provider_name"] = provider_key
+
+    return normalized
+
+
+def _normalize_channel_fields(channel_key: str, fields: dict) -> dict:
+    """Normalize WebUI channel fields to the config schema used by channels."""
+    normalized = dict(fields)
+
+    alias_map = {
+        "telegram": {"bot_token": "token"},
+        "discord": {"bot_token": "token"},
+        "google_chat": {"service_account_key": "service_account_file"},
+        "matrix": {"homeserver": "homeserver_url"},
+    }
+
+    for src, dst in alias_map.get(channel_key, {}).items():
+        if src in normalized and dst not in normalized:
+            normalized[dst] = normalized.pop(src)
+
+    return normalized
 
 
 # ── Chat Routes ──────────────────────────────────────────────────────────────
@@ -232,10 +286,11 @@ async def api_chat_with_file(request):
 
 async def api_status(request):
     config = request.app["config"]
+    provider_name, model_name, _ = _get_active_provider_settings(config)
     return web.json_response({
         "status": "running",
-        "provider": config.get("provider", "local"),
-        "model": config.get("model", "trio-max"),
+        "provider": provider_name,
+        "model": model_name,
         "sessions": len(request.app["sessions"]),
         "version": "0.1.1",
     })
@@ -431,18 +486,18 @@ async def api_tools(request):
     enabled = config.get("tools", {}).get("builtin", [])
 
     all_tools = [
+        {"key": "url_reader", "name": "URL Reader", "desc": "Fetch and extract readable text from a URL"},
         {"key": "shell", "name": "Shell", "desc": "Execute commands in sandbox directory"},
         {"key": "file_ops", "name": "File Operations", "desc": "Read, write, list files within project"},
         {"key": "browser", "name": "Browser", "desc": "Navigate, click, fill, screenshot via Playwright"},
         {"key": "web_search", "name": "Web Search", "desc": "Search the internet via DuckDuckGo"},
         {"key": "rag_search", "name": "RAG Search", "desc": "Semantic search over local documents"},
-        {"key": "code_analysis", "name": "Code Analysis", "desc": "AST parsing, linting, dependency checking"},
         {"key": "screenshot", "name": "Screenshot", "desc": "Capture screen regions"},
         {"key": "email", "name": "Email", "desc": "Send and receive emails via SMTP/IMAP"},
-        {"key": "calculator", "name": "Calculator", "desc": "Math and symbolic computation"},
+        {"key": "calendar", "name": "Calendar", "desc": "Manage calendar events"},
+        {"key": "notes", "name": "Notes", "desc": "Persistent note-taking"},
+        {"key": "math_solver", "name": "Math", "desc": "Math and symbolic computation"},
         {"key": "delegate", "name": "Delegate", "desc": "Spawn sub-agents for complex tasks"},
-        {"key": "mcp_client", "name": "MCP Client", "desc": "Connect to external MCP tool servers"},
-        {"key": "memory", "name": "Memory", "desc": "Store and recall info across sessions"},
     ]
 
     for t in all_tools:
@@ -503,10 +558,18 @@ async def api_channels(request):
 
     for ch in all_channels:
         ch_cfg = channels_cfg.get(ch["key"], {})
-        ch["enabled"] = ch_cfg.get("enabled", ch["key"] in ("cli", "web"))
-        ch["configured"] = bool(ch_cfg.get("bot_token") or ch_cfg.get("access_token")
-                                or ch_cfg.get("api_token") or ch_cfg.get("account_sid")
-                                or not ch.get("configurable", True))
+        normalized_cfg = _normalize_channel_fields(ch["key"], ch_cfg)
+        ch["enabled"] = normalized_cfg.get("enabled", ch["key"] in ("cli", "web"))
+        ch["configured"] = bool(
+            normalized_cfg.get("token")
+            or normalized_cfg.get("bot_token")
+            or normalized_cfg.get("access_token")
+            or normalized_cfg.get("api_token")
+            or normalized_cfg.get("account_sid")
+            or normalized_cfg.get("service_account_file")
+            or normalized_cfg.get("homeserver_url")
+            or not ch.get("configurable", True)
+        )
 
     return web.json_response({"channels": all_channels})
 
@@ -543,7 +606,7 @@ async def api_channels_config(request):
     config = request.app["config"]
     channels = config.setdefault("channels", {})
     ch = channels.setdefault(key, {})
-    ch.update(fields)
+    ch.update(_normalize_channel_fields(key, fields))
     ch["enabled"] = True
 
     _save_config(config)
@@ -670,7 +733,7 @@ async def api_models(request):
     gguf = _list_gguf_models()
 
     config = request.app["config"]
-    active = config.get("model", "trio-max")
+    _, active, _ = _get_active_provider_settings(config)
 
     models = []
     for name in gguf:
@@ -704,14 +767,15 @@ async def api_models_switch(request):
         return web.json_response({"error": "Model name required"}, status=400)
 
     config = request.app["config"]
-    config["model"] = model
+    defaults = config.setdefault("agents", {}).setdefault("defaults", {})
+    defaults["model"] = model
     _save_config(config)
 
     # Reload provider with new model
     provider = request.app["provider"]
     if hasattr(provider, '_model'):
         provider._model = None  # Force reload on next request
-        provider.default_model = model
+    provider.default_model = model
 
     return web.json_response({"status": "ok", "model": model})
 
@@ -721,14 +785,15 @@ async def api_models_switch(request):
 async def api_settings(request):
     """GET /api/settings -- get current settings."""
     config = request.app["config"]
+    provider_name, model_name, _ = _get_active_provider_settings(config)
     return web.json_response({
         "sandbox": config.get("sandbox", True),
         "guardrails": config.get("guardrails", {}).get("enabled", True),
         "memory": config.get("memory", {}).get("enabled", True),
         "session_persistence": config.get("sessions", {}).get("persist", True),
         "deep_thinking": config.get("deep_thinking", False),
-        "provider": config.get("provider", "local"),
-        "model": config.get("model", "trio-max"),
+        "provider": provider_name,
+        "model": model_name,
     })
 
 
@@ -740,6 +805,8 @@ async def api_settings_update(request):
         return web.json_response({"error": "Invalid JSON"}, status=400)
 
     config = request.app["config"]
+    defaults = config.setdefault("agents", {}).setdefault("defaults", {})
+    refresh_provider = False
 
     if "sandbox" in data:
         config["sandbox"] = data["sandbox"]
@@ -752,11 +819,23 @@ async def api_settings_update(request):
     if "deep_thinking" in data:
         config["deep_thinking"] = data["deep_thinking"]
     if "provider" in data:
-        config["provider"] = data["provider"]
+        defaults["provider"] = data["provider"]
+        refresh_provider = True
     if "model" in data:
-        config["model"] = data["model"]
+        defaults["model"] = data["model"]
+        refresh_provider = True
 
     _save_config(config)
+
+    if refresh_provider:
+        old_provider = request.app.get("provider")
+        if old_provider is not None:
+            try:
+                await old_provider.close()
+            except Exception:
+                pass
+        request.app["provider"] = _create_provider(config)
+
     return web.json_response({"status": "ok"})
 
 
@@ -776,6 +855,331 @@ async def api_agents(request):
         {"name": "summarizer", "role": "Condenses long documents, conversations, data into key points",
          "tools": [], "max_iterations": 2},
     ]})
+
+
+# ── Memory & Chat History ────────────────────────────────────────────────────
+
+MEMORY_DIR = Path.home() / ".trio" / "memory"
+HISTORY_DIR = Path.home() / ".trio" / "chat_history"
+
+
+async def api_memory_list(request):
+    """GET /api/memory -- list all memory entries."""
+    MEMORY_DIR.mkdir(parents=True, exist_ok=True)
+    entries = []
+    for f in sorted(MEMORY_DIR.glob("*.json"), key=lambda x: x.stat().st_mtime, reverse=True):
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+            data["id"] = f.stem
+            entries.append(data)
+        except Exception:
+            pass
+    return web.json_response({"memories": entries, "count": len(entries)})
+
+
+async def api_memory_add(request):
+    """POST /api/memory -- add a memory entry."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    title = data.get("title", "").strip()
+    content = data.get("content", "").strip()
+    source = data.get("source", "manual")  # manual, chatgpt, claude, gemini, import
+
+    if not content:
+        return web.json_response({"error": "Content required"}, status=400)
+
+    MEMORY_DIR.mkdir(parents=True, exist_ok=True)
+    import time
+    entry_id = f"{int(time.time())}_{uuid.uuid4().hex[:6]}"
+    entry = {
+        "title": title or content[:60],
+        "content": content,
+        "source": source,
+        "created": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "tokens": len(content.split()),
+    }
+    (MEMORY_DIR / f"{entry_id}.json").write_text(json.dumps(entry, indent=2), encoding="utf-8")
+    entry["id"] = entry_id
+    return web.json_response({"status": "saved", "memory": entry})
+
+
+async def api_memory_delete(request):
+    """POST /api/memory/delete -- remove a memory entry."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    entry_id = data.get("id", "")
+    path = MEMORY_DIR / f"{entry_id}.json"
+    if path.exists():
+        path.unlink()
+        return web.json_response({"status": "deleted"})
+    return web.json_response({"error": "Not found"}, status=404)
+
+
+async def api_memory_import(request):
+    """POST /api/memory/import -- import chat history from other AI services."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    source = data.get("source", "unknown")  # chatgpt, claude, gemini, etc.
+    conversations = data.get("conversations", [])
+    raw_text = data.get("raw_text", "")
+
+    MEMORY_DIR.mkdir(parents=True, exist_ok=True)
+    imported = 0
+    import time
+
+    if conversations:
+        for conv in conversations:
+            entry_id = f"{int(time.time())}_{uuid.uuid4().hex[:6]}"
+            title = conv.get("title", "")
+            messages = conv.get("messages", [])
+            content = "\n\n".join(
+                f"{'User' if m.get('role') == 'user' else 'Assistant'}: {m.get('content', '')}"
+                for m in messages
+            )
+            entry = {
+                "title": title or f"Imported from {source}",
+                "content": content[:50000],
+                "source": source,
+                "created": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "tokens": len(content.split()),
+                "original_messages": len(messages),
+            }
+            (MEMORY_DIR / f"{entry_id}.json").write_text(json.dumps(entry, indent=2), encoding="utf-8")
+            imported += 1
+
+    elif raw_text:
+        entry_id = f"{int(time.time())}_{uuid.uuid4().hex[:6]}"
+        entry = {
+            "title": f"Import from {source}",
+            "content": raw_text[:50000],
+            "source": source,
+            "created": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "tokens": len(raw_text.split()),
+        }
+        (MEMORY_DIR / f"{entry_id}.json").write_text(json.dumps(entry, indent=2), encoding="utf-8")
+        imported = 1
+
+    return web.json_response({"status": "imported", "count": imported})
+
+
+async def api_chat_history(request):
+    """GET /api/history -- get chat sessions."""
+    sessions = request.app["sessions"]
+    result = []
+    for sid, history in sessions.items():
+        if history:
+            result.append({
+                "session_id": sid,
+                "messages": len(history),
+                "preview": history[0].get("content", "")[:100] if history else "",
+                "last_role": history[-1].get("role", "") if history else "",
+            })
+    return web.json_response({"sessions": result})
+
+
+# ── API Keys / Providers ────────────────────────────────────────────────────
+
+SUPPORTED_PROVIDERS = {
+    "local": {
+        "name": "trio-max (Local)",
+        "desc": "Free, runs on your machine. No API key needed.",
+        "fields": [],
+        "free": True,
+    },
+    "openai": {
+        "name": "OpenAI (ChatGPT)",
+        "desc": "GPT-4o, GPT-4, GPT-3.5. Requires API key from platform.openai.com",
+        "fields": [{"key": "api_key", "label": "API Key", "placeholder": "sk-..."}],
+        "models": ["gpt-4o", "gpt-4o-mini", "gpt-4", "gpt-3.5-turbo"],
+    },
+    "anthropic": {
+        "name": "Anthropic (Claude)",
+        "desc": "Claude Opus, Sonnet, Haiku. Key from console.anthropic.com",
+        "fields": [{"key": "api_key", "label": "API Key", "placeholder": "sk-ant-..."}],
+        "models": ["claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"],
+    },
+    "groq": {
+        "name": "Groq",
+        "desc": "Ultra-fast inference. Free tier available. Key from console.groq.com",
+        "fields": [{"key": "api_key", "label": "API Key", "placeholder": "gsk_..."}],
+        "models": ["llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"],
+    },
+    "gemini": {
+        "name": "Google Gemini",
+        "desc": "Gemini Pro, Flash. Key from aistudio.google.com",
+        "fields": [{"key": "api_key", "label": "API Key", "placeholder": "AIza..."}],
+        "models": ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash"],
+    },
+    "openrouter": {
+        "name": "OpenRouter",
+        "desc": "Access 100+ models through one API. Key from openrouter.ai",
+        "fields": [{"key": "api_key", "label": "API Key", "placeholder": "sk-or-..."}],
+        "models": ["anthropic/claude-sonnet-4", "openai/gpt-4o", "google/gemini-pro"],
+    },
+    "together": {
+        "name": "Together AI",
+        "desc": "Open-source models hosted. Key from api.together.xyz",
+        "fields": [{"key": "api_key", "label": "API Key", "placeholder": "..."}],
+        "models": ["meta-llama/Llama-3-70b", "mistralai/Mixtral-8x7B"],
+    },
+    "ollama": {
+        "name": "Ollama (Local)",
+        "desc": "Run any model via Ollama. Free, local. Install from ollama.com",
+        "fields": [{"key": "base_url", "label": "Base URL", "placeholder": "http://localhost:11434"}],
+        "models": ["llama3.1:8b", "mistral", "codellama", "phi3"],
+        "free": True,
+    },
+}
+
+
+async def api_providers(request):
+    """GET /api/providers -- list all supported providers with config status."""
+    config = request.app["config"]
+    current, _, _ = _get_active_provider_settings(config)
+    providers_cfg = config.get("providers", {})
+
+    result = []
+    for key, info in SUPPORTED_PROVIDERS.items():
+        p_cfg = _normalize_provider_fields(key, providers_cfg.get(key, {}))
+        has_key = bool(
+            p_cfg.get("apiKey")
+            or p_cfg.get("apiBase")
+            or p_cfg.get("base_url")
+            or info.get("free")
+        )
+        result.append({
+            "key": key,
+            "name": info["name"],
+            "desc": info["desc"],
+            "fields": info.get("fields", []),
+            "models": info.get("models", []),
+            "free": info.get("free", False),
+            "active": key == current,
+            "configured": has_key,
+        })
+
+    return web.json_response({"providers": result, "active": current})
+
+
+async def api_providers_save(request):
+    """POST /api/providers/save -- save provider API key and optionally activate."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    key = data.get("provider", "")
+    fields = data.get("fields", {})
+    activate = data.get("activate", False)
+    model = data.get("model", "")
+
+    if key not in SUPPORTED_PROVIDERS:
+        return web.json_response({"error": f"Unknown provider: {key}"}, status=400)
+
+    config = request.app["config"]
+    providers = config.setdefault("providers", {})
+    p_cfg = providers.setdefault(key, {})
+    normalized_fields = _normalize_provider_fields(key, fields, model=model)
+    p_cfg.update(normalized_fields)
+
+    if activate:
+        defaults = config.setdefault("agents", {}).setdefault("defaults", {})
+        defaults["provider"] = key
+        if model:
+            defaults["model"] = model
+
+    _save_config(config)
+
+    # Reload provider if activated
+    if activate:
+        try:
+            old_provider = request.app.get("provider")
+            if old_provider is not None:
+                try:
+                    await old_provider.close()
+                except Exception:
+                    pass
+            request.app["provider"] = _create_provider(config)
+        except Exception as e:
+            return web.json_response({"status": "saved", "warning": f"Key saved but provider load failed: {e}"})
+
+    active_provider, _, _ = _get_active_provider_settings(config)
+    return web.json_response({"status": "saved", "active": active_provider})
+
+
+async def api_providers_verify(request):
+    """POST /api/providers/verify -- test if an API key is valid."""
+    import aiohttp as aio_http
+
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    key = data.get("provider", "")
+    api_key = data.get("api_key", "")
+
+    try:
+        async with aio_http.ClientSession() as session:
+            if key == "openai":
+                async with session.get("https://api.openai.com/v1/models",
+                                       headers={"Authorization": f"Bearer {api_key}"},
+                                       ssl=False, timeout=aio_http.ClientTimeout(total=10)) as resp:
+                    if resp.status == 200:
+                        d = await resp.json()
+                        models = [m["id"] for m in d.get("data", []) if "gpt" in m["id"]][:5]
+                        return web.json_response({"valid": True, "models": models, "message": f"Connected. {len(d.get('data',[]))} models available."})
+                    return web.json_response({"valid": False, "error": "Invalid API key"})
+
+            elif key == "anthropic":
+                async with session.post("https://api.anthropic.com/v1/messages",
+                                        headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                                        json={"model": "claude-haiku-4-5-20251001", "max_tokens": 5, "messages": [{"role": "user", "content": "hi"}]},
+                                        ssl=False, timeout=aio_http.ClientTimeout(total=15)) as resp:
+                    if resp.status == 200:
+                        return web.json_response({"valid": True, "message": "Claude API key verified."})
+                    d = await resp.json()
+                    return web.json_response({"valid": False, "error": d.get("error", {}).get("message", "Invalid key")})
+
+            elif key == "groq":
+                async with session.get("https://api.groq.com/openai/v1/models",
+                                       headers={"Authorization": f"Bearer {api_key}"},
+                                       ssl=False, timeout=aio_http.ClientTimeout(total=10)) as resp:
+                    if resp.status == 200:
+                        d = await resp.json()
+                        return web.json_response({"valid": True, "message": f"Groq connected. {len(d.get('data',[]))} models."})
+                    return web.json_response({"valid": False, "error": "Invalid Groq key"})
+
+            elif key == "gemini":
+                url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+                async with session.get(url, ssl=False, timeout=aio_http.ClientTimeout(total=10)) as resp:
+                    if resp.status == 200:
+                        d = await resp.json()
+                        return web.json_response({"valid": True, "message": f"Gemini connected. {len(d.get('models',[]))} models."})
+                    return web.json_response({"valid": False, "error": "Invalid Gemini key"})
+
+            elif key == "openrouter":
+                async with session.get("https://openrouter.ai/api/v1/models",
+                                       headers={"Authorization": f"Bearer {api_key}"},
+                                       ssl=False, timeout=aio_http.ClientTimeout(total=10)) as resp:
+                    if resp.status == 200:
+                        return web.json_response({"valid": True, "message": "OpenRouter connected."})
+                    return web.json_response({"valid": False, "error": "Invalid key"})
+
+            else:
+                return web.json_response({"valid": True, "message": "Configuration saved."})
+
+    except Exception as e:
+        return web.json_response({"valid": False, "error": str(e)})
 
 
 # ── WhatsApp QR ──────────────────────────────────────────────────────────────
@@ -916,6 +1320,18 @@ def create_app(config: dict | None = None) -> web.Application:
     # Sub-agents
     app.router.add_get("/api/agents", api_agents)
 
+    # Memory & History
+    app.router.add_get("/api/memory", api_memory_list)
+    app.router.add_post("/api/memory", api_memory_add)
+    app.router.add_post("/api/memory/delete", api_memory_delete)
+    app.router.add_post("/api/memory/import", api_memory_import)
+    app.router.add_get("/api/history", api_chat_history)
+
+    # Providers / API Keys
+    app.router.add_get("/api/providers", api_providers)
+    app.router.add_post("/api/providers/save", api_providers_save)
+    app.router.add_post("/api/providers/verify", api_providers_verify)
+
     # WhatsApp QR
     app.router.add_get("/api/whatsapp/status", api_whatsapp_status)
     app.router.add_post("/api/whatsapp/start", api_whatsapp_start)
@@ -928,7 +1344,7 @@ def create_app(config: dict | None = None) -> web.Application:
     return app
 
 
-def run_server(host: str = "0.0.0.0", port: int = 28337, config: dict | None = None):
+def run_server(host: str = "127.0.0.1", port: int = 28337, config: dict | None = None):
     app = create_app(config)
     print(f"\n  trio.ai web UI")
     print(f"  ----------------------")

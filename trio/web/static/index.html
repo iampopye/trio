@@ -707,11 +707,11 @@
     <div class="nav-group">
       <div class="nav-label">Deploy</div>
       <button class="nav-btn" data-p="channels"><span class="ico">&#9993;</span> Channels</button>
-      <button class="nav-btn" data-p="models"><span class="ico">&#9683;</span> Models</button>
     </div>
     <div class="nav-group">
       <div class="nav-label">System</div>
-      <button class="nav-btn" data-p="project"><span class="ico">&#9783;</span> Project</button>
+      <button class="nav-btn" data-p="memory"><span class="ico">&#9830;</span> Memory</button>
+      <button class="nav-btn" data-p="providers"><span class="ico">&#9670;</span> API Keys</button>
       <button class="nav-btn" data-p="settings"><span class="ico">&#9881;</span> Settings</button>
     </div>
   </div>
@@ -793,8 +793,8 @@
         <div class="card" style="cursor:pointer" onclick="goPanel('skills')"><div class="card-name">Browse Skills</div><div class="card-text">Explore 1,900+ capabilities</div></div>
         <div class="card" style="cursor:pointer" onclick="goPanel('channels')"><div class="card-name">Deploy</div><div class="card-text">Connect to Discord, Telegram, etc.</div></div>
         <div class="card" style="cursor:pointer" onclick="goPanel('tools')"><div class="card-name">Configure Tools</div><div class="card-text">Enable shell, browser, search</div></div>
-        <div class="card" style="cursor:pointer" onclick="goPanel('models')"><div class="card-name">Manage Models</div><div class="card-text">Switch between trio-max and nano</div></div>
-        <div class="card" style="cursor:pointer" onclick="goPanel('settings')"><div class="card-name">Settings</div><div class="card-text">Sandbox, guardrails, memory</div></div>
+        <div class="card" style="cursor:pointer" onclick="goPanel('providers')"><div class="card-name">API Keys</div><div class="card-text">Connect ChatGPT, Claude, Gemini, Groq</div></div>
+        <div class="card" style="cursor:pointer" onclick="goPanel('memory')"><div class="card-name">Memory</div><div class="card-text">Import knowledge from other AIs</div></div>
       </div>
     </div></div>
   </div>
@@ -836,31 +836,32 @@
     </div></div>
   </div>
 
-  <!-- ── Models ── -->
-  <div class="panel" id="p-models">
+  <!-- ── Memory ── -->
+  <div class="panel" id="p-memory">
     <div class="panel-scroll"><div class="panel-inner">
-      <div class="section-title">AI Models</div>
-      <div class="section-desc">Manage local GGUF models -- no cloud, no API keys needed</div>
-      <div class="grid grid-2">
-        <div class="card"><div class="card-name">trio-max</div><div class="card-text">Qwen3-4B Q4_K_M -- 2.5GB. Best quality for coding, writing, reasoning. CPU or GPU.</div><div class="card-badge">recommended</div></div>
-        <div class="card"><div class="card-name">trio-nano</div><div class="card-text">SmolLM2-1.7B Q4_K_M -- 1GB. Ultra-fast for simple tasks. Minimal resources.</div><div class="card-badge">lightweight</div></div>
-        <div class="card"><div class="card-name">Custom Model</div><div class="card-text">Place any .gguf file in ~/.trio/models/ and it will be auto-detected.</div><div class="card-badge">bring your own</div></div>
+      <div class="section-title">Memory</div>
+      <div class="section-desc">Bring your knowledge from ChatGPT, Claude, Gemini or any AI. Your memories stay local.</div>
+
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="btn btn-accent" onclick="openAddMemory()">+ Add Memory</button>
+        <button class="btn" onclick="openImportMemory()">Import from ChatGPT / Claude</button>
       </div>
-      <div class="section-title" style="font-size:17px;margin-top:28px;">Inference Settings</div>
-      <div class="opt-row"><div><div class="opt-name">Native GGUF Inference</div><div class="opt-desc">Run models locally via llama-cpp -- no Ollama needed</div></div><div class="sw on"></div></div>
-      <div class="opt-row"><div><div class="opt-name">GPU Acceleration</div><div class="opt-desc">Offload layers to GPU when available</div></div><div class="sw on"></div></div>
-      <div class="opt-row"><div><div class="opt-name">Streaming Output</div><div class="opt-desc">Stream tokens as they generate for faster UX</div></div><div class="sw on"></div></div>
+
+      <div class="stats" id="memoryStats">
+        <div class="stat"><div class="stat-num" id="memCount">0</div><div class="stat-lbl">Memories</div></div>
+        <div class="stat"><div class="stat-num" id="memTokens">0</div><div class="stat-lbl">Total Words</div></div>
+      </div>
+
+      <div id="memoryList"><div class="skeleton" style="height:60px;margin-bottom:8px;"></div></div>
     </div></div>
   </div>
 
-  <!-- ── Project ── -->
-  <div class="panel" id="p-project">
+  <!-- ── API Keys / Providers ── -->
+  <div class="panel" id="p-providers">
     <div class="panel-scroll"><div class="panel-inner">
-      <div class="section-title">Project</div>
-      <div class="section-desc">Sandbox info -- agent is restricted to this directory</div>
-      <div class="stats" id="projectStats"></div>
-      <div class="section-title" style="font-size:17px;">Files</div>
-      <div id="projectFiles" style="font-family:'SF Mono','Consolas',monospace;font-size:13px;color:var(--text-2);line-height:2;margin-top:10px;"></div>
+      <div class="section-title">AI Providers & API Keys</div>
+      <div class="section-desc">Use trio-max for free, or connect your own API keys. Switch anytime.</div>
+      <div id="providerList"><div class="skeleton" style="height:100px;margin-bottom:12px;"></div></div>
     </div></div>
   </div>
 
@@ -1506,32 +1507,198 @@ async function loadAgents() {
   } catch(e) { console.error('Agents load error:', e); }
 }
 
-// ── Load Models from API ──
-async function loadModels() {
+// ── Memory ──
+async function loadMemory() {
   try {
-    const r = await fetch('/api/models');
+    const r = await fetch('/api/memory');
     const d = await r.json();
-    const models = d.models || [];
-    const grid = document.querySelector('#p-models .grid');
-    if (grid && models.length) {
-      grid.innerHTML = models.map(m =>
-        '<div class="card'+(m.active?' active-model':'')+'" style="'+(m.active?'border-color:var(--accent);':'')+'cursor:pointer;" onclick="switchModel(\''+m.name.replace('.gguf','').replace(/-q4_k_m/,'')+'\')">' +
-        '<div class="card-name">'+m.name+'</div>' +
-        '<div class="card-text">'+m.size_mb+' MB'+(m.active?' -- Currently active':'')+'</div>' +
-        '<div class="card-badge">'+(m.active?'active':'click to activate')+'</div></div>'
-      ).join('') + '<div class="card"><div class="card-name">Custom Model</div><div class="card-text">Place any .gguf file in ~/.trio/models/</div><div class="card-badge">bring your own</div></div>';
+    const mems = d.memories || [];
+    document.getElementById('memCount').textContent = d.count;
+    document.getElementById('memTokens').textContent = mems.reduce((a,m) => a + (m.tokens||0), 0).toLocaleString();
+
+    if (!mems.length) {
+      document.getElementById('memoryList').innerHTML = '<div class="empty-state"><div style="font-size:24px;margin-bottom:8px;">No memories yet</div>Add memories manually or import from ChatGPT, Claude, Gemini</div>';
+      return;
     }
-  } catch(e) { console.error('Models load error:', e); }
+
+    document.getElementById('memoryList').innerHTML = mems.map(m => {
+      const sourceColors = {chatgpt:'#10b981',claude:'#f97316',gemini:'#3b82f6',groq:'#8b5cf6',manual:'var(--text-3)'};
+      const color = sourceColors[m.source] || 'var(--text-3)';
+      return '<div class="card" style="margin-bottom:10px;padding:16px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:start;">' +
+        '<div><div class="card-name">'+m.title+'</div>' +
+        '<div style="font-size:12px;color:var(--text-3);margin-top:2px;">'+m.created+' &middot; '+m.tokens+' words &middot; <span style="color:'+color+'">'+m.source+'</span></div></div>' +
+        '<button class="btn" style="font-size:11px;padding:3px 8px;color:var(--red);border-color:var(--red);" onclick="deleteMemory(\''+m.id+'\')">Delete</button></div>' +
+        '<div style="font-size:13px;color:var(--text-2);margin-top:8px;line-height:1.6;max-height:80px;overflow:hidden;">'+m.content.slice(0,300).replace(/</g,'&lt;')+'</div></div>';
+    }).join('');
+  } catch(e) { console.error('Memory load error:', e); }
 }
 
-async function switchModel(name) {
+function openAddMemory() {
+  const overlay = document.createElement('div');
+  overlay.id = 'channelModal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);';
+  const modal = document.createElement('div');
+  modal.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:520px;width:90%;box-shadow:var(--shadow);';
+  modal.innerHTML = '<div style="font-size:18px;font-weight:700;margin-bottom:16px;">Add Memory</div>' +
+    '<label style="font-size:13px;font-weight:500;">Title</label>' +
+    '<input class="search" id="memTitle" placeholder="What is this about?" style="margin-bottom:12px;">' +
+    '<label style="font-size:13px;font-weight:500;">Content</label>' +
+    '<textarea class="search" id="memContent" rows="6" placeholder="Paste your knowledge, preferences, context, or anything you want the AI to remember..." style="resize:vertical;min-height:120px;margin-bottom:12px;line-height:1.6;"></textarea>' +
+    '<label style="font-size:13px;font-weight:500;">Source</label>' +
+    '<select class="search" id="memSource" style="margin-bottom:16px;"><option value="manual">Manual</option><option value="chatgpt">From ChatGPT</option><option value="claude">From Claude</option><option value="gemini">From Gemini</option><option value="groq">From Groq</option><option value="other">Other</option></select>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-accent" onclick="saveMemory()">Save Memory</button></div>';
+  overlay.appendChild(modal);
+  overlay.addEventListener('click', e => { if(e.target===overlay) closeModal(); });
+  document.body.appendChild(overlay);
+}
+
+async function saveMemory() {
+  const title = document.getElementById('memTitle').value.trim();
+  const content = document.getElementById('memContent').value.trim();
+  const source = document.getElementById('memSource').value;
+  if (!content) { toast('Content is required','error'); return; }
+  await fetch('/api/memory', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({title,content,source})});
+  closeModal();
+  toast('Memory saved','success');
+  loadMemory();
+}
+
+async function deleteMemory(id) {
+  await fetch('/api/memory/delete', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+  toast('Memory removed','success');
+  loadMemory();
+}
+
+function openImportMemory() {
+  const overlay = document.createElement('div');
+  overlay.id = 'channelModal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);';
+  const modal = document.createElement('div');
+  modal.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:560px;width:90%;box-shadow:var(--shadow);';
+  modal.innerHTML = '<div style="font-size:18px;font-weight:700;margin-bottom:16px;">Import from Other AIs</div>' +
+    '<div style="background:var(--accent-soft);border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;color:var(--text-2);line-height:1.6;">' +
+    'Bring your conversations and knowledge from paid AI services. Your data stays 100% local on your machine.<br><br>' +
+    '<strong>ChatGPT:</strong> Go to Settings > Data Controls > Export Data<br>' +
+    '<strong>Claude:</strong> Copy conversation text from claude.ai<br>' +
+    '<strong>Gemini:</strong> Copy from gemini.google.com</div>' +
+    '<label style="font-size:13px;font-weight:500;">Source</label>' +
+    '<select class="search" id="importSource" style="margin-bottom:12px;"><option value="chatgpt">ChatGPT</option><option value="claude">Claude</option><option value="gemini">Gemini</option><option value="groq">Groq</option><option value="other">Other</option></select>' +
+    '<label style="font-size:13px;font-weight:500;">Paste your conversations or knowledge</label>' +
+    '<textarea class="search" id="importText" rows="8" placeholder="Paste conversation text, exported data, or any knowledge you want to bring over..." style="resize:vertical;min-height:160px;margin-bottom:16px;line-height:1.6;font-size:13px;"></textarea>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-accent" onclick="doImport()">Import</button></div>';
+  overlay.appendChild(modal);
+  overlay.addEventListener('click', e => { if(e.target===overlay) closeModal(); });
+  document.body.appendChild(overlay);
+}
+
+async function doImport() {
+  const source = document.getElementById('importSource').value;
+  const text = document.getElementById('importText').value.trim();
+  if (!text) { toast('Paste some content to import','error'); return; }
+  const r = await fetch('/api/memory/import', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({source, raw_text: text})});
+  const d = await r.json();
+  closeModal();
+  toast('Imported '+d.count+' memory entries from '+source,'success');
+  loadMemory();
+}
+
+// ── Providers / API Keys ──
+async function loadProviders() {
   try {
-    await fetch('/api/models/switch', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({model:name})});
-    document.getElementById('modelName').textContent = name;
-    document.getElementById('dashModel').textContent = name;
-    loadModels();
-    toast('Switched to '+name,'success');
-  } catch(e) { toast('Failed to switch model','error'); }
+    const r = await fetch('/api/providers');
+    const d = await r.json();
+    const providers = d.providers || [];
+    document.getElementById('providerList').innerHTML = providers.map(p => {
+      const statusColor = p.active ? 'var(--green)' : (p.configured ? 'var(--accent)' : 'var(--text-3)');
+      const statusText = p.active ? 'Active' : (p.configured ? 'Configured' : (p.free ? 'Free' : 'Not configured'));
+      return '<div class="card" style="margin-bottom:12px;'+(p.active?'border-color:var(--green);':'')+'">' +
+        '<div style="display:flex;justify-content:space-between;align-items:start;">' +
+        '<div><div class="card-name">'+p.name+(p.free?' <span style="font-size:11px;color:var(--green);font-weight:400;">FREE</span>':'')+'</div>' +
+        '<div class="card-text" style="margin-top:4px;">'+p.desc+'</div></div>' +
+        '<span style="font-size:12px;color:'+statusColor+';font-weight:500;">'+statusText+'</span></div>' +
+        (p.models && p.models.length ? '<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">'+p.models.map(m=>'<span class="card-badge">'+m+'</span>').join('')+'</div>' : '') +
+        '<div style="display:flex;gap:8px;margin-top:12px;">' +
+        (p.fields.length ? '<button class="btn" style="font-size:12px;" onclick="openProviderSetup(\''+p.key+'\')">'+(!p.configured?'Add API Key':'Update Key')+'</button>' : '') +
+        (!p.active && p.configured ? '<button class="btn btn-accent" style="font-size:12px;" onclick="activateProvider(\''+p.key+'\')">Activate</button>' : '') +
+        '</div></div>';
+    }).join('');
+  } catch(e) { console.error('Providers load error:', e); }
+}
+
+function openProviderSetup(key) {
+  fetch('/api/providers').then(r=>r.json()).then(d => {
+    const p = (d.providers||[]).find(x=>x.key===key);
+    if (!p) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'channelModal';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);';
+    const modal = document.createElement('div');
+    modal.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:480px;width:90%;box-shadow:var(--shadow);';
+    let html = '<div style="font-size:18px;font-weight:700;margin-bottom:16px;">'+p.name+'</div>';
+    html += '<div style="font-size:13px;color:var(--text-2);margin-bottom:16px;">'+p.desc+'</div>';
+    p.fields.forEach(f => {
+      html += '<label style="font-size:13px;font-weight:500;margin-bottom:4px;display:block;">'+f.label+'</label>';
+      html += '<input class="search" id="pfield_'+f.key+'" placeholder="'+f.placeholder+'" style="margin-bottom:12px;" type="password">';
+    });
+    if (p.models && p.models.length) {
+      html += '<label style="font-size:13px;font-weight:500;margin-bottom:4px;display:block;">Default Model</label>';
+      html += '<select class="search" id="pfield_model" style="margin-bottom:12px;">'+p.models.map(m=>'<option value="'+m+'">'+m+'</option>').join('')+'</select>';
+    }
+    html += '<div id="provVerifyResult" style="margin-bottom:12px;"></div>';
+    html += '<div style="display:flex;gap:8px;justify-content:flex-end;">';
+    html += '<button class="btn" onclick="closeModal()">Cancel</button>';
+    html += '<button class="btn" onclick="verifyProvider(\''+key+'\')">Test Key</button>';
+    html += '<button class="btn btn-accent" onclick="saveProvider(\''+key+'\',true)" id="provSaveBtn">Save & Activate</button>';
+    html += '</div>';
+    modal.innerHTML = html;
+    overlay.appendChild(modal);
+    overlay.addEventListener('click', e => { if(e.target===overlay) closeModal(); });
+    document.body.appendChild(overlay);
+  });
+}
+
+async function verifyProvider(key) {
+  const apiKey = document.getElementById('pfield_api_key')?.value?.trim() || document.getElementById('pfield_base_url')?.value?.trim() || '';
+  const result = document.getElementById('provVerifyResult');
+  result.innerHTML = '<span style="color:var(--text-2);font-size:13px;">Verifying...</span>';
+  try {
+    const r = await fetch('/api/providers/verify', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({provider:key, api_key:apiKey})});
+    const d = await r.json();
+    if (d.valid) {
+      result.innerHTML = '<div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);border-radius:8px;padding:10px;font-size:13px;color:var(--green);">'+d.message+'</div>';
+    } else {
+      result.innerHTML = '<div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:10px;font-size:13px;color:var(--red);">'+d.error+'</div>';
+    }
+  } catch(e) { result.innerHTML = '<span style="color:var(--red);font-size:13px;">Connection error</span>'; }
+}
+
+async function saveProvider(key, activate) {
+  const fields = {};
+  document.querySelectorAll('[id^="pfield_"]').forEach(el => {
+    const k = el.id.replace('pfield_','');
+    if (k !== 'model') fields[k] = el.value.trim();
+  });
+  const model = document.getElementById('pfield_model')?.value || '';
+  await fetch('/api/providers/save', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({provider:key, fields, activate, model})});
+  closeModal();
+  toast(activate?'Provider activated':'API key saved','success');
+  loadProviders();
+  // Update header badge
+  fetch('/api/status').then(r=>r.json()).then(d=>{
+    document.getElementById('modelName').textContent=d.model;
+    document.getElementById('dashModel').textContent=d.model;
+    document.getElementById('dashProvider').textContent=d.provider;
+  });
+}
+
+async function activateProvider(key) {
+  await fetch('/api/providers/save', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({provider:key, fields:{}, activate:true})});
+  toast('Switched to '+key,'success');
+  loadProviders();
+  fetch('/api/status').then(r=>r.json()).then(d=>{
+    document.getElementById('modelName').textContent=d.model;
+  });
 }
 
 // ── Load Settings from API ──
@@ -1560,23 +1727,6 @@ async function loadSettings() {
   } catch(e) { console.error('Settings load error:', e); }
 }
 
-// ── Load Project from API ──
-async function loadProject() {
-  try {
-    const r = await fetch('/api/project');
-    const d = await r.json();
-    if (d.root) {
-      document.getElementById('projectStats').innerHTML =
-        '<div class="stat"><div class="stat-num">'+d.name+'</div><div class="stat-lbl">Project</div></div>'+
-        '<div class="stat"><div class="stat-num">'+d.language+'</div><div class="stat-lbl">Language</div></div>'+
-        '<div class="stat"><div class="stat-num">'+(d.files_count||0)+'</div><div class="stat-lbl">Files</div></div>'+
-        '<div class="stat"><div class="stat-num">'+(d.has_git?'Yes':'No')+'</div><div class="stat-lbl">Git</div></div>';
-      if (d.files) document.getElementById('projectFiles').innerHTML =
-        d.files.slice(0,60).join('<br>') +
-        (d.files.length>60 ? '<br><span style="color:var(--text-3)">...and '+(d.files.length-60)+' more</span>' : '');
-    }
-  } catch(e) {}
-}
 
 // ── Skills search ──
 let skillSearchTimer;
@@ -1601,9 +1751,9 @@ async function init() {
   loadTools();
   loadChannels();
   loadAgents();
-  loadModels();
+  loadMemory();
+  loadProviders();
   loadSettings();
-  loadProject();
 }
 
 init();
