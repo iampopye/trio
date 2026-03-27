@@ -266,40 +266,46 @@ def _setup_local_gguf(config: dict):
             console.print(f"    [cyan]{idx}[/cyan]. {name}")
         console.print()
 
-    # Choose model
-    model_choices = ["trio-max", "trio-nano", "custom"]
-    console.print("  Which model to use?")
-    console.print("    [cyan]1[/cyan]  trio-max   [dim](recommended)[/dim]")
-    console.print("    [cyan]2[/cyan]  trio-nano  [dim](smaller, faster)[/dim]")
-    console.print("    [cyan]3[/cyan]  Custom path to a .gguf file")
+    # Choose model — full trio lineup
+    TRIO_MODELS = [
+        ("trio-nano",   "3B",  "1.8GB", "Ultra-fast, edge/mobile"),
+        ("trio-small",  "4B",  "2.8GB", "Lightweight, everyday tasks"),
+        ("trio-medium", "8B",  "5GB",   "Balanced quality + speed"),
+        ("trio-high",   "9B",  "5.5GB", "High quality, multimodal"),
+        ("trio-max",    "12B", "7GB",   "Best on consumer GPU"),
+        ("trio-pro",    "30B", "17GB",  "Premium, pro workloads"),
+    ]
+
+    console.print("  [bold]Choose a trio model:[/bold]")
+    console.print()
+    for i, (name, params, size, desc) in enumerate(TRIO_MODELS, 1):
+        detected = _find_gguf_model(model_name=name)
+        tag = "[green][ready][/green]" if detected else f"[dim][download ~{size}][/dim]"
+        rec = " [yellow](recommended)[/yellow]" if name == "trio-small" else ""
+        console.print(f"    [cyan]{i}[/cyan]  [bold]{name}[/bold]  [dim]({params})[/dim]  {desc}  {tag}{rec}")
+    console.print(f"    [cyan]7[/cyan]  Custom path to a .gguf file")
     console.print()
 
-    model_choice = Prompt.ask("  Model", choices=["1", "2", "3"], default="2" if available else "3")
+    model_choice = Prompt.ask("  Model", choices=[str(i) for i in range(1, 8)], default="2")
 
     model_name = ""
     model_path = ""
 
-    if model_choice == "1":
-        model_name = "trio-max"
-        detected = _find_gguf_model(model_name="trio-max")
+    choice_idx = int(model_choice) - 1
+    if choice_idx < len(TRIO_MODELS):
+        model_name = TRIO_MODELS[choice_idx][0]
+        detected = _find_gguf_model(model_name=model_name)
         if detected:
             model_path = detected
-            console.print(f"  [green]\u2713[/green] Found: {detected}")
+            console.print(f"  [green]OK[/green] Found: {detected}")
         else:
-            console.print("  [yellow]! trio-max GGUF not found. Place trio-max-q4_k_m.gguf in ~/.trio/models/[/yellow]")
-    elif model_choice == "2":
-        model_name = "trio-nano"
-        detected = _find_gguf_model(model_name="trio-nano")
-        if detected:
-            model_path = detected
-            console.print(f"  [green]\u2713[/green] Found: {detected}")
-        else:
-            console.print("  [yellow]! trio-nano GGUF not found. Place trio-nano-q4_k_m.gguf in ~/.trio/models/[/yellow]")
+            console.print(f"  [yellow]![/yellow] {model_name} not downloaded yet.")
+            console.print(f"    Run: [cyan]trio train --setup --model {model_name}[/cyan]")
     else:
         model_path = Prompt.ask("  Path to .gguf file")
         if model_path and os.path.isfile(model_path):
             model_name = os.path.basename(model_path).replace(".gguf", "")
-            console.print(f"  [green]\u2713[/green] Found: {model_path}")
+            console.print(f"  [green]OK[/green] Found: {model_path}")
         else:
             console.print(f"  [yellow]! File not found: {model_path}[/yellow]")
             model_name = "custom"
@@ -585,15 +591,16 @@ def _check_trio_models() -> list[str]:
         Path.home() / ".trio" / "models",
         Path(__file__).resolve().parent.parent.parent / "models",
     ]
+    all_tiers = ["trio-nano", "trio-small", "trio-medium", "trio-high", "trio-max", "trio-pro"]
     found = []
     for d in search_dirs:
         if not d.is_dir():
             continue
-        if (d / "trio-max-q4_k_m.gguf").is_file():
-            found.append("trio-max")
-        if (d / "trio-nano-q4_k_m.gguf").is_file():
-            found.append("trio-nano")
-    return list(dict.fromkeys(found))  # dedupe, keep order
+        for name in all_tiers:
+            if (d / f"{name}-q4_k_m.gguf").is_file() or (d / f"{name}.gguf").is_file():
+                if name not in found:
+                    found.append(name)
+    return found
 
 
 def _step_provider(config: dict, ollama_info: dict | None) -> None:
@@ -606,43 +613,46 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
     # Check for local trio models
     trio_models = _check_trio_models()
 
+    TRIO_LINEUP = [
+        ("trio-nano",   "3B",  "1.8GB", "Ultra-fast, edge/mobile"),
+        ("trio-small",  "4B",  "2.8GB", "Everyday tasks"),
+        ("trio-medium", "8B",  "5GB",   "Balanced quality + speed"),
+        ("trio-high",   "9B",  "5.5GB", "High quality, multimodal"),
+        ("trio-max",    "12B", "7GB",   "Best on consumer GPU"),
+        ("trio-pro",    "30B", "17GB",  "Premium, pro workloads"),
+    ]
+
     console.print("  Choose how to power your AI:\n")
-    console.print("    [bold cyan]--- trio models (runs 100% on your machine) ---[/bold cyan]")
+    console.print("    [bold cyan]--- trio models (free, runs on your machine) ---[/bold cyan]")
 
-    if "trio-max" in trio_models:
-        console.print("    [cyan]1[/cyan]  [bold]trio-max[/bold]  [dim](4B params, best quality)[/dim]  [green][ready][/green]")
-    else:
-        console.print("    [cyan]1[/cyan]  [bold]trio-max[/bold]  [dim](4B params, best quality)[/dim]  [yellow][will download ~2.5GB][/yellow]")
-
-    if "trio-nano" in trio_models:
-        console.print("    [cyan]2[/cyan]  [bold]trio-nano[/bold]  [dim](1.7B params, fast & light)[/dim]  [green][ready][/green]")
-    else:
-        console.print("    [cyan]2[/cyan]  [bold]trio-nano[/bold]  [dim](1.7B params, fast & light)[/dim]  [yellow][will download ~1GB][/yellow]")
+    for i, (name, params, size, desc) in enumerate(TRIO_LINEUP, 1):
+        ready = name in trio_models
+        tag = "[green][ready][/green]" if ready else f"[dim][download ~{size}][/dim]"
+        rec = " [yellow]*recommended*[/yellow]" if name == "trio-small" else ""
+        console.print(f"    [cyan]{i}[/cyan]  [bold]{name}[/bold]  [dim]({params})[/dim]  {desc}  {tag}{rec}")
 
     console.print()
     console.print("    [bold cyan]--- bring your own API key ---[/bold cyan]")
-    console.print("    [cyan]3[/cyan]  OpenAI  [dim](GPT-4o, GPT-4-turbo)[/dim]")
-    console.print("    [cyan]4[/cyan]  Anthropic  [dim](Claude Sonnet, Opus)[/dim]")
-    console.print("    [cyan]5[/cyan]  Google Gemini  [dim](Gemini 2.0 Flash)[/dim]")
-    console.print("    [cyan]6[/cyan]  Groq / OpenRouter / DeepSeek  [dim](any OpenAI-compatible API)[/dim]")
+    console.print("    [cyan]7[/cyan]  OpenAI  [dim](GPT-4o, GPT-4)[/dim]")
+    console.print("    [cyan]8[/cyan]  Anthropic  [dim](Claude Sonnet, Opus)[/dim]")
+    console.print("    [cyan]9[/cyan]  Google Gemini  [dim](Gemini 2.5 Pro/Flash)[/dim]")
+    console.print("    [cyan]10[/cyan] Groq / OpenRouter  [dim](any OpenAI-compatible API)[/dim]")
 
+    max_choice = 10
     if ollama_info and ollama_info.get("models"):
         console.print()
         console.print("    [bold cyan]--- detected on this machine ---[/bold cyan]")
         model_list = ", ".join(ollama_info["models"][:5])
-        console.print(f"    [cyan]7[/cyan]  Ollama  [dim]({model_list})[/dim]")
-        choices = ["1", "2", "3", "4", "5", "6", "7"]
-    else:
-        choices = ["1", "2", "3", "4", "5", "6"]
+        console.print(f"    [cyan]11[/cyan] Ollama  [dim]({model_list})[/dim]")
+        max_choice = 11
 
     console.print()
 
-    # Default to trio-max if available, otherwise prompt download
-    default = "1"
-    choice = Prompt.ask("  Choose", choices=choices, default=default)
+    choice = Prompt.ask("  Choose", choices=[str(i) for i in range(1, max_choice + 1)], default="2")
+    choice_num = int(choice)
 
-    if choice in ("1", "2"):
-        model_name = "trio-max" if choice == "1" else "trio-nano"
+    if choice_num <= 6:
+        model_name = TRIO_LINEUP[choice_num - 1][0]
         model_installed = model_name in trio_models
 
         if not model_installed:
@@ -651,25 +661,24 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
             try:
                 import subprocess, sys
                 script = Path(__file__).resolve().parent.parent.parent / "scripts" / "setup_models.py"
-                flag = "--max-only" if model_name == "trio-max" else "--nano-only"
                 result = subprocess.run(
-                    [sys.executable, str(script), flag],
-                    timeout=600,
+                    [sys.executable, str(script), "--model", model_name],
+                    timeout=1200,
                 )
                 if result.returncode == 0:
                     console.print(f"  [green][OK][/green] {model_name} downloaded and ready!")
                 else:
-                    console.print(f"  [yellow]Download had issues. You can retry later: trio train --setup[/yellow]")
+                    console.print(f"  [yellow]Download had issues. Retry: trio train --setup --model {model_name}[/yellow]")
             except Exception as e:
                 console.print(f"  [yellow]Download failed: {e}[/yellow]")
-                console.print(f"  [dim]Run later: trio train --setup[/dim]")
+                console.print(f"  [dim]Run later: trio train --setup --model {model_name}[/dim]")
 
         config["providers"]["trio"] = {"default_model": model_name}
         config["agents"]["defaults"]["provider"] = "trio"
         config["agents"]["defaults"]["model"] = model_name
         console.print(f"\n  [green][OK] Model: {model_name} (runs locally, no internet needed)[/green]")
 
-    elif choice == "3":
+    elif choice_num == 7:
         api_key = Prompt.ask("  OpenAI API key")
         model = Prompt.ask("  Model", default="gpt-4o")
         config["providers"]["openai"] = {"apiKey": api_key, "default_model": model}
@@ -677,26 +686,26 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
         config["agents"]["defaults"]["model"] = model
         console.print(f"\n  [green][OK] Provider: openai ({model})[/green]")
 
-    elif choice == "4":
+    elif choice_num == 8:
         api_key = Prompt.ask("  Anthropic API key")
-        model = Prompt.ask("  Model", default="claude-sonnet-4-20250514")
+        model = Prompt.ask("  Model", default="claude-sonnet-4-6")
         config["providers"]["anthropic"] = {"apiKey": api_key, "default_model": model}
         config["agents"]["defaults"]["provider"] = "anthropic"
         config["agents"]["defaults"]["model"] = model
         console.print(f"\n  [green][OK] Provider: anthropic ({model})[/green]")
 
-    elif choice == "5":
+    elif choice_num == 9:
         api_key = Prompt.ask("  Gemini API key")
-        model = Prompt.ask("  Model", default="gemini-2.0-flash")
+        model = Prompt.ask("  Model", default="gemini-2.5-flash")
         config["providers"]["gemini"] = {"apiKey": api_key, "default_model": model}
         config["agents"]["defaults"]["provider"] = "gemini"
         config["agents"]["defaults"]["model"] = model
         console.print(f"\n  [green][OK] Provider: gemini ({model})[/green]")
 
-    elif choice == "6":
+    elif choice_num == 10:
         _setup_provider_manual(config)
 
-    elif choice == "7" and ollama_info:
+    elif choice_num == 11 and ollama_info:
         best = _pick_best_model(ollama_info["models"])
         if len(ollama_info["models"]) > 1:
             model = Prompt.ask("  Ollama model", default=best)
