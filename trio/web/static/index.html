@@ -579,12 +579,102 @@
     margin-top: 10px;
   }
 
+  /* ══════ Toast ══════ */
+  .toast-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease, fadeOut 0.3s ease 3.7s forwards;
+    max-width: 360px;
+  }
+
+  .toast.success { border-left: 3px solid var(--green); }
+  .toast.error { border-left: 3px solid var(--red); }
+  .toast.info { border-left: 3px solid var(--accent); }
+
+  @keyframes slideIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes fadeOut { to { opacity: 0; transform: translateX(40px); } }
+
+  /* ══════ Better Cards ══════ */
+  .card { position: relative; overflow: hidden; }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent-soft) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card:hover::before { opacity: 1; }
+  .card > * { position: relative; }
+
+  /* ══════ Better Input Focus ══════ */
+  .input-box { transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+  .input-box:hover { border-color: var(--text-3); }
+
+  /* ══════ Smooth Page Transitions ══════ */
+  .panel { animation: panelIn 0.2s ease; }
+  @keyframes panelIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ══════ Empty State ══════ */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-3);
+    font-size: 14px;
+  }
+
+  /* ══════ Skeleton Loader ══════ */
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-hover) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+    height: 16px;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* ══════ Nav Badge ══════ */
+  .nav-count {
+    font-size: 10px;
+    background: var(--accent);
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 600;
+  }
+
+  /* ══════ Better Scrollbar ══════ */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
   /* ══════ Mobile ══════ */
   @media (max-width: 768px) {
     .sidebar { display: none; }
     .msgs { padding: 16px; }
     .panel-inner { padding: 20px 16px; }
     .topbar { padding: 0 16px; }
+    .toast-container { left: 16px; right: 16px; }
+    .toast { max-width: 100%; }
   }
 </style>
 </head>
@@ -647,11 +737,17 @@
       <div class="welcome" id="welcome">
         <div class="welcome-mark">t</div>
         <h2>What can I help with?</h2>
-        <p>Code, write, analyze, debug -- powered by trio-max running locally on your machine. Sandboxed to your project.</p>
+        <p>Code, write, analyze, debug -- powered by trio-max running locally on your machine. Sandboxed to your project directory.</p>
         <div class="chips">
           <button class="chip" onclick="ask('Explain this project structure')">Explore project</button>
-          <button class="chip" onclick="ask('Write a Python REST API')">Write code</button>
-          <button class="chip" onclick="ask('Review my code for bugs')">Code review</button>
+          <button class="chip" onclick="ask('Write a Python REST API with FastAPI')">Write code</button>
+          <button class="chip" onclick="ask('Review my code for bugs and suggest fixes')">Code review</button>
+          <button class="chip" onclick="ask('Help me debug this error')">Debug</button>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:16px;font-size:12px;color:var(--text-3);">
+          <span>Drop files to upload</span>
+          <span>Enter to send</span>
+          <span>Shift+Enter for newline</span>
         </div>
       </div>
     </div>
@@ -708,8 +804,8 @@
     <div class="panel-scroll"><div class="panel-inner">
       <div class="section-title">TrioHub Skills</div>
       <div class="section-desc">Browse and install from 1,909 community skills across 13 categories</div>
-      <input class="search" placeholder="Search skills..." oninput="filterCards('skillGrid',this.value)">
-      <div class="grid grid-2" id="skillGrid"></div>
+      <input class="search" id="skillSearchInput" placeholder="Search skills...">
+      <div id="skillGrid"><div class="skeleton" style="height:200px;margin-bottom:12px;"></div><div class="skeleton" style="height:200px;"></div></div>
     </div></div>
   </div>
 
@@ -783,7 +879,19 @@
   </div>
 </div>
 
+<div class="toast-container" id="toasts"></div>
 <script>
+// ── Toast system ──
+function toast(msg, type='info') {
+  const c = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  const icons = { success: '&#10003;', error: '&#10007;', info: '&#9432;' };
+  t.innerHTML = '<span style="font-size:16px;">'+(icons[type]||icons.info)+'</span><span>'+msg+'</span>';
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
 // ── Nav ──
 function goPanel(name) {
   document.querySelectorAll('.nav-btn').forEach(b => {
@@ -856,7 +964,7 @@ function handleDrop(e) {
 }
 
 async function processFile(file) {
-  if (file.size > 25 * 1024 * 1024) { alert('File too large. Max 25MB.'); return; }
+  if (file.size > 25 * 1024 * 1024) { toast('File too large. Max 25MB.','error'); return; }
 
   const preview = document.getElementById('filePreview');
   const ext = file.name.split('.').pop().toUpperCase();
@@ -961,7 +1069,7 @@ async function loadInstalledSkills() {
 
 async function loadSkills(category='') {
   currentSkillCategory = category;
-  const q = document.querySelector('#p-skills .search');
+  const q = document.getElementById('skillSearchInput');
   const search = q ? q.value : '';
   const url = '/api/skills?limit=200' + (category ? '&category='+encodeURIComponent(category) : '') + (search ? '&q='+encodeURIComponent(search) : '');
   try {
@@ -1177,7 +1285,7 @@ function openChannelSetup(key) {
     html += '</div>';
     html += '<div id="waQrArea" style="text-align:center;padding:20px;">';
     html += '<button class="btn btn-accent" style="font-size:14px;padding:10px 24px;" onclick="startWhatsApp()">Start WhatsApp Bridge</button>';
-    html += '<div style="font-size:12px;color:var(--text-3);margin-top:8px;">Requires Node.js installed</div>';
+    html += '<div style="font-size:12px;color:var(--text-3);margin-top:8px;">Requires <a href="https://nodejs.org" target="_blank" style="color:var(--accent);text-decoration:underline;">Node.js</a> installed on your system</div>';
     html += '</div>';
     html += '<div id="waStatus" style="margin-top:12px;"></div>';
     html += '</div>';
@@ -1248,8 +1356,17 @@ async function startWhatsApp() {
     const d = await r.json();
 
     if (d.error) {
-      area.innerHTML = '<div style="color:var(--red);font-size:14px;">'+d.error+'</div>' +
-        '<button class="btn" style="margin-top:12px;" onclick="startWhatsApp()">Retry</button>';
+      const isNodeMissing = d.error.includes('Node.js') || d.error.includes('cannot find') || d.error.includes('WinError');
+      area.innerHTML = '<div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:16px;text-align:left;">' +
+        '<div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:8px;">'+(isNodeMissing?'Node.js Required':'Connection Failed')+'</div>' +
+        '<div style="font-size:13px;color:var(--text-2);margin-bottom:12px;">'+(isNodeMissing
+          ? 'WhatsApp QR scanning requires Node.js to be installed on your system.'
+          : d.error) + '</div>' +
+        (isNodeMissing
+          ? '<a href="https://nodejs.org/en/download/" target="_blank" class="btn btn-accent" style="display:inline-block;text-decoration:none;font-size:13px;">Download Node.js</a> '
+          : '') +
+        '<button class="btn" style="font-size:13px;" onclick="startWhatsApp()">Retry</button>' +
+        '</div>';
       return;
     }
 
@@ -1288,6 +1405,7 @@ async function pollWhatsApp() {
         // Save to config
         fetch('/api/channels/config', {method:'POST', headers:{'Content-Type':'application/json'},
           body:JSON.stringify({key:'whatsapp', fields:{connection:'qr', phone:d.info.phone, name:d.info.name}})});
+        toast('WhatsApp connected as '+d.info.name,'success');
         loadChannels();
       }
       else if (d.qr) {
@@ -1412,8 +1530,8 @@ async function switchModel(name) {
     document.getElementById('modelName').textContent = name;
     document.getElementById('dashModel').textContent = name;
     loadModels();
-    alert('Switched to '+name+'. Next message will use the new model.');
-  } catch(e) { alert('Failed to switch model'); }
+    toast('Switched to '+name,'success');
+  } catch(e) { toast('Failed to switch model','error'); }
 }
 
 // ── Load Settings from API ──
@@ -1462,9 +1580,9 @@ async function loadProject() {
 
 // ── Skills search ──
 let skillSearchTimer;
-document.querySelector('#p-skills .search').addEventListener('input', function() {
+document.getElementById('skillSearchInput').addEventListener('input', function() {
   clearTimeout(skillSearchTimer);
-  skillSearchTimer = setTimeout(() => loadSkills(), 300);
+  skillSearchTimer = setTimeout(() => loadSkills(currentSkillCategory), 300);
 });
 
 // ── Init: load all data from APIs ──
