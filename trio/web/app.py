@@ -13,12 +13,58 @@ from pathlib import Path
 
 from aiohttp import web
 
-from trio.core.config import load_config
-from trio.core.loop import AgentLoop
+from trio.core.config import load_config, get_workspace_dir
 
 logger = logging.getLogger(__name__)
 
 STATIC_DIR = Path(__file__).parent / "static"
+
+SYSTEM_PROMPT = (
+    "You are trio-max, an advanced AI assistant created by trio.ai. "
+    "You are helpful, accurate, and thorough. You can help with coding, "
+    "writing, analysis, math, search, and general questions. "
+    "Keep responses clear and well-formatted using markdown."
+)
+
+
+def _load_workspace_prompt():
+    """Load SOUL.md and USER.md from workspace if available."""
+    workspace = get_workspace_dir()
+    parts = [SYSTEM_PROMPT]
+    for fname in ("SOUL.md", "USER.md"):
+        path = workspace / fname
+        if path.exists():
+            try:
+                parts.append(path.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+    return "\n\n".join(parts)
+
+
+def _create_provider(config: dict):
+    """Create the appropriate LLM provider based on config."""
+    provider_name = config.get("provider", "local")
+
+    if provider_name == "local":
+        from trio.providers.local import LocalProvider
+        provider_config = config.get("providers", {}).get("local", {})
+        provider_config.setdefault("default_model", "trio-max")
+        return LocalProvider(provider_config)
+
+    elif provider_name in ("ollama", "trio"):
+        from trio.providers.ollama import OllamaProvider
+        provider_config = config.get("providers", {}).get("ollama", {})
+        return OllamaProvider(provider_config)
+
+    elif provider_name == "openai":
+        from trio.providers.openai import OpenAIProvider
+        provider_config = config.get("providers", {}).get("openai", {})
+        return OpenAIProvider(provider_config)
+
+    else:
+        # Fallback to local
+        from trio.providers.local import LocalProvider
+        return LocalProvider(config.get("providers", {}).get("local", {}))
 
 
 # ── Routes ───────────────────────────────────────────────────────────────────
@@ -40,25 +86,28 @@ async def api_chat(request):
         return web.json_response({"error": "Empty message"}, status=400)
 
     session_id = data.get("session_id", str(uuid.uuid4()))
-    config = request.app["config"]
+    provider = request.app["provider"]
+    system_prompt = request.app["system_prompt"]
 
-    # Get or create agent loop for this session
+    # Get or create session history
     sessions = request.app["sessions"]
     if session_id not in sessions:
-        loop = AgentLoop(config)
-        sessions[session_id] = {"loop": loop, "history": []}
+        sessions[session_id] = []
 
-    session = sessions[session_id]
-    session["history"].append({"role": "user", "content": message})
+    history = sessions[session_id]
+    history.append({"role": "user", "content": message})
+
+    # Build messages for LLM
+    messages = [{"role": "system", "content": system_prompt}] + history[-20:]
 
     try:
-        response = await session["loop"].step(message, history=session["history"])
-        content = response if isinstance(response, str) else str(response)
+        response = await provider.generate(messages=messages)
+        content = response.content or "I couldn't generate a response."
     except Exception as e:
-        logger.error(f"Agent error: {e}")
+        logger.error(f"Provider error: {e}")
         content = f"Error: {e}"
 
-    session["history"].append({"role": "assistant", "content": content})
+    history.append({"role": "assistant", "content": content})
 
     return web.json_response({
         "response": content,
@@ -78,15 +127,18 @@ async def api_chat_stream(request):
         return web.json_response({"error": "Empty message"}, status=400)
 
     session_id = data.get("session_id", str(uuid.uuid4()))
-    config = request.app["config"]
+    provider = request.app["provider"]
+    system_prompt = request.app["system_prompt"]
 
     sessions = request.app["sessions"]
     if session_id not in sessions:
-        loop = AgentLoop(config)
-        sessions[session_id] = {"loop": loop, "history": []}
+        sessions[session_id] = []
 
-    session = sessions[session_id]
-    session["history"].append({"role": "user", "content": message})
+    history = sessions[session_id]
+    history.append({"role": "user", "content": message})
+
+    # Build messages for LLM
+    messages = [{"role": "system", "content": system_prompt}] + history[-20:]
 
     resp = web.StreamResponse(
         status=200,
@@ -100,23 +152,24 @@ async def api_chat_stream(request):
     )
     await resp.prepare(request)
 
+    content = ""
     try:
-        full_response = await session["loop"].step(message, history=session["history"])
-        content = full_response if isinstance(full_response, str) else str(full_response)
-
-        # Send as chunks for streaming feel
-        chunk_size = 4
-        for i in range(0, len(content), chunk_size):
-            chunk = content[i:i + chunk_size]
-            event = f"data: {json.dumps({'text': chunk})}\n\n"
-            await resp.write(event.encode("utf-8"))
-            await asyncio.sleep(0.02)
+        async for chunk in provider.stream_generate(messages=messages):
+            if chunk.text:
+                content += chunk.text
+                event = f"data: {json.dumps({'text': chunk.text})}\n\n"
+                await resp.write(event.encode("utf-8"))
+            if chunk.is_final:
+                break
 
         await resp.write(f"data: {json.dumps({'done': True})}\n\n".encode("utf-8"))
     except Exception as e:
-        await resp.write(f"data: {json.dumps({'error': str(e)})}\n\n".encode("utf-8"))
+        logger.error(f"Stream error: {e}")
+        error_msg = str(e)
+        content = f"Error: {error_msg}"
+        await resp.write(f"data: {json.dumps({'error': error_msg})}\n\n".encode("utf-8"))
 
-    session["history"].append({"role": "assistant", "content": content})
+    history.append({"role": "assistant", "content": content})
     return resp
 
 
@@ -128,7 +181,7 @@ async def api_status(request):
         "provider": config.get("provider", "local"),
         "model": config.get("model", "trio-max"),
         "sessions": len(request.app["sessions"]),
-        "version": "0.1.0",
+        "version": "0.1.1",
     })
 
 
@@ -143,8 +196,11 @@ async def api_sessions_clear(request):
 def create_app(config: dict | None = None) -> web.Application:
     """Create the aiohttp web application."""
     app = web.Application()
-    app["config"] = config or load_config()
+    cfg = config or load_config()
+    app["config"] = cfg
     app["sessions"] = {}
+    app["system_prompt"] = _load_workspace_prompt()
+    app["provider"] = _create_provider(cfg)
 
     # API routes
     app.router.add_post("/api/chat", api_chat)
