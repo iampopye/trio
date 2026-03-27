@@ -25,7 +25,7 @@ from argparse import ArgumentParser
 
 MODELS = {
     "trio-nano": {
-        "url": "https://huggingface.co/mrtechgarg/trio-nano/resolve/main/trio-nano-q4_k_m.gguf",
+        "url": "https://huggingface.co/trioai-org/trio-nano/resolve/main/trio-nano-q4_k_m.gguf",
         "filename": "trio-nano-q4_k_m.gguf",
         "modelfile": "trio-nano.Modelfile",
         "description": "trio-nano -- ultra-fast 3B model for edge and mobile",
@@ -33,7 +33,7 @@ MODELS = {
         "tier": "nano",
     },
     "trio-small": {
-        "url": "https://huggingface.co/mrtechgarg/trio-small/resolve/main/trio-small-q4_k_m.gguf",
+        "url": "https://huggingface.co/trioai-org/trio-small/resolve/main/trio-small-q4_k_m.gguf",
         "filename": "trio-small-q4_k_m.gguf",
         "modelfile": "trio-small.Modelfile",
         "description": "trio-small -- lightweight 4B model for everyday tasks",
@@ -41,7 +41,7 @@ MODELS = {
         "tier": "small",
     },
     "trio-medium": {
-        "url": "https://huggingface.co/mrtechgarg/trio-medium/resolve/main/trio-medium-q4_k_m.gguf",
+        "url": "https://huggingface.co/trioai-org/trio-medium/resolve/main/trio-medium-q4_k_m.gguf",
         "filename": "trio-medium-q4_k_m.gguf",
         "modelfile": "trio-medium.Modelfile",
         "description": "trio-medium -- balanced 8B model for quality and speed",
@@ -49,7 +49,7 @@ MODELS = {
         "tier": "medium",
     },
     "trio-high": {
-        "url": "https://huggingface.co/mrtechgarg/trio-high/resolve/main/trio-high-q4_k_m.gguf",
+        "url": "https://huggingface.co/trioai-org/trio-high/resolve/main/trio-high-q4_k_m.gguf",
         "filename": "trio-high-q4_k_m.gguf",
         "modelfile": "trio-high.Modelfile",
         "description": "trio-high -- high quality 9B model with multimodal support",
@@ -57,7 +57,7 @@ MODELS = {
         "tier": "high",
     },
     "trio-max": {
-        "url": "https://huggingface.co/mrtechgarg/trio-max/resolve/main/trio-max-q4_k_m.gguf",
+        "url": "https://huggingface.co/trioai-org/trio-max/resolve/main/trio-max-q4_k_m.gguf",
         "filename": "trio-max-q4_k_m.gguf",
         "modelfile": "trio-max.Modelfile",
         "description": "trio-max -- best quality 12B model for consumer GPU",
@@ -65,7 +65,7 @@ MODELS = {
         "tier": "max",
     },
     "trio-pro": {
-        "url": "https://huggingface.co/mrtechgarg/trio-pro/resolve/main/trio-pro-q4_k_m.gguf",
+        "url": "https://huggingface.co/trioai-org/trio-pro/resolve/main/trio-pro-q4_k_m.gguf",
         "filename": "trio-pro-q4_k_m.gguf",
         "modelfile": "trio-pro.Modelfile",
         "description": "trio-pro -- premium 30B MoE model for pro workloads",

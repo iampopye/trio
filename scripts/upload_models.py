@@ -36,7 +36,7 @@ MODEL_DESCRIPTIONS = {
     "trio-pro":    "trio-pro -- premium 30B MoE model for pro workloads by trio.ai",
 }
 
-HF_ORG = "trioai"
+HF_ORG = "trioai-org"
 
 
 def upload_model(model_name: str, token: str):
