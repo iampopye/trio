@@ -795,9 +795,91 @@ def _step_skills(config: dict) -> None:
     labels = [SKILL_CATEGORIES[k]["icon"] + " " + SKILL_CATEGORIES[k]["label"] for k in selected_keys]
     console.print()
     for lbl in labels:
-        console.print(f"  [green]\u2713[/green] {lbl}")
-    console.print(f"\n  [bold green]\u2713 {enabled_count:,} skills enabled[/bold green]")
+        console.print(f"  [green]OK[/green] {lbl}")
+
+    # Download skills from TrioHub (HuggingFace)
+    console.print(f"\n  [dim]Downloading {enabled_count:,} skills from TrioHub...[/dim]")
+    downloaded = _download_skills_from_hub(selected_keys, cat_counts)
+    if downloaded > 0:
+        console.print(f"  [bold green]OK {downloaded:,} skills installed[/bold green]")
+    else:
+        console.print(f"  [yellow]Using {enabled_count:,} bundled skills (offline mode)[/yellow]")
     console.print()
+
+
+def _download_skills_from_hub(categories: list[str], cat_counts: dict) -> int:
+    """Download skill files from trioai-org/triohub on HuggingFace."""
+    import json
+    from pathlib import Path
+
+    skills_dir = Path.home() / ".trio" / "skills"
+    skills_dir.mkdir(parents=True, exist_ok=True)
+
+    # Try to download index from HuggingFace
+    index_url = "https://huggingface.co/datasets/trioai-org/triohub/resolve/main/index.json"
+    try:
+        import urllib.request
+        import ssl
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        req = urllib.request.Request(index_url, headers={"User-Agent": "trio.ai/0.2"})
+        with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
+            index_data = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return 0  # Offline, use bundled skills
+
+    # Parse categories and find matching skills
+    all_categories = index_data.get("categories", [])
+    skills_to_download = []
+
+    # Map our category keys to index category names
+    for cat in all_categories:
+        cat_name = cat.get("name", "")
+        # Check if any selected category keywords match
+        for sel_key in categories:
+            meta = SKILL_CATEGORIES.get(sel_key, {})
+            keywords = meta.get("keywords", [])
+            if any(kw.lower() in cat_name.lower() for kw in keywords) or sel_key.lower() in cat_name.lower():
+                for skill in cat.get("skills", []):
+                    skills_to_download.append(skill)
+                break
+
+    if not skills_to_download:
+        # Download all if no match
+        for cat in all_categories:
+            skills_to_download.extend(cat.get("skills", []))
+
+    # Download skill files
+    base_url = "https://huggingface.co/datasets/trioai-org/triohub/resolve/main/skills/"
+    downloaded = 0
+    total = len(skills_to_download)
+
+    for i, skill in enumerate(skills_to_download):
+        filename = skill.get("file", "")
+        if not filename:
+            continue
+
+        dest = skills_dir / filename
+        if dest.exists():
+            downloaded += 1
+            continue
+
+        try:
+            skill_url = base_url + filename
+            req = urllib.request.Request(skill_url, headers={"User-Agent": "trio.ai/0.2"})
+            with urllib.request.urlopen(req, context=ctx, timeout=10) as resp:
+                dest.write_bytes(resp.read())
+            downloaded += 1
+
+            # Progress every 100 skills
+            if downloaded % 100 == 0:
+                console.print(f"  [dim]  {downloaded}/{total} skills...[/dim]")
+        except Exception:
+            continue
+
+    return downloaded
 
 
 def _step_tools(config: dict) -> None:
