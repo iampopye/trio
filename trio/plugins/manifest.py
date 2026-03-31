@@ -64,7 +64,7 @@ class PluginManifest:
             list(plugin_dir.rglob("*.py")) + list(plugin_dir.rglob("*.md"))
         )
         for f in source_files:
-            if f.name == "__pycache__":
+            if "__pycache__" in f.parts:
                 continue
             try:
                 hasher.update(f.name.encode())

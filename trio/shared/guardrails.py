@@ -72,7 +72,8 @@ MAX_INPUT_LENGTHS = {
 }
 
 # Rate limiting: {user_id: {"timestamps": [float], "blocked_until": float}}
-_probe_tracker = {}
+_probe_tracker: dict = {}
+_PROBE_TRACKER_MAX_SIZE = 10000  # Max tracked users to prevent memory DoS
 PROBE_WINDOW = 600       # 10 minutes
 PROBE_THRESHOLD = 3       # 3 attempts in window
 PROBE_BLOCK_DURATION = 1800  # 30 minutes
@@ -308,6 +309,17 @@ def _is_rate_limited(user_id):
 def _record_probe(user_id):
     user_id = str(user_id)
     now = time.time()
+
+    # Evict stale entries to prevent unbounded memory growth
+    if len(_probe_tracker) > _PROBE_TRACKER_MAX_SIZE:
+        stale_cutoff = now - PROBE_WINDOW - PROBE_BLOCK_DURATION
+        stale_keys = [
+            k for k, v in _probe_tracker.items()
+            if v.get("blocked_until", 0) < now
+            and all(t < stale_cutoff for t in v.get("timestamps", []))
+        ]
+        for k in stale_keys[:len(_probe_tracker) // 2]:  # Remove up to half
+            del _probe_tracker[k]
 
     if user_id not in _probe_tracker:
         _probe_tracker[user_id] = {"timestamps": [], "blocked_until": 0}

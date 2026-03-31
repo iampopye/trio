@@ -20,7 +20,7 @@ from pathlib import Path
 
 from aiohttp import web
 
-from trio.core.config import load_config, get_workspace_dir
+from trio.core.config import load_config, save_config as _core_save_config, get_workspace_dir
 
 logger = logging.getLogger(__name__)
 
@@ -177,8 +177,8 @@ def _create_provider(config: dict):
 
 
 def _save_config(config: dict):
-    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
+    """Save config using the core config module (encrypts secrets)."""
+    _core_save_config(config)
 
 
 # ── Chat Routes ──────────────────────────────────────────────────────────────
@@ -548,22 +548,32 @@ async def api_skill_uninstall(request):
         return web.json_response({"error": "Invalid JSON"}, status=400)
 
     skill_name = data.get("name", "")
+    # Security: sanitize to prevent path traversal
+    safe_name = Path(skill_name).name
+    if not safe_name or "/" in skill_name or "\\" in skill_name or ".." in skill_name:
+        return web.json_response({"error": "Invalid skill name"}, status=400)
+
     skills_dir = Path.home() / ".trio" / "skills"
     removed = False
 
     for ext in (".md", ".py", ".yaml"):
-        path = skills_dir / f"{skill_name}{ext}"
+        path = skills_dir / f"{safe_name}{ext}"
+        # Verify path stays within skills_dir
+        try:
+            path.resolve().relative_to(skills_dir.resolve())
+        except ValueError:
+            continue
         if path.exists():
             path.unlink()
             removed = True
 
     config = request.app["config"]
     installed = config.get("installed_skills", [])
-    if skill_name in installed:
-        installed.remove(skill_name)
+    if safe_name in installed:
+        installed.remove(safe_name)
         _save_config(config)
 
-    return web.json_response({"status": "removed" if removed else "not_found", "name": skill_name})
+    return web.json_response({"status": "removed" if removed else "not_found", "name": safe_name})
 
 
 # ── Tools ────────────────────────────────────────────────────────────────────
@@ -979,7 +989,16 @@ async def api_memory_delete(request):
         return web.json_response({"error": "Invalid JSON"}, status=400)
 
     entry_id = data.get("id", "")
-    path = MEMORY_DIR / f"{entry_id}.json"
+    # Security: sanitize to prevent path traversal
+    safe_id = Path(entry_id).name  # Strip any directory components
+    if not safe_id or "/" in entry_id or "\\" in entry_id or ".." in entry_id:
+        return web.json_response({"error": "Invalid memory ID"}, status=400)
+    path = MEMORY_DIR / f"{safe_id}.json"
+    # Verify path stays within MEMORY_DIR
+    try:
+        path.resolve().relative_to(MEMORY_DIR.resolve())
+    except ValueError:
+        return web.json_response({"error": "Invalid memory ID"}, status=400)
     if path.exists():
         path.unlink()
         return web.json_response({"status": "deleted"})

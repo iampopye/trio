@@ -53,7 +53,7 @@ class PluginLoader:
         if not manifest.enabled:
             return 0
 
-        # Security check: reject tampered plugins
+        # Security check: reject tampered or unverified plugins
         if manifest.checksum and not manifest.verified:
             logger.error(
                 f"SECURITY: Refusing to load tools from plugin '{manifest.name}' — "
@@ -61,6 +61,13 @@ class PluginLoader:
                 f"Re-install the plugin or run 'trio plugin verify {manifest.name}'."
             )
             return 0
+
+        if not manifest.checksum:
+            logger.warning(
+                f"SECURITY: Plugin '{manifest.name}' has no checksum. "
+                f"Run 'trio plugin sign {manifest.name}' to generate one. "
+                f"Unverified plugins will be blocked in a future release."
+            )
 
         tools_dir = manifest.path / "tools"
         if not tools_dir.exists():

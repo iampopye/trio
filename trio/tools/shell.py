@@ -43,16 +43,17 @@ ALLOWED_COMMANDS = frozenset({
     "java", "javac", "mvn", "gradle",
     "gcc", "g++", "make", "cmake",
     "docker", "docker-compose",
-    # System info (read-only)
-    "whoami", "hostname", "uname", "date", "uptime", "env", "printenv",
+    # System info (read-only, env/printenv excluded — they leak secrets)
+    "whoami", "hostname", "uname", "date", "uptime",
     "which", "where", "type", "command",
     "ps", "top", "htop", "free", "df", "du",
     # Network (read-only)
-    "curl", "wget", "ping", "nslookup", "dig", "host",
+    "ping", "nslookup", "dig", "host",
     # trio-specific
     "trio", "ollama",
-    # Windows equivalents
-    "cmd", "powershell", "pwsh",
+    # NOTE: cmd, powershell, pwsh are intentionally excluded — they are
+    # shell interpreters that can execute arbitrary commands and bypass
+    # the allowlist. curl/wget excluded — data exfiltration risk.
 })
 
 # ── Blocklist: dangerous patterns always rejected ──────────────────────────
