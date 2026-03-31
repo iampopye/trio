@@ -5,10 +5,15 @@ Or:        python -m trio.web.app
 """
 
 import asyncio
+import hashlib
+import hmac
 import json
 import logging
 import os
+import secrets
+import time
 import uuid
+from collections import defaultdict
 from pathlib import Path
 
 from aiohttp import web
@@ -19,6 +24,119 @@ logger = logging.getLogger(__name__)
 
 STATIC_DIR = Path(__file__).parent / "static"
 CONFIG_PATH = Path.home() / ".trio" / "config.json"
+
+# ── Security: Allowed file upload types ────────────────────────────────────
+ALLOWED_UPLOAD_EXTENSIONS = {
+    ".txt", ".md", ".csv", ".json", ".xml", ".yaml", ".yml",
+    ".py", ".js", ".ts", ".html", ".css", ".java", ".go", ".rs", ".c", ".cpp", ".h",
+    ".pdf", ".docx", ".xlsx", ".pptx",
+    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg",
+    ".log", ".ini", ".toml", ".cfg", ".conf",
+}
+MAX_UPLOAD_SIZE = 50 * 1024 * 1024  # 50 MB
+
+# ── Security: Rate Limiting ────────────────────────────────────────────────
+_rate_limiter: dict[str, list[float]] = defaultdict(list)
+RATE_LIMIT_WINDOW = 60      # 1 minute
+RATE_LIMIT_MAX_REQUESTS = 60  # 60 requests per minute per IP
+
+
+def _is_rate_limited(client_ip: str) -> bool:
+    """Check if a client IP has exceeded the rate limit."""
+    now = time.time()
+    timestamps = _rate_limiter[client_ip]
+    # Purge old entries
+    _rate_limiter[client_ip] = [t for t in timestamps if now - t < RATE_LIMIT_WINDOW]
+    if len(_rate_limiter[client_ip]) >= RATE_LIMIT_MAX_REQUESTS:
+        return True
+    _rate_limiter[client_ip].append(now)
+    return False
+
+
+# ── Security: API Key Authentication ──────────────────────────────────────
+
+def _get_or_create_api_key() -> str:
+    """Load or generate the web API key stored in ~/.trio/api_key."""
+    key_path = Path.home() / ".trio" / "api_key"
+    key_path.parent.mkdir(parents=True, exist_ok=True)
+    if key_path.exists():
+        return key_path.read_text(encoding="utf-8").strip()
+    api_key = f"trio_{secrets.token_urlsafe(32)}"
+    key_path.write_text(api_key, encoding="utf-8")
+    # Restrict permissions on Unix
+    try:
+        key_path.chmod(0o600)
+    except (OSError, NotImplementedError):
+        pass
+    return api_key
+
+
+# Routes that don't require auth (static assets, index page)
+_PUBLIC_PATHS = frozenset({"/", "/favicon.ico"})
+
+
+@web.middleware
+async def auth_middleware(request: web.Request, handler):
+    """Verify API key on all /api/ routes."""
+    path = request.path
+
+    # Static files and index page are public
+    if path in _PUBLIC_PATHS or path.startswith("/static"):
+        return await handler(request)
+
+    # Rate limiting on all API routes
+    client_ip = request.remote or "unknown"
+    if _is_rate_limited(client_ip):
+        return web.json_response(
+            {"error": "Rate limit exceeded. Try again later."},
+            status=429,
+        )
+
+    # API routes require authentication
+    if path.startswith("/api/"):
+        expected_key = request.app.get("api_key", "")
+        # Check Authorization header: "Bearer trio_xxx" or "ApiKey trio_xxx"
+        auth_header = request.headers.get("Authorization", "")
+        provided_key = ""
+        if auth_header.startswith("Bearer "):
+            provided_key = auth_header[7:]
+        elif auth_header.startswith("ApiKey "):
+            provided_key = auth_header[7:]
+        # Also check query param for browser convenience (e.g. EventSource)
+        if not provided_key:
+            provided_key = request.query.get("api_key", "")
+
+        # Allow local requests without auth when api_key_required is disabled
+        is_local = client_ip in ("127.0.0.1", "::1", "localhost")
+        require_auth = request.app.get("require_api_key", True)
+
+        if require_auth and not is_local:
+            if not provided_key or not hmac.compare_digest(provided_key, expected_key):
+                return web.json_response(
+                    {"error": "Unauthorized. Provide API key via 'Authorization: Bearer <key>' header."},
+                    status=401,
+                )
+
+    return await handler(request)
+
+
+@web.middleware
+async def security_headers_middleware(request: web.Request, handler):
+    """Add security headers to all responses."""
+    resp = await handler(request)
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["X-XSS-Protection"] = "1; mode=block"
+    resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    resp.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    # CORS: restrict to localhost by default
+    origin = request.headers.get("Origin", "")
+    allowed_origins = request.app.get("allowed_origins", [])
+    if origin in allowed_origins or not origin:
+        resp.headers["Access-Control-Allow-Origin"] = origin or "http://localhost:28337"
+    resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    resp.headers["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS"
+    return resp
 
 SYSTEM_PROMPT = (
     "You are trio-max, an advanced AI assistant created by trio.ai. "
@@ -159,15 +277,38 @@ async def api_upload(request):
         return web.json_response({"error": "No file uploaded"}, status=400)
 
     filename = field.filename or "unknown"
-    data = await field.read()  # read full file
+
+    # --- Security: validate filename ---
+    # Strip path components to prevent directory traversal
+    safe_name = Path(filename).name
+    if not safe_name or safe_name.startswith("."):
+        return web.json_response({"error": "Invalid filename"}, status=400)
+
+    # Check file extension
+    ext = Path(safe_name).suffix.lower()
+    if ext not in ALLOWED_UPLOAD_EXTENSIONS:
+        return web.json_response(
+            {"error": f"File type '{ext}' not allowed. Allowed: {', '.join(sorted(ALLOWED_UPLOAD_EXTENSIONS))}"},
+            status=400,
+        )
+
+    # Read with size limit
+    data = await field.read()
+    if len(data) > MAX_UPLOAD_SIZE:
+        return web.json_response(
+            {"error": f"File too large. Max size: {MAX_UPLOAD_SIZE // (1024*1024)} MB"},
+            status=413,
+        )
 
     from trio.web.file_handler import extract_text
-    result = extract_text(data, filename)
+    result = extract_text(data, safe_name)
 
-    # Save to temp uploads dir
+    # Save to temp uploads dir with sanitized name
     uploads_dir = Path.home() / ".trio" / "uploads"
     uploads_dir.mkdir(parents=True, exist_ok=True)
-    save_path = uploads_dir / filename
+    # Add hash prefix to prevent name collisions and predictable paths
+    name_hash = hashlib.sha256(data[:1024]).hexdigest()[:8]
+    save_path = uploads_dir / f"{name_hash}_{safe_name}"
     save_path.write_bytes(data)
     result["saved_path"] = str(save_path)
 
@@ -237,7 +378,7 @@ async def api_status(request):
         "provider": config.get("provider", "local"),
         "model": config.get("model", "trio-max"),
         "sessions": len(request.app["sessions"]),
-        "version": "0.1.1",
+        "version": "0.2.1",
     })
 
 
@@ -1184,10 +1325,18 @@ async def api_whatsapp_logout(request):
 # ── App Factory ──────────────────────────────────────────────────────────────
 
 def create_app(config: dict | None = None) -> web.Application:
-    app = web.Application()
+    app = web.Application(middlewares=[auth_middleware, security_headers_middleware])
     cfg = config or load_config()
     app["config"] = cfg
     app["sessions"] = {}
+
+    # Security setup
+    api_key = _get_or_create_api_key()
+    app["api_key"] = api_key
+    app["require_api_key"] = cfg.get("web", {}).get("require_api_key", True)
+    app["allowed_origins"] = cfg.get("web", {}).get("allowed_origins", [
+        "http://localhost:28337", "http://127.0.0.1:28337",
+    ])
     app["system_prompt"] = _load_workspace_prompt()
     app["provider"] = _create_provider(cfg)
 
@@ -1255,10 +1404,17 @@ def create_app(config: dict | None = None) -> web.Application:
 
 def run_server(host: str = "0.0.0.0", port: int = 28337, config: dict | None = None):
     app = create_app(config)
+    api_key = app["api_key"]
+    require_auth = app["require_api_key"]
     print(f"\n  trio.ai web UI")
     print(f"  ----------------------")
     print(f"  Local:   http://localhost:{port}")
     print(f"  Network: http://{host}:{port}")
+    if require_auth:
+        print(f"  API Key: {api_key}")
+        print(f"  Auth:    Required for remote access (local requests bypass)")
+    else:
+        print(f"  Auth:    Disabled (set web.require_api_key=true in config)")
     print(f"  Press Ctrl+C to stop\n")
     web.run_app(app, host=host, port=port, print=None)
 
