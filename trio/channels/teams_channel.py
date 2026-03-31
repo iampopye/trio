@@ -22,6 +22,7 @@ class TeamsChannel(BaseChannel):
         self._app_id = config.get("app_id", "")
         self._app_password = config.get("app_password", "")
         self._webhook_port = config.get("webhook_port", 3978)
+        self._webhook_host = config.get("webhook_host", "127.0.0.1")
         self._adapter = None
         self._runner = None
         self._conversations: dict[str, Any] = {}  # chat_id → conversation_ref
@@ -79,7 +80,7 @@ class TeamsChannel(BaseChannel):
 
         self._runner = web.AppRunner(app)
         await self._runner.setup()
-        site = web.TCPSite(self._runner, "0.0.0.0", self._webhook_port)
+        site = web.TCPSite(self._runner, self._webhook_host, self._webhook_port)
         await site.start()
         logger.info(f"Teams webhook listening on port {self._webhook_port}")
 

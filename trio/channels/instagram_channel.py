@@ -32,6 +32,7 @@ class InstagramChannel(BaseChannel):
         self._verify_token = config.get("verify_token", "trio_verify")
         self._app_secret = config.get("app_secret", "")
         self._webhook_port = config.get("webhook_port", 8086)
+        self._webhook_host = config.get("webhook_host", "127.0.0.1")
         self._app = None
         self._runner = None
         self._session = None
@@ -50,7 +51,7 @@ class InstagramChannel(BaseChannel):
 
         self._runner = web.AppRunner(self._app)
         await self._runner.setup()
-        site = web.TCPSite(self._runner, "0.0.0.0", self._webhook_port)
+        site = web.TCPSite(self._runner, self._webhook_host, self._webhook_port)
         await site.start()
         logger.info(f"Instagram webhook listening on port {self._webhook_port}")
 

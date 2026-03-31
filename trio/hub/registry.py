@@ -7,6 +7,7 @@ import logging
 import ssl
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +63,11 @@ class TrioHubRegistry:
             # Fallback to urllib
             import urllib.request
             try:
+                parsed = urlparse(INDEX_URL)
+                if parsed.scheme not in ("http", "https"):
+                    raise ValueError(f"Unsupported URL scheme: {parsed.scheme!r}")
                 ctx = ssl.create_default_context()
-                with urllib.request.urlopen(INDEX_URL, timeout=10, context=ctx) as resp:
+                with urllib.request.urlopen(INDEX_URL, timeout=10, context=ctx) as resp:  # noqa: S310  # nosec B310 — scheme validated
                     self._index = json.loads(resp.read().decode())
                     self._loaded = True
                     return self._index
@@ -73,7 +77,7 @@ class TrioHubRegistry:
                     ctx = ssl.create_default_context()
                     ctx.check_hostname = False
                     ctx.verify_mode = ssl.CERT_NONE
-                    with urllib.request.urlopen(INDEX_URL, timeout=10, context=ctx) as resp:
+                    with urllib.request.urlopen(INDEX_URL, timeout=10, context=ctx) as resp:  # noqa: S310  # nosec B310 — scheme validated
                         self._index = json.loads(resp.read().decode())
                         self._loaded = True
                         return self._index

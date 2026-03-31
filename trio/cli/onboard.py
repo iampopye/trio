@@ -10,9 +10,21 @@ import shutil
 import sys
 from pathlib import Path
 
+from urllib.parse import urlparse
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt, Confirm
+
+
+def _safe_urlopen(req_or_url, **kwargs):
+    """Validate URL scheme before calling urlopen (B310 mitigation)."""
+    import urllib.request
+    url = req_or_url.full_url if hasattr(req_or_url, "full_url") else str(req_or_url)
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"Unsupported URL scheme: {parsed.scheme!r}")
+    return urllib.request.urlopen(req_or_url, **kwargs)  # nosec B310 — scheme validated
 from rich.table import Table
 from rich.text import Text
 from rich.columns import Columns
@@ -185,7 +197,7 @@ def _detect_ollama() -> dict | None:
         import urllib.request
         import json as _json
         req = urllib.request.Request("http://localhost:11434/api/tags", method="GET")
-        with urllib.request.urlopen(req, timeout=3) as resp:
+        with _safe_urlopen(req, timeout=3) as resp:
             data = _json.loads(resp.read())
             models = [m["name"] for m in data.get("models", [])]
             return {"url": "http://localhost:11434", "models": models}
@@ -827,7 +839,7 @@ def _download_skills_from_hub(categories: list[str], cat_counts: dict) -> int:
         ctx.verify_mode = ssl.CERT_NONE
 
         req = urllib.request.Request(index_url, headers={"User-Agent": "trio.ai/0.2"})
-        with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
+        with _safe_urlopen(req, context=ctx, timeout=15) as resp:
             index_data = json.loads(resp.read().decode("utf-8"))
     except Exception:
         return 0  # Offline, use bundled skills
@@ -871,7 +883,7 @@ def _download_skills_from_hub(categories: list[str], cat_counts: dict) -> int:
         try:
             skill_url = base_url + filename
             req = urllib.request.Request(skill_url, headers={"User-Agent": "trio.ai/0.2"})
-            with urllib.request.urlopen(req, context=ctx, timeout=10) as resp:
+            with _safe_urlopen(req, context=ctx, timeout=10) as resp:
                 dest.write_bytes(resp.read())
             downloaded += 1
 

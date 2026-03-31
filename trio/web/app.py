@@ -1423,7 +1423,7 @@ def create_app(config: dict | None = None) -> web.Application:
     return app
 
 
-def run_server(host: str = "0.0.0.0", port: int = 28337, config: dict | None = None):
+def run_server(host: str = "127.0.0.1", port: int = 28337, config: dict | None = None):
     app = create_app(config)
     api_key = app["api_key"]
     require_auth = app["require_api_key"]

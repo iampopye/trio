@@ -27,6 +27,7 @@ class SMSChannel(BaseChannel):
         self._auth_token = config.get("auth_token", "")
         self._phone_number = config.get("phone_number", "")  # Twilio phone number
         self._webhook_port = config.get("webhook_port", 8085)
+        self._webhook_host = config.get("webhook_host", "127.0.0.1")
         self._twilio_client = None
         self._app = None
         self._runner = None
@@ -50,7 +51,7 @@ class SMSChannel(BaseChannel):
 
         self._runner = web.AppRunner(self._app)
         await self._runner.setup()
-        site = web.TCPSite(self._runner, "0.0.0.0", self._webhook_port)
+        site = web.TCPSite(self._runner, self._webhook_host, self._webhook_port)
         await site.start()
         logger.info(
             f"SMS webhook listening on port {self._webhook_port} "

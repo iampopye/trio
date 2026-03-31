@@ -171,7 +171,7 @@ def main():
     # trio serve
     serve_parser = subparsers.add_parser("serve", help="Start browser-based chat UI")
     serve_parser.add_argument("--port", type=int, default=28337, help="Port (default: 28337)")
-    serve_parser.add_argument("--host", default="0.0.0.0", help="Host (default: 0.0.0.0)")
+    serve_parser.add_argument("--host", default="127.0.0.1", help="Host (default: 127.0.0.1)")
 
     # trio train
     train_parser = subparsers.add_parser("train", help="Train or retrain the trio-max model")

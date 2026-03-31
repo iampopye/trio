@@ -29,7 +29,7 @@ class TrioEngine:
         print(f"[Trio Engine] Loading model from: {checkpoint_path}")
 
         if os.path.exists(checkpoint_path):
-            ckpt = torch.load(checkpoint_path, map_location=self.device, weights_only=False)
+            ckpt = torch.load(checkpoint_path, map_location=self.device, weights_only=True)
             saved_cfg = ckpt.get("config", {})
             saved_vocab = saved_cfg.get("vocab_size", 0)
 
@@ -251,7 +251,7 @@ if __name__ == "__main__":
     parser.add_argument("--mode",       type=str, default="cli",
                         choices=["cli", "api"],
                         help="'cli' for interactive chat, 'api' for REST server")
-    parser.add_argument("--host",       type=str, default="0.0.0.0")
+    parser.add_argument("--host",       type=str, default="127.0.0.1")
     parser.add_argument("--port",       type=int, default=8080)
     args = parser.parse_args()
 

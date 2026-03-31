@@ -21,6 +21,7 @@ class GoogleChatChannel(BaseChannel):
         super().__init__(name="google_chat", bus=bus, config=config)
         self._service_account_file = config.get("service_account_file", "")
         self._webhook_port = config.get("webhook_port", 8090)
+        self._webhook_host = config.get("webhook_host", "127.0.0.1")
         self._runner = None
         self._credentials = None
         self._spaces: dict[str, str] = {}  # chat_id → space_name
@@ -50,7 +51,7 @@ class GoogleChatChannel(BaseChannel):
 
         self._runner = web.AppRunner(app)
         await self._runner.setup()
-        site = web.TCPSite(self._runner, "0.0.0.0", self._webhook_port)
+        site = web.TCPSite(self._runner, self._webhook_host, self._webhook_port)
         await site.start()
         logger.info(f"Google Chat webhook listening on port {self._webhook_port}")
 

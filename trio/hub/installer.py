@@ -7,6 +7,7 @@ import logging
 import shutil
 import tempfile
 from pathlib import Path
+from urllib.parse import urlparse
 
 from trio.core.config import get_skills_dir, get_plugins_dir
 
@@ -95,7 +96,10 @@ class HubInstaller:
         except ImportError:
             import urllib.request
             try:
-                with urllib.request.urlopen(url, timeout=15) as resp:
+                parsed = urlparse(url)
+                if parsed.scheme not in ("http", "https"):
+                    raise ValueError(f"Unsupported URL scheme: {parsed.scheme!r}")
+                with urllib.request.urlopen(url, timeout=15) as resp:  # noqa: S310  # nosec B310 — scheme validated
                     return resp.read().decode("utf-8")
             except Exception:
                 return None

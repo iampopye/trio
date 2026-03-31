@@ -180,13 +180,12 @@ def get_agent_defaults(config: dict) -> dict:
 
 # ── Secrets Encryption ─────────────────────────────────────────────────────
 #
-# Provides XOR-based obfuscation for sensitive values in config.json.
-# This prevents plaintext credential exposure if the file is accidentally
-# committed, shared, or read by other tools. It is NOT a substitute for
-# a proper secrets manager, but it raises the bar significantly vs plaintext.
+# Provides AES-128-CBC encryption (via Fernet) for sensitive values in
+# config.json. Falls back to XOR obfuscation if the `cryptography` package
+# is not installed.
 #
-# Encrypted values are stored as: "ENC:base64_payload"
-# The encryption key is derived from a machine-local secret stored in
+# Encrypted values are stored as: "ENC:fernet_token" or "ENC:xor_base64"
+# The encryption key is a machine-local secret stored in
 # ~/.trio/.secret_key (auto-generated, chmod 600).
 
 # Fields that contain secrets and should be encrypted at rest
@@ -199,9 +198,17 @@ SECRET_FIELDS = frozenset({
 
 _ENC_PREFIX = "ENC:"
 
+# Try to use Fernet (AES) from cryptography package
+_fernet = None
+try:
+    from cryptography.fernet import Fernet as _Fernet, InvalidToken as _InvalidToken
+    _HAS_FERNET = True
+except ImportError:
+    _HAS_FERNET = False
+
 
 def _get_secret_key() -> bytes:
-    """Load or generate the machine-local encryption key."""
+    """Load or generate the machine-local encryption key (32 bytes)."""
     key_path = get_trio_dir() / ".secret_key"
     if key_path.exists():
         return key_path.read_bytes()
@@ -214,30 +221,65 @@ def _get_secret_key() -> bytes:
     return key
 
 
+def _get_fernet():
+    """Get or create a Fernet instance from the master key."""
+    global _fernet
+    if _fernet is None and _HAS_FERNET:
+        master = _get_secret_key()
+        # Fernet needs a 32-byte URL-safe base64 key
+        fernet_key = base64.urlsafe_b64encode(master[:32])
+        _fernet = _Fernet(fernet_key)
+    return _fernet
+
+
 def _derive_key(master: bytes, context: str) -> bytes:
-    """Derive a field-specific key using HMAC-SHA256."""
+    """Derive a field-specific key using HMAC-SHA256 (XOR fallback only)."""
     return hashlib.sha256(master + context.encode()).digest()
 
 
 def _encrypt_value(value: str, field_name: str) -> str:
-    """Encrypt a string value for storage. Returns 'ENC:base64'."""
+    """Encrypt a string value for storage. Returns 'ENC:...'."""
     if not value or value.startswith(_ENC_PREFIX):
         return value
-    key = _derive_key(_get_secret_key(), field_name)
-    data = value.encode("utf-8")
-    # XOR encryption with derived key (repeating key)
-    encrypted = bytes(b ^ key[i % len(key)] for i, b in enumerate(data))
-    return _ENC_PREFIX + base64.b64encode(encrypted).decode("ascii")
+
+    f = _get_fernet()
+    if f is not None:
+        # AES encryption via Fernet (authenticated, secure)
+        token = f.encrypt(value.encode("utf-8"))
+        return _ENC_PREFIX + token.decode("ascii")
+    else:
+        # XOR fallback (obfuscation only — install 'cryptography' for real encryption)
+        key = _derive_key(_get_secret_key(), field_name)
+        data = value.encode("utf-8")
+        encrypted = bytes(b ^ key[i % len(key)] for i, b in enumerate(data))
+        return _ENC_PREFIX + "xor:" + base64.b64encode(encrypted).decode("ascii")
 
 
 def _decrypt_value(value: str, field_name: str) -> str:
-    """Decrypt an 'ENC:base64' value back to plaintext."""
+    """Decrypt an 'ENC:...' value back to plaintext."""
     if not isinstance(value, str) or not value.startswith(_ENC_PREFIX):
         return value
-    key = _derive_key(_get_secret_key(), field_name)
-    encrypted = base64.b64decode(value[len(_ENC_PREFIX):])
-    decrypted = bytes(b ^ key[i % len(key)] for i, b in enumerate(encrypted))
-    return decrypted.decode("utf-8")
+
+    payload = value[len(_ENC_PREFIX):]
+
+    # XOR fallback format: "ENC:xor:base64data"
+    if payload.startswith("xor:"):
+        key = _derive_key(_get_secret_key(), field_name)
+        encrypted = base64.b64decode(payload[4:])
+        decrypted = bytes(b ^ key[i % len(key)] for i, b in enumerate(encrypted))
+        return decrypted.decode("utf-8")
+
+    # Fernet format: "ENC:fernet_token"
+    f = _get_fernet()
+    if f is not None:
+        try:
+            return f.decrypt(payload.encode("ascii")).decode("utf-8")
+        except Exception:
+            pass
+
+    # If Fernet is not available but data was Fernet-encrypted, try XOR as last resort
+    # (will produce garbage, but won't crash)
+    return value  # Return encrypted value as-is if decryption not possible
 
 
 def _encrypt_secrets(data: dict, path: str = "") -> dict:
