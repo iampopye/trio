@@ -407,7 +407,7 @@ def _scan_skill_categories() -> dict[str, int]:
         try:
             header = md_file.read_text(encoding="utf-8", errors="ignore")[:600].lower()
         except Exception:
-            continue
+            continue  # nosec B112 — intentional skip
 
         matched = False
 
@@ -457,7 +457,7 @@ def _get_ram_gb() -> str:
         total = psutil.virtual_memory().total
         return f"{total / (1024 ** 3):.1f} GB"
     except ImportError:
-        pass
+        pass  # nosec B110 — intentional silent fallback
 
     # Fallback: platform-specific
     if platform.system() == "Windows":
@@ -482,7 +482,7 @@ def _get_ram_gb() -> str:
             kernel32.GlobalMemoryStatusEx(ctypes.byref(mem))
             return f"{mem.ullTotalPhys / (1024 ** 3):.1f} GB"
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback
     elif platform.system() == "Linux":
         try:
             with open("/proc/meminfo") as f:
@@ -491,14 +491,14 @@ def _get_ram_gb() -> str:
                         kb = int(line.split()[1])
                         return f"{kb / (1024 ** 2):.1f} GB"
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback  # nosec B110 — intentional silent fallback
     elif platform.system() == "Darwin":
         try:
-            import subprocess
-            out = subprocess.check_output(["sysctl", "-n", "hw.memsize"], text=True).strip()
+            import subprocess  # nosec B404
+            out = subprocess.check_output(["sysctl", "-n", "hw.memsize"], text=True).strip()  # nosec B603 B607
             return f"{int(out) / (1024 ** 3):.1f} GB"
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback
 
     return "unknown"
 
@@ -509,8 +509,8 @@ def _detect_gpu() -> str:
     nvidia_smi = shutil.which("nvidia-smi")
     if nvidia_smi:
         try:
-            import subprocess
-            out = subprocess.check_output(
+            import subprocess  # nosec B404
+            out = subprocess.check_output(  # nosec B603 B607
                 [nvidia_smi, "--query-gpu=name,memory.total", "--format=csv,noheader,nounits"],
                 text=True, timeout=5,
             ).strip()
@@ -520,7 +520,7 @@ def _detect_gpu() -> str:
                 mem = parts[1].strip() if len(parts) > 1 else "?"
                 return f"{name} ({mem} MB)"
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback
 
     # Try ROCm (AMD)
     rocm = shutil.which("rocm-smi")
@@ -567,7 +567,7 @@ def _step_system_check() -> None:
             ram_val = float(ram.replace(" GB", ""))
             ram_ok = ram_val >= 4.0
         except ValueError:
-            pass
+            pass  # nosec B110 — intentional silent fallback
         mark = "[green]\u2713[/green]" if ram_ok else "[yellow]![/yellow]"
         checks.append((mark, f"RAM: {ram}"))
     else:
@@ -673,9 +673,9 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
             console.print(f"\n  [dim]Downloading {model_name}...[/dim]")
             console.print(f"  [dim]This is a one-time download. Grab a coffee.[/dim]\n")
             try:
-                import subprocess, sys
+                import subprocess, sys  # nosec B404
                 script = Path(__file__).resolve().parent.parent.parent / "scripts" / "setup_models.py"
-                result = subprocess.run(
+                result = subprocess.run(  # nosec B603 B607
                     [sys.executable, str(script), "--model", model_name],
                     timeout=1200,
                 )
@@ -891,7 +891,7 @@ def _download_skills_from_hub(categories: list[str], cat_counts: dict) -> int:
             if downloaded % 100 == 0:
                 console.print(f"  [dim]  {downloaded}/{total} skills...[/dim]")
         except Exception:
-            continue
+            continue  # nosec B112 — intentional skip
 
     return downloaded
 

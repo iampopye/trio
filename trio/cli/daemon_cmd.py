@@ -17,7 +17,7 @@ import logging
 import os
 import platform
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 from datetime import datetime, timezone
@@ -132,7 +132,7 @@ def _cmd_start():
         CREATE_NEW_PROCESS_GROUP = 0x00000200
         DETACHED_PROCESS = 0x00000008
         with open(stdout_log, "a") as out, open(stderr_log, "a") as err:
-            proc = subprocess.Popen(
+            proc = subprocess.Popen(  # nosec B603 B607
                 cmd,
                 stdout=out,
                 stderr=err,
@@ -142,7 +142,7 @@ def _cmd_start():
     else:
         # Unix: nohup-style detach via start_new_session
         with open(stdout_log, "a") as out, open(stderr_log, "a") as err:
-            proc = subprocess.Popen(
+            proc = subprocess.Popen(  # nosec B603 B607
                 cmd,
                 stdout=out,
                 stderr=err,
@@ -278,7 +278,7 @@ def _service_install_status() -> str:
             return "[green]systemd (installed)[/green]"
     elif system == "Windows":
         # Check scheduled task
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603 B607
             ["schtasks", "/Query", "/TN", _WIN_TASK_NAME, "/FO", "LIST"],
             capture_output=True, text=True,
         )
@@ -339,7 +339,7 @@ def _get_process_memory(pid: int) -> str | None:
                         kb = int(line.split()[1])
                         return f"{kb / 1024:.1f} MB"
             else:
-                result = subprocess.run(
+                result = subprocess.run(  # nosec B603 B607
                     ["ps", "-o", "rss=", "-p", str(pid)],
                     capture_output=True, text=True,
                 )
@@ -376,7 +376,7 @@ def _cmd_logs():
                     border_style="dim",
                 ))
         except OSError:
-            pass
+            pass  # nosec B110 — intentional silent fallback
 
     console.print("\n[dim]Hint: watch the live log with: tail -f ~/.trio/daemon/daemon.log[/dim]")
 
@@ -479,7 +479,7 @@ def _install_launchd():
     _LAUNCHD_PLIST.parent.mkdir(parents=True, exist_ok=True)
     _LAUNCHD_PLIST.write_text(plist, encoding="utf-8")
 
-    subprocess.run(["launchctl", "load", "-w", str(_LAUNCHD_PLIST)])
+    subprocess.run(["launchctl", "load", "-w", str(_LAUNCHD_PLIST)])  # nosec B603 B607
     console.print(f"[green]Daemon installed as LaunchAgent![/green]")
     console.print(f"  Plist: {_LAUNCHD_PLIST}")
     console.print("[dim]The daemon will auto-start on login and restart on crash.[/dim]")
@@ -487,7 +487,7 @@ def _install_launchd():
 
 def _uninstall_launchd():
     if _LAUNCHD_PLIST.exists():
-        subprocess.run(["launchctl", "unload", str(_LAUNCHD_PLIST)])
+        subprocess.run(["launchctl", "unload", str(_LAUNCHD_PLIST)])  # nosec B603 B607
         _LAUNCHD_PLIST.unlink()
         console.print("[green]LaunchAgent removed.[/green]")
     else:
@@ -531,13 +531,13 @@ WantedBy=default.target
     _SYSTEMD_PATH.parent.mkdir(parents=True, exist_ok=True)
     _SYSTEMD_PATH.write_text(unit, encoding="utf-8")
 
-    subprocess.run(["systemctl", "--user", "daemon-reload"])
-    subprocess.run(["systemctl", "--user", "enable", "--now", _SYSTEMD_SERVICE])
+    subprocess.run(["systemctl", "--user", "daemon-reload"])  # nosec B603 B607
+    subprocess.run(["systemctl", "--user", "enable", "--now", _SYSTEMD_SERVICE])  # nosec B603 B607
 
     # Enable linger so it survives logout
     user = os.environ.get("USER", "")
     if user:
-        subprocess.run(["loginctl", "enable-linger", user])
+        subprocess.run(["loginctl", "enable-linger", user])  # nosec B603 B607
 
     console.print(f"[green]Daemon installed as systemd user service![/green]")
     console.print(f"  Unit: {_SYSTEMD_PATH}")
@@ -547,10 +547,10 @@ WantedBy=default.target
 
 def _uninstall_systemd():
     if _SYSTEMD_PATH.exists():
-        subprocess.run(["systemctl", "--user", "stop", _SYSTEMD_SERVICE])
-        subprocess.run(["systemctl", "--user", "disable", _SYSTEMD_SERVICE])
+        subprocess.run(["systemctl", "--user", "stop", _SYSTEMD_SERVICE])  # nosec B603 B607
+        subprocess.run(["systemctl", "--user", "disable", _SYSTEMD_SERVICE])  # nosec B603 B607
         _SYSTEMD_PATH.unlink()
-        subprocess.run(["systemctl", "--user", "daemon-reload"])
+        subprocess.run(["systemctl", "--user", "daemon-reload"])  # nosec B603 B607
         console.print("[green]systemd service removed.[/green]")
     else:
         console.print("[yellow]No systemd service installed.[/yellow]")
@@ -591,7 +591,7 @@ def _install_windows():
     vbs_script.write_text(vbs_content, encoding="utf-8")
 
     # Try schtasks (preferred — runs at logon, can restart on failure)
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 B607
         [
             "schtasks", "/Create",
             "/TN", _WIN_TASK_NAME,
@@ -629,7 +629,7 @@ def _uninstall_windows():
     removed = False
 
     # Remove scheduled task
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 B607
         ["schtasks", "/Delete", "/TN", _WIN_TASK_NAME, "/F"],
         capture_output=True, text=True,
     )

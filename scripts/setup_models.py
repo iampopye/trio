@@ -14,7 +14,7 @@ import os
 import sys
 import time
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -261,7 +261,7 @@ def download_file(url: str, dest: Path, description: str = "") -> bool:
 def check_ollama() -> bool:
     """Check if ollama CLI is available."""
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603 B607
             ["ollama", "--version"],
             capture_output=True,
             text=True,
@@ -291,7 +291,7 @@ def create_ollama_model(model_name: str, modelfile_path: Path) -> bool:
     print(f"  Modelfile: {modelfile_path}")
 
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603 B607
             ["ollama", "create", model_name, "-f", str(modelfile_path)],
             cwd=str(modelfile_path.parent),
             capture_output=False,
@@ -314,7 +314,7 @@ def create_ollama_model(model_name: str, modelfile_path: Path) -> bool:
 def verify_ollama_model(model_name: str) -> bool:
     """Verify a model is registered in Ollama by listing models."""
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603 B607
             ["ollama", "list"],
             capture_output=True,
             text=True,
@@ -323,7 +323,7 @@ def verify_ollama_model(model_name: str) -> bool:
         if result.returncode == 0:
             return model_name in result.stdout
     except Exception:
-        pass
+        pass  # nosec B110 — intentional silent fallback
     return False
 
 

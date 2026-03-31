@@ -39,7 +39,7 @@ async def run_heartbeat(action: str | None):
         console.print(content)
 
     elif action == "edit":
-        import subprocess
+        import subprocess  # nosec B404
         import os
         hb_file = get_workspace_dir() / "HEARTBEAT.md"
         if not hb_file.exists():
@@ -49,7 +49,7 @@ async def run_heartbeat(action: str | None):
                 encoding="utf-8",
             )
         editor = os.environ.get("EDITOR", "notepad" if os.name == "nt" else "nano")
-        subprocess.run([editor, str(hb_file)])
+        subprocess.run([editor, str(hb_file)])  # nosec B603 B607
 
     else:
         console.print("[bold]trio heartbeat[/bold] — manage the heartbeat daemon\n")

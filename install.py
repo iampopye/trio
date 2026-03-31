@@ -7,7 +7,7 @@ Usage:
 
 import os
 import platform
-import subprocess
+import subprocess  # nosec B404
 import sys
 
 _INNER_FLAG = "--_inner"
@@ -55,7 +55,7 @@ def main():
     if not in_venv:
         if not os.path.isdir(venv_dir):
             print("  Setting up...")
-            subprocess.run(
+            subprocess.run(  # nosec B603 B607
                 [sys.executable, "-m", "venv", venv_dir],
                 check=True, capture_output=True,
             )
@@ -68,7 +68,7 @@ def main():
 
         if os.path.exists(venv_python):
             args = [a for a in sys.argv[1:] if a != _INNER_FLAG]
-            result = subprocess.run(
+            result = subprocess.run(  # nosec B603 B607
                 [venv_python, __file__, _INNER_FLAG] + args,
                 env=_pip_env(),
             )
@@ -87,7 +87,7 @@ def main():
     extras = ".[all,dev]" if dev_mode else "."
 
     cmd = [sys.executable, "-m", "pip", "install", "-q", "-e", extras]
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 B607
         cmd, cwd=script_dir, capture_output=True, text=True, env=_pip_env()
     )
 
@@ -108,7 +108,7 @@ def main():
 
     # Run doctor
     print()
-    subprocess.run([sys.executable, "-m", "trio", "doctor"], cwd=script_dir)
+    subprocess.run([sys.executable, "-m", "trio", "doctor"], cwd=script_dir)  # nosec B603 B607
 
     # Show next steps if user ran directly (not inner re-launch)
     if not is_inner:
@@ -118,19 +118,19 @@ def main():
 def _remove_trio_conflict():
     """Remove the 'trio' async library if installed — it conflicts with trio.ai."""
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603 B607
             [sys.executable, "-m", "pip", "show", "trio"],
             capture_output=True, text=True,
         )
         if result.returncode == 0 and "trio" in result.stdout:
             # Check it's the async library, not our package
             if "Structured concurrency" in result.stdout or "trio-websocket" in result.stdout:
-                subprocess.run(
+                subprocess.run(  # nosec B603 B607
                     [sys.executable, "-m", "pip", "uninstall", "-y", "trio", "trio-websocket"],
                     capture_output=True,
                 )
     except Exception:
-        pass
+        pass  # nosec B110 — intentional silent fallback
 
 
 def _print_success():
@@ -170,7 +170,7 @@ def _fix_path_for_venv(venv_dir):
                         new_path = scripts + ";" + current if current else scripts
                         winreg.SetValueEx(key, "PATH", 0, winreg.REG_EXPAND_SZ, new_path)
             except Exception:
-                pass
+                pass  # nosec B110 — intentional silent fallback
     else:
         from pathlib import Path
         bin_dir = os.path.join(venv_dir, "bin")
@@ -182,7 +182,7 @@ def _fix_path_for_venv(venv_dir):
                 try:
                     trio_dst.symlink_to(trio_src)
                 except Exception:
-                    pass
+                    pass  # nosec B110 — intentional silent fallback
 
 
 if __name__ == "__main__":

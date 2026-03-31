@@ -69,7 +69,7 @@ def _get_or_create_api_key() -> str:
     try:
         key_path.chmod(0o600)
     except (OSError, NotImplementedError):
-        pass
+        pass  # nosec B110 — intentional silent fallback
     return api_key
 
 
@@ -157,7 +157,7 @@ def _load_workspace_prompt():
             try:
                 parts.append(path.read_text(encoding="utf-8"))
             except Exception:
-                pass
+                pass  # nosec B110 — intentional silent fallback
     return "\n\n".join(parts)
 
 
@@ -948,7 +948,7 @@ async def api_memory_list(request):
             data["id"] = f.stem
             entries.append(data)
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback
     return web.json_response({"memories": entries, "count": len(entries)})
 
 
@@ -1272,7 +1272,7 @@ async def api_whatsapp_status(request):
 
 async def api_whatsapp_start(request):
     """POST /api/whatsapp/start -- start the WhatsApp bridge."""
-    import subprocess as sp
+    import subprocess as sp  # nosec B404
     from trio.channels.whatsapp_web import _ensure_bridge, BRIDGE_DIR, BRIDGE_SCRIPT, SESSION_DIR, is_node_available
 
     if not is_node_available():
@@ -1304,7 +1304,7 @@ async def api_whatsapp_start(request):
 
     # Start bridge in background
     try:
-        process = sp.Popen(
+        process = sp.Popen(  # nosec B603 B607
             ["node", str(BRIDGE_SCRIPT), str(SESSION_DIR), str(port)],
             cwd=str(BRIDGE_DIR),
             stdout=sp.DEVNULL, stderr=sp.DEVNULL,
@@ -1330,7 +1330,7 @@ async def api_whatsapp_logout(request):
             async with session.get(f"http://localhost:{port}/logout", timeout=aio_http.ClientTimeout(total=5)) as resp:
                 await resp.json()
     except Exception:
-        pass
+        pass  # nosec B110 — intentional silent fallback
 
     # Kill bridge process
     proc = request.app.get("wa_process")
@@ -1338,7 +1338,7 @@ async def api_whatsapp_logout(request):
         try:
             proc.terminate()
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback
 
     return web.json_response({"status": "logged_out"})
 

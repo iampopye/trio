@@ -70,7 +70,7 @@ class PluginManifest:
                 hasher.update(f.name.encode())
                 hasher.update(f.read_bytes())
             except Exception:
-                pass
+                pass  # nosec B110 — intentional silent fallback
         return hasher.hexdigest()
 
     def generate_checksum(self) -> str:

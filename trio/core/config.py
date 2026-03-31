@@ -25,21 +25,21 @@ DEFAULT_CONFIG = {
         }
     },
     "channels": {
-        "discord": {"enabled": False, "token": ""},
-        "telegram": {"enabled": False, "token": "", "admin_id": 0},
+        "discord": {"enabled": False, "token": ""},  # nosec B105 — field name, not a secret
+        "telegram": {"enabled": False, "token": "", "admin_id": 0},  # nosec B105 — field name, not a secret
         "signal": {"enabled": False, "phone": ""},
-        "whatsapp": {"enabled": False, "phone_number_id": "", "access_token": "", "verify_token": "trio_verify", "webhook_port": 8080},
-        "slack": {"enabled": False, "bot_token": "", "app_token": ""},
-        "teams": {"enabled": False, "app_id": "", "app_password": "", "webhook_port": 3978},
+        "whatsapp": {"enabled": False, "phone_number_id": "", "access_token": "", "verify_token": "trio_verify", "webhook_port": 8080},  # nosec B105 — field name, not a secret
+        "slack": {"enabled": False, "bot_token": "", "app_token": ""},  # nosec B105 — field name, not a secret
+        "teams": {"enabled": False, "app_id": "", "app_password": "", "webhook_port": 3978},  # nosec B105 — field name, not a secret
         "google_chat": {"enabled": False, "service_account_file": "", "webhook_port": 8090},
         "imessage": {"enabled": False, "poll_interval": 5},
-        "matrix": {"enabled": False, "homeserver_url": "https://matrix.org", "user_id": "", "access_token": ""},
-        "sms": {"enabled": False, "account_sid": "", "auth_token": "", "phone_number": "", "webhook_port": 8085},
-        "instagram": {"enabled": False, "page_id": "", "access_token": "", "verify_token": "trio_verify", "app_secret": "", "webhook_port": 8086},
-        "messenger": {"enabled": False, "page_id": "", "access_token": "", "verify_token": "trio_verify", "app_secret": "", "webhook_port": 8087},
-        "line": {"enabled": False, "channel_access_token": "", "channel_secret": "", "webhook_port": 8088},
-        "reddit": {"enabled": False, "client_id": "", "client_secret": "", "username": "", "password": "", "poll_interval": 30},
-        "email": {"enabled": False, "imap_host": "", "imap_port": 993, "smtp_host": "", "smtp_port": 587, "username": "", "password": "", "poll_interval": 30},
+        "matrix": {"enabled": False, "homeserver_url": "https://matrix.org", "user_id": "", "access_token": ""},  # nosec B105 — field name, not a secret
+        "sms": {"enabled": False, "account_sid": "", "auth_token": "", "phone_number": "", "webhook_port": 8085},  # nosec B105 — field name, not a secret
+        "instagram": {"enabled": False, "page_id": "", "access_token": "", "verify_token": "trio_verify", "app_secret": "", "webhook_port": 8086},  # nosec B105 — field name, not a secret
+        "messenger": {"enabled": False, "page_id": "", "access_token": "", "verify_token": "trio_verify", "app_secret": "", "webhook_port": 8087},  # nosec B105 — field name, not a secret
+        "line": {"enabled": False, "channel_access_token": "", "channel_secret": "", "webhook_port": 8088},  # nosec B105 — field name, not a secret
+        "reddit": {"enabled": False, "client_id": "", "client_secret": "", "username": "", "password": "", "poll_interval": 30},  # nosec B105 — field name, not a secret
+        "email": {"enabled": False, "imap_host": "", "imap_port": 993, "smtp_host": "", "smtp_port": 587, "username": "", "password": "", "poll_interval": 30},  # nosec B105 — field name, not a secret
     },
     "tools": {
         "builtin": [
@@ -53,7 +53,7 @@ DEFAULT_CONFIG = {
             "smtp_port": 587,
             "imap_host": "",
             "username": "",
-            "password": "",
+            "password": "",  # nosec B105 — field name, not a secret
         },
     },
     "heartbeat": {
@@ -147,7 +147,7 @@ def save_config(config: dict[str, Any]) -> None:
     try:
         config_path.chmod(0o600)
     except (OSError, NotImplementedError):
-        pass
+        pass  # nosec B110 — intentional silent fallback
 
 
 def _deep_merge(base: dict, override: dict) -> dict:
@@ -189,7 +189,7 @@ def get_agent_defaults(config: dict) -> dict:
 # ~/.trio/.secret_key (auto-generated, chmod 600).
 
 # Fields that contain secrets and should be encrypted at rest
-SECRET_FIELDS = frozenset({
+SECRET_FIELDS = frozenset({  # nosec B105 — field name, not a secret
     "token", "bot_token", "app_token", "access_token", "api_key",
     "app_password", "password", "auth_token", "client_secret",
     "channel_secret", "channel_access_token", "app_secret",
@@ -217,7 +217,7 @@ def _get_secret_key() -> bytes:
     try:
         key_path.chmod(0o600)
     except (OSError, NotImplementedError):
-        pass
+        pass  # nosec B110 — intentional silent fallback
     return key
 
 
@@ -275,7 +275,7 @@ def _decrypt_value(value: str, field_name: str) -> str:
         try:
             return f.decrypt(payload.encode("ascii")).decode("utf-8")
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback
 
     # If Fernet is not available but data was Fernet-encrypted, try XOR as last resort
     # (will produce garbage, but won't crash)

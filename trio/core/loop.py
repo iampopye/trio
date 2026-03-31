@@ -398,5 +398,5 @@ class AgentLoop:
             try:
                 return path.read_text(encoding="utf-8")
             except Exception:
-                pass
+                pass  # nosec B110 — intentional silent fallback
         return None

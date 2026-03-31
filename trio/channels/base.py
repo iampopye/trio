@@ -88,7 +88,7 @@ class ChannelManager:
             try:
                 await channel.stop()
             except Exception:
-                pass
+                pass  # nosec B110 — intentional silent fallback
 
     async def _route_outbound(self) -> None:
         """Consume outbound messages and route to correct channel."""

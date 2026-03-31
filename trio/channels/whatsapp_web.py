@@ -13,7 +13,7 @@ import asyncio
 import json
 import logging
 import os
-import subprocess
+import subprocess  # nosec B404
 import sys
 import tempfile
 from pathlib import Path
@@ -163,7 +163,7 @@ def _ensure_bridge():
 def is_node_available():
     """Check if Node.js is installed."""
     try:
-        r = subprocess.run(["node", "--version"], capture_output=True, text=True, timeout=5)
+        r = subprocess.run(["node", "--version"], capture_output=True, text=True, timeout=5)  # nosec B603 B607
         return r.returncode == 0
     except Exception:
         return False

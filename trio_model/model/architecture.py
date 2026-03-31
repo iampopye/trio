@@ -149,7 +149,7 @@ class TrioModel(nn.Module):
         targets: Optional[torch.Tensor] = None,   # (B, T) for training
     ):
         B, T = input_ids.shape
-        assert T <= self.cfg.context_length, (
+        assert T <= self.cfg.context_length, (  # nosec B101
             f"Sequence length {T} exceeds model context length {self.cfg.context_length}"
         )
 

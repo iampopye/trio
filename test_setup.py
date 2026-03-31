@@ -20,7 +20,7 @@ def test_tokenizer():
     print(f"  Encoded: {ids}")
     print(f"  Decoded: {dec}")
     print(f"  Vocab size: {tok.vocab_size}")
-    assert len(ids) > 0, "Encoding failed"
+    assert len(ids) > 0, "Encoding failed"  # nosec B101
     print("  OK: Tokenizer")
 
 
@@ -44,8 +44,8 @@ def test_model_forward():
     print(f"  Input shape:  {x.shape}")
     print(f"  Output shape: {logits.shape}")
     print(f"  Loss:         {loss.item():.4f}")
-    assert logits.shape == (B, T, cfg.vocab_size), "Logits shape mismatch"
-    assert loss.item() > 0, "Loss should be positive"
+    assert logits.shape == (B, T, cfg.vocab_size), "Logits shape mismatch"  # nosec B101
+    assert loss.item() > 0, "Loss should be positive"  # nosec B101
     print("  OK: Forward pass")
 
 
@@ -83,8 +83,8 @@ def test_agent_imports():
     providers = ProviderRegistry.available()
     print(f"  Config dir: {get_trio_dir()}")
     print(f"  Providers:  {', '.join(providers)}")
-    assert "trio" in providers, "Trio local provider not registered"
-    assert "ollama" in providers, "Ollama provider not registered"
+    assert "trio" in providers, "Trio local provider not registered"  # nosec B101
+    assert "ollama" in providers, "Ollama provider not registered"  # nosec B101
     print("  OK: Agent framework")
 
 

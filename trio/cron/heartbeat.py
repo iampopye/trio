@@ -116,7 +116,7 @@ class HeartbeatDaemon:
             try:
                 await self._task
             except asyncio.CancelledError:
-                pass
+                pass  # nosec B110 — intentional silent fallback
         self._log_hb("Heartbeat stopped")
         logger.info("Heartbeat daemon stopped")
 

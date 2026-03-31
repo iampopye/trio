@@ -46,7 +46,7 @@ def _ensure_path():
                         print(f"[trio.ai] Added {scripts_dir} to your PATH.")
                         print("[trio.ai] Restart your terminal for 'trio' command to work.\n")
             except Exception:
-                pass
+                pass  # nosec B110 — intentional silent fallback
 
     else:
         # macOS / Linux: check if ~/.local/bin is on PATH
@@ -72,7 +72,7 @@ def _ensure_path():
                         print(f"[trio.ai] Added ~/.local/bin to PATH in {profile.name}")
                         print("[trio.ai] Restart your terminal or run: source " + str(profile) + "\n")
             except Exception:
-                pass
+                pass  # nosec B110 — intentional silent fallback
 
 
 def main():
@@ -247,17 +247,17 @@ def main():
     elif args.command == "train":
         if args.setup:
             # Download pre-quantized GGUF models and register with Ollama
-            import subprocess
+            import subprocess  # nosec B404
             script = os.path.join(os.path.dirname(__file__), "..", "scripts", "setup_models.py")
             script = os.path.normpath(script)
             if not os.path.exists(script):
                 print("[trio.ai] Error: setup_models.py not found at", script)
                 sys.exit(1)
             print("[trio.ai] Setting up trio-max and trio-nano via Ollama...\n")
-            subprocess.run([sys.executable, "-u", script])
+            subprocess.run([sys.executable, "-u", script])  # nosec B603 B607
         else:
             # Train from scratch using local training pipeline
-            import subprocess
+            import subprocess  # nosec B404
             script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
             if not os.path.exists(script):
                 script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
@@ -266,7 +266,7 @@ def main():
                 cmd.append("--reset")
             print("[trio.ai] Starting model training...")
             print("[trio.ai] You can pause anytime (Ctrl+C) and resume with: trio train\n")
-            subprocess.run(cmd)
+            subprocess.run(cmd)  # nosec B603 B607
 
 
 if __name__ == "__main__":

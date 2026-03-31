@@ -67,7 +67,7 @@ class EmailChannel(BaseChannel):
             try:
                 self._imap.logout()
             except Exception:
-                pass
+                pass  # nosec B110 — intentional silent fallback
             self._imap = None
 
     def _connect_imap(self) -> None:

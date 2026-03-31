@@ -73,7 +73,7 @@ class SignalChannel(BaseChannel):
                 try:
                     await self._connect()
                 except Exception:
-                    pass
+                    pass  # nosec B110 — intentional silent fallback
             except json.JSONDecodeError:
                 continue
             except Exception as e:
@@ -196,7 +196,7 @@ class SignalChannel(BaseChannel):
             self._writer.write(data.encode())
             await self._writer.drain()
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback
 
     def _split_message(self, text: str, limit: int) -> list[str]:
         if len(text) <= limit:

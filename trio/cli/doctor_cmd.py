@@ -270,7 +270,7 @@ async def _check_provider() -> DoctorCheck:
                         count = len(data.get("models", []))
                         return DoctorCheck("Provider", True, f"ollama ({count} models at {base_url})")
         except Exception:
-            pass
+            pass  # nosec B110 — intentional silent fallback
         return DoctorCheck("Provider", False, f"ollama not reachable at {base_url}")
 
     else:

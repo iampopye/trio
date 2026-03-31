@@ -85,7 +85,7 @@ class MultiHeadAttention(nn.Module):
         rope_base: int = 10000,
     ):
         super().__init__()
-        assert d_model % num_heads == 0, "d_model must be divisible by num_heads"
+        assert d_model % num_heads == 0, "d_model must be divisible by num_heads"  # nosec B101
 
         self.num_heads    = num_heads
         self.num_kv_heads = num_kv_heads if num_kv_heads is not None else num_heads

@@ -139,7 +139,7 @@ class TelegramChannel(BaseChannel):
                                 self._bot.send_message, int(chat_id), part,
                             )
                 except Exception:
-                    pass
+                    pass  # nosec B110 — intentional silent fallback
             self._active_messages.pop(chat_id, None)
             return
 

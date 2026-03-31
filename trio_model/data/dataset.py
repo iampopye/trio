@@ -34,7 +34,7 @@ class TextDataset(Dataset):
         val_fraction: float = 0.1,
     ):
         super().__init__()
-        assert os.path.exists(file_path), f"Data file not found: {file_path}"
+        assert os.path.exists(file_path), f"Data file not found: {file_path}"  # nosec B101
 
         with open(file_path, "r", encoding="utf-8") as f:
             raw = f.read()

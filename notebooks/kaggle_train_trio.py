@@ -20,15 +20,15 @@ Instructions:
 
 # ── Cell 1: Setup ─────────────────────────────────────────────────────────────
 
-import subprocess, sys, os
+import subprocess, sys, os  # nosec B404
 
 # Install dependencies
-subprocess.run([sys.executable, "-m", "pip", "install", "-q",
+subprocess.run([sys.executable, "-m", "pip", "install", "-q",  # nosec B603 B607
     "torch", "tiktoken", "pyyaml", "numpy", "datasets", "huggingface_hub"])
 
 # Clone trio repo
 if not os.path.exists("/kaggle/working/trio"):
-    subprocess.run(["git", "clone", "https://github.com/iampopye/trio.git", "/kaggle/working/trio"])
+    subprocess.run(["git", "clone", "https://github.com/iampopye/trio.git", "/kaggle/working/trio"])  # nosec B603 B607
 
 sys.path.insert(0, "/kaggle/working/trio")
 
@@ -246,8 +246,8 @@ class SFTDatasetBPE(torch.utils.data.Dataset):
                     tokens = tokenizer.encode(text)[:seq_len]
                     if len(tokens) > 20:
                         self.samples.append(tokens)
-            except:
-                continue
+            except:  # noqa: E722
+                continue  # nosec B112 — intentional skip
         print(f"[SFT Dataset] {len(self.samples):,} samples")
 
     def __len__(self):

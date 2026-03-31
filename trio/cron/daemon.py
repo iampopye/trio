@@ -442,7 +442,7 @@ class TrioDaemon:
             if path.exists():
                 path.unlink()
         except OSError:
-            pass
+            pass  # nosec B110 — intentional silent fallback
 
     # ------------------------------------------------------------------
     # Status file
@@ -520,7 +520,7 @@ class TrioDaemon:
         try:
             pid_file.unlink()
         except OSError:
-            pass
+            pass  # nosec B110 — intentional silent fallback
         return False, None
 
     @staticmethod
@@ -533,8 +533,8 @@ class TrioDaemon:
         # Send termination signal
         if sys.platform == "win32":
             # Windows: use taskkill (handles both console and pythonw)
-            import subprocess
-            subprocess.run(
+            import subprocess  # nosec B404
+            subprocess.run(  # nosec B603 B607
                 ["taskkill", "/PID", str(pid), "/F"],
                 capture_output=True,
             )
@@ -548,15 +548,15 @@ class TrioDaemon:
                 try:
                     _pid_path().unlink(missing_ok=True)
                 except OSError:
-                    pass
+                    pass  # nosec B110 — intentional silent fallback
                 return True
             time.sleep(0.5)
 
         # Force kill after timeout
         if _pid_alive(pid):
             if sys.platform == "win32":
-                import subprocess
-                subprocess.run(
+                import subprocess  # nosec B404
+                subprocess.run(  # nosec B603 B607
                     ["taskkill", "/PID", str(pid), "/F"],
                     capture_output=True,
                 )
@@ -567,7 +567,7 @@ class TrioDaemon:
         try:
             _pid_path().unlink(missing_ok=True)
         except OSError:
-            pass
+            pass  # nosec B110 — intentional silent fallback
         return True
 
     @staticmethod

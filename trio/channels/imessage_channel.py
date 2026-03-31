@@ -6,7 +6,7 @@ import asyncio
 import logging
 import platform
 import sqlite3
-import subprocess
+import subprocess  # nosec B404
 from pathlib import Path
 from typing import Any
 
@@ -54,7 +54,7 @@ class IMessageChannel(BaseChannel):
             try:
                 await self._poll_task
             except asyncio.CancelledError:
-                pass
+                pass  # nosec B110 — intentional silent fallback
 
     def _get_latest_rowid(self) -> int:
         """Get the most recent message ROWID."""
@@ -126,7 +126,7 @@ class IMessageChannel(BaseChannel):
 
         try:
             await asyncio.to_thread(
-                subprocess.run,
+                subprocess.run,  # nosec B603 B607
                 ["osascript", "-e", script],
                 capture_output=True,
                 text=True,

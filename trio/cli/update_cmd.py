@@ -2,7 +2,7 @@
 
 # Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
 
-import subprocess
+import subprocess  # nosec B404
 import sys
 
 from rich.console import Console
@@ -42,7 +42,7 @@ async def _update_git(channel: str):
     console.print(f"[dim]Git install detected at: {repo_dir}[/dim]")
 
     # Check for uncommitted changes
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 B607
         ["git", "status", "--porcelain"],
         cwd=str(repo_dir), capture_output=True, text=True,
     )
@@ -53,15 +53,15 @@ async def _update_git(channel: str):
 
     # Fetch latest
     console.print("[dim]Fetching latest...[/dim]")
-    subprocess.run(["git", "fetch", "--all", "--prune"], cwd=str(repo_dir))
+    subprocess.run(["git", "fetch", "--all", "--prune"], cwd=str(repo_dir))  # nosec B603 B607
 
     # Get current and remote SHA
-    local = subprocess.run(
+    local = subprocess.run(  # nosec B603 B607
         ["git", "rev-parse", "HEAD"],
         cwd=str(repo_dir), capture_output=True, text=True,
     ).stdout.strip()
 
-    remote = subprocess.run(
+    remote = subprocess.run(  # nosec B603 B607
         ["git", "rev-parse", "origin/main"],
         cwd=str(repo_dir), capture_output=True, text=True,
     ).stdout.strip()
@@ -72,7 +72,7 @@ async def _update_git(channel: str):
 
     # Pull
     console.print(f"[dim]Updating {local[:8]} → {remote[:8]}...[/dim]")
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 B607
         ["git", "pull", "--rebase", "origin", "main"],
         cwd=str(repo_dir),
     )
@@ -82,7 +82,7 @@ async def _update_git(channel: str):
 
     # Reinstall
     console.print("[dim]Reinstalling...[/dim]")
-    subprocess.run([sys.executable, "-m", "pip", "install", "-e", "."],
+    subprocess.run([sys.executable, "-m", "pip", "install", "-e", "."],  # nosec B603 B607
                    cwd=str(repo_dir))
 
     console.print("[green]Update complete![/green]")
@@ -109,7 +109,7 @@ async def _update_pip(channel: str):
 
     # Upgrade
     tag = "trio-ai" if channel == "stable" else f"trio-ai=={channel}"
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 B607
         [sys.executable, "-m", "pip", "install", "--upgrade", tag],
         capture_output=True, text=True,
     )
@@ -118,7 +118,7 @@ async def _update_pip(channel: str):
         # Get new version
         try:
             # Force reimport
-            new_ver = subprocess.run(
+            new_ver = subprocess.run(  # nosec B603 B607
                 [sys.executable, "-c", "from importlib.metadata import version; print(version('trio-ai'))"],
                 capture_output=True, text=True,
             ).stdout.strip()

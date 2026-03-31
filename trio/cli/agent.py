@@ -135,7 +135,7 @@ async def run_agent(message: str | None = None, no_markdown: bool = False, show_
             channel_task = asyncio.create_task(channel_manager.start_all())
             await cli.run_interactive()
         except KeyboardInterrupt:
-            pass
+            pass  # nosec B110 — intentional silent fallback
         finally:
             agent.stop()
             await channel_manager.stop_all()

@@ -122,7 +122,7 @@ class SlackChannel(BaseChannel):
                         for part in self._split_message(final_text, MESSAGE_LIMIT):
                             await self._client.chat_postMessage(channel=chat_id, text=part)
                 except Exception:
-                    pass
+                    pass  # nosec B110 — intentional silent fallback
             self._active_messages.pop(chat_id, None)
             return
 

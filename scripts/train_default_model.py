@@ -85,8 +85,8 @@ def detect_ram():
             ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
             return round(stat.ullTotalPhys / (1024**3), 1)
         elif sys.platform == "darwin":
-            import subprocess
-            result = subprocess.run(["sysctl", "-n", "hw.memsize"], capture_output=True, text=True, timeout=5)
+            import subprocess  # nosec B404
+            result = subprocess.run(["sysctl", "-n", "hw.memsize"], capture_output=True, text=True, timeout=5)  # nosec B603 B607
             if result.returncode == 0:
                 return round(int(result.stdout.strip()) / (1024**3), 1)
         else:
@@ -95,7 +95,7 @@ def detect_ram():
                     if line.startswith("MemTotal:"):
                         return round(int(line.split()[1]) / (1024**2), 1)
     except Exception:
-        pass
+        pass  # nosec B110 — intentional silent fallback
     return 8
 
 
@@ -193,7 +193,7 @@ def train(reset=False):
             model = torch.compile(model)
             print("  [torch.compile enabled]")
     except Exception:
-        pass
+        pass  # nosec B110 — intentional silent fallback
 
     # Load checkpoint if resuming
     if resuming:

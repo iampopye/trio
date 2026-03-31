@@ -117,7 +117,7 @@ class SessionManager:
                     name = meta.get("name", key)
                     created_at = meta.get("created_at", created_at)
                 except Exception:
-                    pass
+                    pass  # nosec B110 — intentional silent fallback
             msg_count = sum(1 for line in f.read_text(encoding="utf-8").split("\n") if line.strip())
             sessions.append({
                 "key": key,

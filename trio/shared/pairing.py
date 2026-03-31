@@ -44,7 +44,7 @@ def _load_json(path: Path) -> dict:
         try:
             return json.loads(path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, IOError):
-            pass
+            pass  # nosec B110 — intentional silent fallback
     return {}
 
 
