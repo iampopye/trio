@@ -8,6 +8,8 @@ Unified processing loop that:
     5. Publishes response back to MessageBus
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 import time

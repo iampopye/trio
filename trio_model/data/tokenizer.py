@@ -4,6 +4,8 @@ Wraps tiktoken (GPT-2/GPT-4 compatible) with Trio-specific special tokens.
 For nano config, uses a smaller character-level fallback.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import os
 import json
 import regex as re

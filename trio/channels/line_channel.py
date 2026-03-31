@@ -4,6 +4,8 @@ Receives messages via a webhook endpoint and sends replies
 using the LINE Messaging API.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import hashlib
 import hmac

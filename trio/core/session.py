@@ -1,5 +1,7 @@
 """Session persistence — JSONL-based conversation storage."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import json
 import time
 from pathlib import Path

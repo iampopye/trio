@@ -1,5 +1,7 @@
 """trio agent — interactive CLI chat mode."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 import sys

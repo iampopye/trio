@@ -4,6 +4,8 @@ Receives inbound SMS via a webhook endpoint and sends outbound SMS
 via the Twilio REST API.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 from typing import Any

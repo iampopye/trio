@@ -1,5 +1,7 @@
 """CLI handler for trio heartbeat subcommand."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 from rich.console import Console
 

@@ -14,6 +14,8 @@ Two loading modes:
     - alwaysLoad: false → Summary only, activated via LOAD_SKILL: skill_name
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import logging
 import re
 from pathlib import Path

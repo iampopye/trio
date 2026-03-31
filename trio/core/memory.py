@@ -1,5 +1,7 @@
 """Persistent memory system — MEMORY.md + HISTORY.md + auto-consolidation."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import time
 from pathlib import Path
 from typing import Any

@@ -4,6 +4,8 @@ Extracted from BotServer's telegram_bot.py with channel abstraction.
 Keeps: streaming edits (1.0s), message splitting (4000 chars), photo support.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 import time

@@ -4,6 +4,8 @@ Polls an IMAP inbox for new emails and sends replies via SMTP.
 Each email thread is treated as a separate conversation.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import email
 import email.utils

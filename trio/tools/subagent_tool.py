@@ -1,5 +1,7 @@
 """SubAgent delegation tool — lets the main agent spawn sub-agents for focused tasks."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import logging
 from typing import Any
 

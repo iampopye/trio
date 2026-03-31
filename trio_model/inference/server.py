@@ -4,6 +4,8 @@ FastAPI-based chat server that loads a trained Trio checkpoint
 and serves it through a REST API + interactive CLI.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import os
 import argparse
 import json

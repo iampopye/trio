@@ -1,5 +1,7 @@
 """Screenshot tool — capture screen or specific regions."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 import tempfile

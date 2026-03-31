@@ -1,5 +1,7 @@
 """Google Chat channel — Google Chat API via webhook + service account."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 from typing import Any

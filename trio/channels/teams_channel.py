@@ -1,5 +1,7 @@
 """Microsoft Teams channel — Bot Framework SDK via aiohttp webhook."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 from typing import Any

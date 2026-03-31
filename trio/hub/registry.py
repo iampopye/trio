@@ -1,5 +1,7 @@
 """TrioHub registry -- fetches skill/plugin index from GitHub or local bundle."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import json
 import logging
 import ssl

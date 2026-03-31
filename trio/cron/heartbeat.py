@@ -4,6 +4,8 @@ Integrates with :class:`trio.cron.daemon.TrioDaemon` for background execution.
 Logs tick results to a dedicated heartbeat log file.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 from datetime import datetime

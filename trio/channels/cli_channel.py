@@ -1,5 +1,7 @@
 """CLI channel — interactive terminal chat for `trio agent`."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import sys
 import logging

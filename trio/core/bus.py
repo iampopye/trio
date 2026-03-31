@@ -1,5 +1,7 @@
 """Async MessageBus — decouples channels from agent loop."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import time
 from dataclasses import dataclass, field

@@ -6,6 +6,8 @@ to detect topic, conversation type, key entities, and user intent.
 Enriches the system prompt so the LLM understands what's being discussed.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import re
 from collections import Counter
 

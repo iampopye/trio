@@ -1,5 +1,7 @@
 """CLI handler for trio skill subcommand."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 from rich.console import Console
 from rich.table import Table
 

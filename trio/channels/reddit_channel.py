@@ -3,6 +3,8 @@
 Polls for new mentions and DMs, and replies via the Reddit API.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 from typing import Any

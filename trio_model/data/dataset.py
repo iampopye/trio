@@ -6,6 +6,8 @@ Supports:
   - Memory-mapped binary files for large datasets
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import os
 import json
 import numpy as np

@@ -4,6 +4,8 @@ Extracted from BotServer's signal_bot.py with channel abstraction.
 Keeps: async JSON-RPC, group support, typing indicators, auto-reconnect.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import json
 import logging

@@ -1,5 +1,7 @@
 """Slack channel — Socket Mode with live message editing."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 import time

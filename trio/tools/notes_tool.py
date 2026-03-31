@@ -1,5 +1,7 @@
 """Notes tool — create and manage markdown notes."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import logging
 import re
 from datetime import datetime

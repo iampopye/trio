@@ -1,5 +1,7 @@
 """Email tool — send and read emails via SMTP/IMAP."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import email
 import imaplib

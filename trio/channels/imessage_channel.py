@@ -1,5 +1,7 @@
 """iMessage channel — macOS only via AppleScript + sqlite3 polling."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 import platform

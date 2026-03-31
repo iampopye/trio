@@ -1,5 +1,7 @@
 """RAG search tool — search the knowledge base for relevant context."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import logging
 from typing import Any
 

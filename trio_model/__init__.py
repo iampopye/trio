@@ -4,6 +4,8 @@ Decoder-only transformer with RoPE, RMSNorm, SwiGLU, and GQA.
 Train from scratch, fine-tune with SFT + Constitutional AI.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 from .config import TrioConfig, get_config, NanoConfig, SmallConfig, MediumConfig
 from .model.architecture import TrioModel
 from .model.attention import MultiHeadAttention

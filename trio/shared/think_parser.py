@@ -4,6 +4,8 @@ Parser for DeepSeek-R1 <think>...</think> tags in streaming output.
 Handles tags split across chunk boundaries using a simple state machine.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import re
 
 

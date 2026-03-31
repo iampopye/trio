@@ -11,6 +11,8 @@ Layers:
     5. Operational        — sanitize_for_logging(), enforce_length_limit()
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import re
 import time
 import logging

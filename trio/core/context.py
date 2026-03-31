@@ -1,5 +1,7 @@
 """Context builder — assembles system prompt + memory + skills + tools for the LLM."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import time
 from typing import Any
 

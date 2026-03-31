@@ -1,5 +1,7 @@
 """File operations tool — read, write, edit, list files."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import logging
 import os
 from pathlib import Path

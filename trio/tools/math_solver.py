@@ -1,5 +1,7 @@
 """Math solver tool — 3-tier: AST eval -> SymPy -> LLM fallback."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import ast
 import logging
 import operator

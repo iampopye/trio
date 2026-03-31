@@ -4,6 +4,8 @@ Handles PID management, structured logging, health monitoring with auto-restart,
 and cross-platform signal handling (SIGTERM/SIGINT on Unix, CTRL_C_EVENT on Windows).
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import json
 import logging

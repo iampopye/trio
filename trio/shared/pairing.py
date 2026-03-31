@@ -1,5 +1,7 @@
 """DM pairing security — code-based approval for unknown senders."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import json
 import logging
 import secrets

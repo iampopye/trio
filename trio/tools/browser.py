@@ -1,5 +1,7 @@
 """Browser automation tool — control a web browser via Playwright."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import base64
 import logging

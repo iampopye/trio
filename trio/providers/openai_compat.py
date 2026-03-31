@@ -14,6 +14,8 @@ Known compatible services:
     - Any OpenAI-compatible endpoint
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import json
 import logging
 from typing import Any, AsyncIterator

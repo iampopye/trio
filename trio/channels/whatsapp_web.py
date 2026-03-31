@@ -7,6 +7,8 @@ the lifecycle and message routing.
 Requires: npm install whatsapp-web.js qrcode-terminal
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import json
 import logging

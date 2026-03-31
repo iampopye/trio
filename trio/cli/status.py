@@ -1,5 +1,7 @@
 """trio status — show system status."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 from pathlib import Path
 

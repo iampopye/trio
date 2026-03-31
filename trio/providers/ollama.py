@@ -4,6 +4,8 @@ Migrated from BotServer's ollama_handler.py with provider abstraction.
 Supports sync generate, async streaming, vision, and model management.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import json
 import logging
 from typing import Any, AsyncIterator

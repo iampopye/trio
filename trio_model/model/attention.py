@@ -7,6 +7,8 @@ Implements:
   - Causal masking
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import math
 import torch
 import torch.nn as nn

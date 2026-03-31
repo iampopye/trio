@@ -4,6 +4,8 @@ Extracted from BotServer's discord_bot.py with channel abstraction.
 Keeps: streaming edits (0.6s), message splitting (2000 chars), typing indicators.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 import time

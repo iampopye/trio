@@ -4,6 +4,8 @@ Supports: PDF, DOCX, XLSX, CSV, TXT, Python, JS, JSON, Markdown,
           HTML, images (OCR placeholder), and more.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import csv
 import io
 import json

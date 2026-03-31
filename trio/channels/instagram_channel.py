@@ -4,6 +4,8 @@ Receives direct messages via a webhook endpoint and sends replies
 using the Meta Graph API (Instagram Messaging).
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import hashlib
 import hmac

@@ -6,6 +6,8 @@ are confined to that directory. No path traversal, no escaping.
 Similar to how Claude Code scopes to the project root.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import os
 import logging
 from pathlib import Path

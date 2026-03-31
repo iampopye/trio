@@ -4,6 +4,8 @@ Connects to a Matrix homeserver using the matrix-nio library.
 Receives messages from joined rooms and sends replies back.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 from typing import Any

@@ -1,5 +1,7 @@
 """Base channel interface and channel manager."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 from abc import ABC, abstractmethod

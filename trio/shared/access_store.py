@@ -5,6 +5,8 @@ Stores approved/pending users in JSON file, shared across all channels.
 Thread-safe for mixed sync/async handlers.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import json
 import os
 import time

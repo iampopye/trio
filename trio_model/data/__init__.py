@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 from .tokenizer import get_tokenizer, CharTokenizer, TrioTokenizer, SPECIAL_TOKENS
 from .dataset import TextDataset, InstructionDataset, get_dataloaders
 

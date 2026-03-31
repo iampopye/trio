@@ -3,6 +3,8 @@ Trio AI Model — Configuration
 Defines nano / small / medium model presets.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 from dataclasses import dataclass, field
 from typing import Optional
 import yaml, os

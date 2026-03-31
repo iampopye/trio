@@ -1,5 +1,7 @@
 """trio onboard -- interactive 6-step setup wizard."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import json
 import os
 import platform

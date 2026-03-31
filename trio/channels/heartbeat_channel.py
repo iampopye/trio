@@ -1,5 +1,7 @@
 """Heartbeat channel — virtual channel that logs agent responses to heartbeat tasks."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import logging
 from datetime import datetime
 from pathlib import Path

@@ -6,6 +6,8 @@ On first use, auto-initializes the model using system CPU/GPU.
 If the model is untrained, uses a smart fallback response engine.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import os
 import time
 from typing import Any, AsyncIterator

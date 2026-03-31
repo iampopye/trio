@@ -10,6 +10,8 @@ Subcommands:
     trio daemon logs       — Show recent daemon logs (tail-f style)
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import json
 import logging
 import os

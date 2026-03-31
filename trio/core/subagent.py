@@ -9,6 +9,8 @@ Architecture:
     SubAgent runs its own generate/tool-call loop using the shared provider.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 from dataclasses import dataclass, field

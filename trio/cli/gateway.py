@@ -1,5 +1,7 @@
 """trio gateway — start all enabled channels."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import logging
 
