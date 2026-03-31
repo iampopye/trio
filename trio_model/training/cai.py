@@ -7,6 +7,8 @@ Implements Anthropic's CAI technique:
   4. Collect revised pairs as new SFT training data
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import os
 import json
 import argparse
@@ -211,7 +213,7 @@ if __name__ == "__main__":
 
     ckpt_path = args.checkpoint or os.path.join(cfg.checkpoint_dir, "sft", "trio_latest.pt")
     if os.path.exists(ckpt_path):
-        ckpt = torch.load(ckpt_path, map_location="cpu")
+        ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=True)
         model.load_state_dict(ckpt["model"])
         print(f"[CAI] Loaded model from {ckpt_path}")
     else:

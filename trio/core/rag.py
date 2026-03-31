@@ -9,6 +9,8 @@ Supports:
     - Context injection into LLM prompts
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import hashlib
 import json
 import logging
@@ -29,7 +31,7 @@ class Document:
     def __init__(self, content: str, metadata: dict[str, Any] | None = None):
         self.content = content
         self.metadata = metadata or {}
-        self.doc_id = hashlib.md5(content[:200].encode()).hexdigest()[:12]
+        self.doc_id = hashlib.sha256(content[:200].encode()).hexdigest()[:12]
 
     def to_dict(self) -> dict:
         return {"content": self.content, "metadata": self.metadata, "doc_id": self.doc_id}

@@ -1,5 +1,7 @@
 """Plugin loader — discovers and loads plugins from ~/.trio/plugins/."""
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import importlib.util
 import logging
 import sys
@@ -43,8 +45,21 @@ class PluginLoader:
         return manifests
 
     def load_tools(self, manifest: PluginManifest, registry: ToolRegistry) -> int:
-        """Load tool classes from a plugin and register them."""
+        """Load tool classes from a plugin and register them.
+
+        Security: if the plugin has a checksum but verification failed,
+        tools are NOT loaded to prevent execution of tampered code.
+        """
         if not manifest.enabled:
+            return 0
+
+        # Security check: reject tampered plugins
+        if manifest.checksum and not manifest.verified:
+            logger.error(
+                f"SECURITY: Refusing to load tools from plugin '{manifest.name}' — "
+                f"checksum verification FAILED. The plugin may have been tampered with. "
+                f"Re-install the plugin or run 'trio plugin verify {manifest.name}'."
+            )
             return 0
 
         tools_dir = manifest.path / "tools"
@@ -60,7 +75,8 @@ class PluginLoader:
                 if tool:
                     registry.register(tool)
                     count += 1
-                    logger.info(f"Loaded plugin tool: {tool.name} (from {manifest.name})")
+                    verified_tag = " [verified]" if manifest.verified else " [unverified]"
+                    logger.info(f"Loaded plugin tool: {tool.name} (from {manifest.name}){verified_tag}")
             except Exception as e:
                 logger.error(f"Failed to load tool from {py_file}: {e}")
 

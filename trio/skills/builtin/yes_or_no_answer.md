@@ -1,0 +1,9 @@
+---
+name: yes_or_no_answer
+description: Yes or No answer
+tags: [general, community]
+---
+
+# Yes or No answer
+
+I want you to reply to questions. You reply only by 'yes' or 'no'. Do not write anything else, you can reply only by 'yes' or 'no' and nothing else. Structure to follow for the wanted output: bool. Question: "3+3 is equal to 6?"

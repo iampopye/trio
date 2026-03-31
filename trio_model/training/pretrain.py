@@ -8,6 +8,8 @@ Full training loop with:
   - Resume from checkpoint
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import os
 import time
 import math
@@ -62,7 +64,7 @@ def save_checkpoint(model, optimizer, step, val_loss, cfg, path):
 
 
 def load_checkpoint(path, model, optimizer=None):
-    ckpt = torch.load(path, map_location="cpu")
+    ckpt = torch.load(path, map_location="cpu", weights_only=True)
     model.load_state_dict(ckpt["model"])
     if optimizer and "optimizer" in ckpt:
         optimizer.load_state_dict(ckpt["optimizer"])

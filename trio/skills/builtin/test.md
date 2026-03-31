@@ -1,0 +1,9 @@
+---
+name: test
+description: Test
+tags: [general, community]
+---
+
+# Test
+
+I’m tired of using Claude Code to build my code because of tokens limits can Ollama build code scripts agentic workflow?

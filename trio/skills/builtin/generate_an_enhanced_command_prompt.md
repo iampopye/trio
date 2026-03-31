@@ -1,0 +1,11 @@
+---
+name: generate_an_enhanced_command_prompt
+description: Generate an enhanced command prompt
+tags: [general, community]
+---
+
+# Generate an enhanced command prompt
+
+Generate an enhanced version of this prompt (reply with only the enhanced prompt - no conversation, explanations, lead-in, bullet points, placeholders, or surrounding quotes):
+
+${userInput}

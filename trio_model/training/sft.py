@@ -5,6 +5,8 @@ to create a helpful assistant. Uses prompt masking so loss is computed
 only on assistant responses, not user prompts.
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import os
 import math
 import argparse
@@ -45,7 +47,7 @@ def sft_train(preset: str = "nano", base_checkpoint: str = None):
     # Load pre-trained weights if available
     if base_checkpoint:
         if os.path.exists(base_checkpoint):
-            ckpt = torch.load(base_checkpoint, map_location=device)
+            ckpt = torch.load(base_checkpoint, map_location=device, weights_only=True)
             model.load_state_dict(ckpt["model"])
             print(f"[SFT] Loaded base model from {base_checkpoint}")
         else:
@@ -54,7 +56,7 @@ def sft_train(preset: str = "nano", base_checkpoint: str = None):
         # Try to auto-find latest checkpoint
         latest = os.path.join(cfg.checkpoint_dir, "trio_latest.pt")
         if os.path.exists(latest):
-            ckpt = torch.load(latest, map_location=device)
+            ckpt = torch.load(latest, map_location=device, weights_only=True)
             model.load_state_dict(ckpt["model"])
             print(f"[SFT] Auto-loaded pre-trained checkpoint from {latest}")
         else:

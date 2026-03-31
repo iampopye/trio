@@ -1,0 +1,9 @@
+---
+name: strict_markdown-only_output_enforcement
+description: Strict Markdown-Only Output Enforcement
+tags: [general, community]
+---
+
+# Strict Markdown-Only Output Enforcement
+
+Send the entire response as ONE uninterrupted ```markdown fenced block only. No prose before or after. No nested code blocks. No formatting outside the block.

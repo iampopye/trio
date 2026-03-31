@@ -4,6 +4,8 @@ Run with:  trio serve
 Or:        python -m trio.web.app
 """
 
+# Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
+
 import asyncio
 import hashlib
 import hmac

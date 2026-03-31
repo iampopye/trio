@@ -1,0 +1,124 @@
+trio.ai
+Copyright (c) 2026 Karan Garg
+Licensed under the MIT License. See LICENSE file.
+
+This product includes software developed by third parties.
+Below is a list of the key dependencies and their licenses.
+
+================================================================================
+
+Core Dependencies
+================================================================================
+
+aiohttp (https://github.com/aio-libs/aiohttp)
+  License: Apache License 2.0
+
+python-dotenv (https://github.com/theskumar/python-dotenv)
+  License: BSD 3-Clause
+
+rich (https://github.com/Textualize/rich)
+  License: MIT
+
+prompt-toolkit (https://github.com/prompt-toolkit/python-prompt-toolkit)
+  License: BSD 3-Clause
+
+================================================================================
+
+AI / ML Dependencies
+================================================================================
+
+PyTorch (https://github.com/pytorch/pytorch)
+  License: BSD 3-Clause
+
+tiktoken (https://github.com/openai/tiktoken)
+  License: MIT
+
+datasets (https://github.com/huggingface/datasets)
+  License: Apache License 2.0
+
+NumPy (https://github.com/numpy/numpy)
+  License: BSD 3-Clause
+
+llama-cpp-python (https://github.com/abetlen/llama-cpp-python)
+  License: MIT
+
+================================================================================
+
+Web / API Dependencies
+================================================================================
+
+FastAPI (https://github.com/tiangolo/fastapi)
+  License: MIT
+
+Uvicorn (https://github.com/encode/uvicorn)
+  License: BSD 3-Clause
+
+Pydantic (https://github.com/pydantic/pydantic)
+  License: MIT
+
+================================================================================
+
+Chat Platform SDKs
+================================================================================
+
+discord.py (https://github.com/Rapptz/discord.py)
+  License: MIT
+
+pyTelegramBotAPI (https://github.com/eternnoir/pyTelegramBotAPI)
+  License: GPL-2.0 (optional dependency)
+
+slack-sdk (https://github.com/slackapi/python-slack-sdk)
+  License: MIT
+
+botbuilder-core (https://github.com/microsoft/botbuilder-python)
+  License: MIT
+
+matrix-nio (https://github.com/poljar/matrix-nio)
+  License: ISC
+
+twilio (https://github.com/twilio/twilio-python)
+  License: MIT
+
+praw (https://github.com/praw-dev/praw)
+  License: BSD 2-Clause
+
+line-bot-sdk (https://github.com/line/line-bot-sdk-python)
+  License: Apache License 2.0
+
+================================================================================
+
+Utility Dependencies
+================================================================================
+
+beautifulsoup4 (https://www.crummy.com/software/BeautifulSoup/)
+  License: MIT
+
+Playwright (https://github.com/microsoft/playwright-python)
+  License: Apache License 2.0
+
+PyPDF2 (https://github.com/py-pdf/pypdf)
+  License: BSD 3-Clause
+
+duckduckgo-search (https://github.com/deedy5/duckduckgo_search)
+  License: MIT
+
+SymPy (https://github.com/sympy/sympy)
+  License: BSD 3-Clause
+
+Pillow (https://github.com/python-pillow/Pillow)
+  License: HPND (Historical Permission Notice and Disclaimer)
+
+mss (https://github.com/BoboTiG/python-mss)
+  License: MIT
+
+PyNaCl (https://github.com/pyca/pynacl)
+  License: Apache License 2.0
+
+yt-dlp (https://github.com/yt-dlp/yt-dlp)
+  License: Unlicense
+
+================================================================================
+
+Note: Not all dependencies listed above are required. trio.ai uses an optional
+dependency system — only the features you install will pull in their respective
+dependencies. See pyproject.toml [project.optional-dependencies] for details.

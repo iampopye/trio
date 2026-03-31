@@ -60,4 +60,9 @@ desktop.ini
 trio_model/data/train.txt
 trio_model/data/sft_data.jsonl
 *.gguf
+*.gguf.part
 training_log.txt
+
+# ── Temp/test dirs ───────────────────────────
+.tmphome*/
+triobot-*/

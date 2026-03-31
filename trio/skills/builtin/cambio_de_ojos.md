@@ -1,0 +1,9 @@
+---
+name: cambio_de_ojos
+description: cambio de ojos
+tags: [general, community]
+---
+
+# cambio de ojos
+
+Anime boy with short white hair, pale skin, black shirt, close-up portrait, neutral expression, soft shadows, minimalist background, glowing demon red eyes, dark red sclera veins, subtle red aura around the eyes, sharp pupils, intense gaze, cinematic lighting, high detail, dramatic contrast
