@@ -537,12 +537,17 @@ def _detect_gpu() -> str:
 # ── Step functions ───────────────────────────────────────────────────────────
 
 def _step_system_check() -> None:
-    """Step 1/6: System Check."""
+    """Step 1/6: System Check -- uses trio.core.hardware for auto-detection."""
+    from trio.core.hardware import detect_hardware, recommend_model, get_gpu_layers
+
     console.print()
     console.print(Panel(
         "[bold white]Step 1/6[/bold white]  [bold cyan]System Check[/bold cyan]",
         border_style="cyan", box=box.HEAVY,
     ))
+
+    hw = detect_hardware()
+    rec = recommend_model(hw)
 
     checks = []
 
@@ -556,29 +561,33 @@ def _step_system_check() -> None:
     checks.append((mark, detail))
 
     # OS / Platform
-    os_name = f"{platform.system()} {platform.release()}"
-    checks.append(("[green]\u2713[/green]", f"Platform: {os_name} ({platform.machine()})"))
+    checks.append(("[green]\u2713[/green]", f"Platform: {hw.os_name} {hw.os_version} ({platform.machine()})"))
+
+    # CPU
+    checks.append(("[green]\u2713[/green]", f"CPU: {hw.cpu_name} ({hw.cpu_cores} cores)"))
 
     # RAM
-    ram = _get_ram_gb()
-    if ram != "unknown":
-        ram_ok = True
-        try:
-            ram_val = float(ram.replace(" GB", ""))
-            ram_ok = ram_val >= 4.0
-        except ValueError:
-            pass  # nosec B110 — intentional silent fallback
+    if hw.ram_gb > 0:
+        ram_ok = hw.ram_gb >= 4.0
         mark = "[green]\u2713[/green]" if ram_ok else "[yellow]![/yellow]"
-        checks.append((mark, f"RAM: {ram}"))
+        checks.append((mark, f"RAM: {hw.ram_gb:.1f} GB"))
     else:
         checks.append(("[dim]-[/dim]", "RAM: could not detect"))
 
     # GPU
-    gpu = _detect_gpu()
-    if "none" in gpu.lower():
-        checks.append(("[dim]-[/dim]", f"GPU: {gpu}  [dim](CPU inference will be used)[/dim]"))
+    if "none" in hw.gpu_name.lower():
+        checks.append(("[dim]-[/dim]", f"GPU: {hw.gpu_name}  [dim](CPU inference will be used)[/dim]"))
     else:
-        checks.append(("[green]\u2713[/green]", f"GPU: {gpu}"))
+        vram_info = f" ({hw.gpu_vram_gb:.1f} GB VRAM)" if hw.gpu_vram_gb > 0 else ""
+        accel_tags = []
+        if hw.has_cuda:
+            accel_tags.append("CUDA")
+        if hw.has_metal:
+            accel_tags.append("Metal")
+        if hw.has_rocm:
+            accel_tags.append("ROCm")
+        accel = f"  [dim][{', '.join(accel_tags)}][/dim]" if accel_tags else ""
+        checks.append(("[green]\u2713[/green]", f"GPU: {hw.gpu_name}{vram_info}{accel}"))
 
     # Ollama
     ollama_info = _detect_ollama()
@@ -590,9 +599,17 @@ def _step_system_check() -> None:
     else:
         checks.append(("[dim]-[/dim]", "Ollama: not detected  [dim](optional)[/dim]"))
 
-    # Display
+    # Display checks
     for mark, detail in checks:
         console.print(f"  {mark}  {detail}")
+
+    # Model recommendation
+    gpu_layers = get_gpu_layers(hw, rec["size_gb"])
+    layer_desc = "full GPU offload" if gpu_layers >= 999 else f"{gpu_layers} GPU layers" if gpu_layers > 0 else "CPU only"
+    console.print()
+    console.print(f"  [bold yellow]>>>[/bold yellow]  Recommended model: [bold green]{rec['name']}[/bold green] "
+                  f"[dim]({rec['params']}, ~{rec['size_gb']} GB, {layer_desc})[/dim]")
+    console.print(f"       [dim]{rec['reason']}[/dim]")
 
     console.print()
     return ollama_info
@@ -619,6 +636,8 @@ def _check_trio_models() -> list[str]:
 
 def _step_provider(config: dict, ollama_info: dict | None) -> None:
     """Step 2/6: AI Model selection."""
+    from trio.core.hardware import detect_hardware, recommend_model
+
     console.print(Panel(
         "[bold white]Step 2/6[/bold white]  [bold cyan]AI Model[/bold cyan]",
         border_style="cyan", box=box.HEAVY,
@@ -626,6 +645,11 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
 
     # Check for local trio models
     trio_models = _check_trio_models()
+
+    # Get hardware-based recommendation
+    hw = detect_hardware()
+    hw_rec = recommend_model(hw)
+    recommended_name = hw_rec["name"]
 
     TRIO_LINEUP = [
         ("trio-nano",   "3B",  "1.8GB", "Ultra-fast, edge/mobile"),
@@ -636,13 +660,16 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
         ("trio-pro",    "30B", "17GB",  "Premium, pro workloads"),
     ]
 
+    # Find default choice index (1-based) for the recommended model
+    rec_index = next((i for i, (n, *_) in enumerate(TRIO_LINEUP, 1) if n == recommended_name), 2)
+
     console.print("  Choose how to power your AI:\n")
     console.print("    [bold cyan]--- trio models (free, runs on your machine) ---[/bold cyan]")
 
     for i, (name, params, size, desc) in enumerate(TRIO_LINEUP, 1):
         ready = name in trio_models
         tag = "[green][ready][/green]" if ready else f"[dim][download ~{size}][/dim]"
-        rec = " [yellow]*recommended*[/yellow]" if name == "trio-small" else ""
+        rec = " [yellow]*recommended for your hardware*[/yellow]" if name == recommended_name else ""
         console.print(f"    [cyan]{i}[/cyan]  [bold]{name}[/bold]  [dim]({params})[/dim]  {desc}  {tag}{rec}")
 
     console.print()
@@ -662,7 +689,7 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
 
     console.print()
 
-    choice = Prompt.ask("  Choose", choices=[str(i) for i in range(1, max_choice + 1)], default="2")
+    choice = Prompt.ask("  Choose", choices=[str(i) for i in range(1, max_choice + 1)], default=str(rec_index))
     choice_num = int(choice)
 
     if choice_num <= 6:

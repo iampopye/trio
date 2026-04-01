@@ -2225,31 +2225,40 @@ async function startWhatsApp() {
   const area = document.getElementById('waQrArea');
   const status = document.getElementById('waStatus');
 
-  area.innerHTML = '<div style="color:var(--text-2);font-size:14px;">Starting WhatsApp bridge...</div>';
+  area.innerHTML =
+    '<div style="color:var(--text-2);font-size:14px;">' +
+    '<div style="margin-bottom:8px;">Starting WhatsApp bridge...</div>' +
+    '<div style="font-size:12px;color:var(--text-3);">This may take a moment if dependencies need to be installed.</div>' +
+    '</div>';
 
   try {
     const r = await fetch('/api/whatsapp/start', { method: 'POST' });
     const d = await r.json();
 
     if (d.error) {
-      const isNodeMissing = d.error.includes('Node.js') || d.error.includes('cannot find') || d.error.includes('WinError');
+      const isNodeMissing = d.node_missing || d.error.includes('Node.js') || d.error.includes('nodejs');
       area.innerHTML = '<div class="result-box result-error" style="text-align:left;">' +
         '<div style="font-weight:650;margin-bottom:6px;">' + (isNodeMissing ? 'Node.js Required' : 'Connection Failed') + '</div>' +
         '<div style="margin-bottom:10px;">' + (isNodeMissing
-          ? 'WhatsApp QR scanning requires Node.js to be installed on your system.'
+          ? 'Install Node.js from <a href="https://nodejs.org" target="_blank" style="color:var(--accent);">https://nodejs.org</a> to enable WhatsApp QR scan.'
           : d.error) + '</div>' +
         (isNodeMissing
-          ? '<a href="https://nodejs.org/en/download/" target="_blank" class="btn btn-accent btn-sm" style="text-decoration:none;">Download Node.js</a> '
+          ? '<a href="https://nodejs.org/en/download/" target="_blank" class="btn btn-accent btn-sm" style="text-decoration:none;margin-right:8px;">Download Node.js</a>'
           : '') +
         '<button class="btn btn-sm" onclick="startWhatsApp()">Retry</button>' +
         '</div>';
       return;
     }
 
-    area.innerHTML = '<div style="color:var(--text-2);font-size:14px;">Waiting for QR code...</div>';
+    if (d.status === 'already_running') {
+      area.innerHTML = '<div style="color:var(--text-2);font-size:14px;">Bridge already running, checking status...</div>';
+    } else {
+      area.innerHTML = '<div style="color:var(--text-2);font-size:14px;">Waiting for QR code...</div>';
+    }
     pollWhatsApp();
   } catch (e) {
-    area.innerHTML = '<div style="color:var(--red);font-size:14px;">Failed to start: ' + e.message + '</div>';
+    area.innerHTML = '<div style="color:var(--red);font-size:14px;">Failed to start: ' + e.message + '</div>' +
+      '<button class="btn btn-sm" style="margin-top:8px;" onclick="startWhatsApp()">Retry</button>';
   }
 }
 
@@ -2265,13 +2274,24 @@ async function pollWhatsApp() {
 
       if (!area) { clearInterval(waPolling); return; }
 
-      if (d.ready) {
+      if (d.node_missing) {
+        clearInterval(waPolling);
+        area.innerHTML = '<div class="result-box result-error" style="text-align:left;">' +
+          '<div style="font-weight:650;margin-bottom:6px;">Node.js Required</div>' +
+          '<div style="margin-bottom:10px;">Install Node.js from <a href="https://nodejs.org" target="_blank" style="color:var(--accent);">https://nodejs.org</a> to enable WhatsApp QR scan.</div>' +
+          '<a href="https://nodejs.org/en/download/" target="_blank" class="btn btn-accent btn-sm" style="text-decoration:none;margin-right:8px;">Download Node.js</a>' +
+          '<button class="btn btn-sm" onclick="startWhatsApp()">Retry</button>' +
+          '</div>';
+        return;
+      }
+
+      if (d.ready && d.info) {
         clearInterval(waPolling);
         area.innerHTML =
           '<div class="result-box result-success" style="text-align:center;padding:24px;">' +
           '<div style="font-size:28px;margin-bottom:8px;">&#10003;</div>' +
           '<div style="font-size:16px;font-weight:650;">Connected!</div>' +
-          '<div style="margin-top:6px;">' + d.info.name + ' (' + d.info.phone + ')</div>' +
+          '<div style="margin-top:6px;">' + (d.info.name || 'Unknown') + ' (' + (d.info.phone || '') + ')</div>' +
           '</div>';
         status.innerHTML = '<button class="btn" style="width:100%;margin-top:8px;" onclick="logoutWhatsApp()">Disconnect</button>';
 
@@ -2279,7 +2299,7 @@ async function pollWhatsApp() {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ key: 'whatsapp', fields: { connection: 'qr', phone: d.info.phone, name: d.info.name } })
         });
-        toast('WhatsApp connected as ' + d.info.name, 'success');
+        toast('WhatsApp connected as ' + (d.info.name || d.info.phone), 'success');
         loadChannels();
       }
       else if (d.qr) {
@@ -2289,9 +2309,10 @@ async function pollWhatsApp() {
           '</div>' +
           '<div style="font-size:13px;color:var(--text-2);margin-top:14px;">Open WhatsApp &gt; Linked Devices &gt; Scan this code</div>';
       }
-      else if (d.error) {
+      else if (d.error && !d.bridge_running) {
         clearInterval(waPolling);
-        area.innerHTML = '<div style="color:var(--red);font-size:14px;">' + d.error + '</div>';
+        area.innerHTML = '<div style="color:var(--red);font-size:14px;">' + d.error + '</div>' +
+          '<button class="btn btn-sm" style="margin-top:8px;" onclick="startWhatsApp()">Retry</button>';
       }
     } catch (e) {}
   }, 2000);
@@ -2305,6 +2326,7 @@ async function logoutWhatsApp() {
   }
   const status = document.getElementById('waStatus');
   if (status) status.innerHTML = '';
+  if (waPolling) { clearInterval(waPolling); waPolling = null; }
   loadChannels();
 }
 

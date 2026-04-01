@@ -371,6 +371,69 @@ async def api_chat_with_file(request):
     return resp
 
 
+# ── Approvals ─────────────────────────────────────────────────────────────────
+
+async def api_approvals_pending(request):
+    """GET /api/approvals/pending — list approval requests waiting for a response."""
+    manager = request.app.get("approval_manager")
+    if manager is None:
+        return web.json_response({"pending": [], "note": "Approval system not initialised"})
+    return web.json_response({"pending": manager.get_pending()})
+
+
+async def api_approvals_respond(request):
+    """POST /api/approvals/respond — approve or deny a pending request.
+
+    Body: {"id": "<request_id>", "approved": true/false}
+    """
+    manager = request.app.get("approval_manager")
+    if manager is None:
+        return web.json_response({"error": "Approval system not initialised"}, status=503)
+
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    request_id = data.get("id", "")
+    approved = data.get("approved")
+    if not request_id or approved is None:
+        return web.json_response(
+            {"error": "Missing 'id' or 'approved' field"}, status=400,
+        )
+
+    ok = manager.respond(request_id, bool(approved))
+    if not ok:
+        return web.json_response(
+            {"error": f"Request '{request_id}' not found or already resolved"}, status=404,
+        )
+    return web.json_response({"status": "ok", "id": request_id, "approved": bool(approved)})
+
+
+async def api_approvals_history(request):
+    """GET /api/approvals/history — recent approval decisions."""
+    manager = request.app.get("approval_manager")
+    if manager is None:
+        return web.json_response({"history": []})
+    limit = int(request.query.get("limit", "50"))
+    return web.json_response({"history": manager.get_history(limit=limit)})
+
+
+# ── Hardware Detection ────────────────────────────────────────────────────────
+
+async def api_hardware(request):
+    """GET /api/hardware -- detect hardware and recommend optimal trio model."""
+    from trio.core.hardware import detect_hardware, recommend_model, get_gpu_layers
+    hw = detect_hardware()
+    rec = recommend_model(hw)
+    gpu_layers = get_gpu_layers(hw, rec["size_gb"])
+    return web.json_response({
+        "hardware": hw.to_dict(),
+        "recommended_model": rec,
+        "gpu_layers": gpu_layers,
+    })
+
+
 # ── Status & Project ─────────────────────────────────────────────────────────
 
 async def api_status(request):
@@ -1253,92 +1316,170 @@ async def api_providers_verify(request):
         return web.json_response({"valid": False, "error": str(e)})
 
 
+# ── Routing ───────────────────────────────────────────────────────────────────
+
+async def api_routing_get(request):
+    """GET /api/routing -- show current routing config, available providers, strategy."""
+    router = request.app.get("router")
+    if router is None:
+        return web.json_response({"error": "Router not initialized"}, status=500)
+
+    try:
+        providers = await router.available_providers()
+    except Exception as exc:
+        providers = []
+        logger.error("Failed to query available providers: %s", exc)
+
+    routing_info = router.get_routing_info()
+
+    # Add cost estimates for each provider
+    for p in providers:
+        p["cost_estimate_per_1k"] = router.estimate_cost(p["name"], 1000)
+
+    return web.json_response({
+        "routing": routing_info,
+        "providers": providers,
+        "strategies": [s.value for s in __import__("trio.core.router", fromlist=["RoutingStrategy"]).RoutingStrategy],
+    })
+
+
+async def api_routing_update(request):
+    """POST /api/routing -- update routing strategy and preferences.
+
+    Accepts JSON body with any of:
+        strategy:           "local_only" | "free_first" | "balanced" | "quality_first"
+        allow_paid:         bool
+        preferred_provider: str (provider name or "" to clear)
+        fallback_order:     list[str]
+    """
+    router = request.app.get("router")
+    if router is None:
+        return web.json_response({"error": "Router not initialized"}, status=500)
+
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    # Validate strategy if provided
+    if "strategy" in data:
+        from trio.core.router import RoutingStrategy
+        valid = {s.value for s in RoutingStrategy}
+        if data["strategy"] not in valid:
+            return web.json_response({
+                "error": f"Invalid strategy '{data['strategy']}'. Valid: {sorted(valid)}",
+            }, status=400)
+
+    # Validate preferred_provider if provided
+    if "preferred_provider" in data and data["preferred_provider"]:
+        known = router._all_provider_names()
+        if data["preferred_provider"] not in known:
+            return web.json_response({
+                "error": f"Unknown provider '{data['preferred_provider']}'. Known: {known}",
+            }, status=400)
+
+    # Apply updates
+    allowed_keys = {"strategy", "allow_paid", "preferred_provider", "fallback_order", "health_check_ttl"}
+    update = {k: v for k, v in data.items() if k in allowed_keys}
+
+    if not update:
+        return web.json_response({"error": "No valid fields to update"}, status=400)
+
+    router.update_config(update)
+
+    # Persist to disk
+    from trio.core.config import save_config as _core_save_config
+    config = request.app["config"]
+    _core_save_config(config)
+
+    return web.json_response({
+        "status": "updated",
+        "routing": router.get_routing_info(),
+    })
+
+
 # ── WhatsApp QR ──────────────────────────────────────────────────────────────
 
 async def api_whatsapp_status(request):
     """GET /api/whatsapp/status -- get QR code or connection status."""
-    from trio.channels.whatsapp_web import get_bridge_status, is_node_available
+    from trio.channels.whatsapp_web import (
+        get_bridge_status, is_node_available, get_node_version,
+    )
     port = request.app.get("wa_port", 28338)
 
     if not is_node_available():
         return web.json_response({
-            "ready": False, "qr": None, "bridge_running": False,
-            "error": "Node.js not installed. Install from https://nodejs.org",
+            "ready": False, "qr": None, "info": None,
+            "bridge_running": False,
+            "node_missing": True,
+            "error": (
+                "Install Node.js from https://nodejs.org to enable "
+                "WhatsApp QR scan"
+            ),
         })
 
     status = await get_bridge_status(port)
+    status["node_version"] = get_node_version()
     return web.json_response(status)
 
 
 async def api_whatsapp_start(request):
-    """POST /api/whatsapp/start -- start the WhatsApp bridge."""
-    import subprocess as sp  # nosec B404
-    from trio.channels.whatsapp_web import _ensure_bridge, BRIDGE_DIR, BRIDGE_SCRIPT, SESSION_DIR, is_node_available
+    """POST /api/whatsapp/start -- start the WhatsApp bridge.
+
+    Auto-starts the bridge when the user clicks "Connect WhatsApp".
+    Handles npm install automatically if node_modules are missing.
+    """
+    from trio.channels.whatsapp_web import (
+        is_node_available, get_bridge_status, start_bridge,
+    )
 
     if not is_node_available():
-        return web.json_response({"error": "Node.js not installed"}, status=400)
+        return web.json_response({
+            "error": (
+                "Node.js is not installed. "
+                "Install Node.js from https://nodejs.org to enable "
+                "WhatsApp QR scan."
+            ),
+            "node_missing": True,
+        }, status=400)
 
     port = request.app.get("wa_port", 28338)
 
     # Check if already running
-    from trio.channels.whatsapp_web import get_bridge_status
     status = await get_bridge_status(port)
-    if status.get("bridge_running") or status.get("ready") or status.get("qr"):
-        return web.json_response({"status": "already_running"})
+    if status.get("bridge_running"):
+        return web.json_response({"status": "already_running", "port": port})
 
-    # Ensure bridge files exist
-    has_modules = _ensure_bridge()
+    # start_bridge handles: _ensure_bridge + _ensure_node_modules + Popen
+    process, message = await start_bridge(port)
 
-    if not has_modules:
-        # Run npm install
-        try:
-            proc = await asyncio.create_subprocess_exec(
-                "npm", "install", "--production",
-                cwd=str(BRIDGE_DIR),
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            await asyncio.wait_for(proc.wait(), timeout=120)
-        except Exception as e:
-            return web.json_response({"error": f"npm install failed: {e}"}, status=500)
+    if process is None:
+        # message already explains the error
+        return web.json_response({"error": message}, status=500)
 
-    # Start bridge in background
-    try:
-        process = sp.Popen(  # nosec B603 B607
-            ["node", str(BRIDGE_SCRIPT), str(SESSION_DIR), str(port)],
-            cwd=str(BRIDGE_DIR),
-            stdout=sp.DEVNULL, stderr=sp.DEVNULL,
-            creationflags=sp.CREATE_NO_WINDOW if os.name == 'nt' else 0,
-        )
-        request.app["wa_process"] = process
-        request.app["wa_port"] = port
+    # Store process handle for cleanup
+    request.app["wa_process"] = process
+    request.app["wa_port"] = port
 
-        # Wait for bridge to start
-        await asyncio.sleep(3)
-        return web.json_response({"status": "started", "pid": process.pid, "port": port})
-    except Exception as e:
-        return web.json_response({"error": str(e)}, status=500)
+    return web.json_response({
+        "status": "started",
+        "pid": process.pid,
+        "port": port,
+        "message": message,
+    })
 
 
 async def api_whatsapp_logout(request):
     """POST /api/whatsapp/logout -- disconnect and clear session."""
-    import aiohttp as aio_http
+    from trio.channels.whatsapp_web import stop_bridge
+
     port = request.app.get("wa_port", 28338)
-
-    try:
-        async with aio_http.ClientSession() as session:
-            async with session.get(f"http://localhost:{port}/logout", timeout=aio_http.ClientTimeout(total=5)) as resp:
-                await resp.json()
-    except Exception:
-        pass  # nosec B110 — intentional silent fallback
-
-    # Kill bridge process
     proc = request.app.get("wa_process")
-    if proc:
-        try:
-            proc.terminate()
-        except Exception:
-            pass  # nosec B110 — intentional silent fallback
+
+    await stop_bridge(port, proc)
+
+    # Clear stored reference
+    request.app.pop("wa_process", None)
 
     return web.json_response({"status": "logged_out"})
 
@@ -1361,12 +1502,32 @@ def create_app(config: dict | None = None) -> web.Application:
     app["system_prompt"] = _load_workspace_prompt()
     app["provider"] = _create_provider(cfg)
 
+    # Smart model router
+    from trio.core.router import ModelRouter
+    app["router"] = ModelRouter(cfg)
+
+    # Human-in-the-loop approval manager (Web UI mode)
+    from trio.core.approvals import ApprovalManager, ApprovalPolicy
+    app["approval_manager"] = ApprovalManager(
+        policy=ApprovalPolicy(cfg),
+        mode="web",
+        config=cfg,
+    )
+
     # Chat
     app.router.add_post("/api/chat", api_chat)
     app.router.add_post("/api/chat/stream", api_chat_stream)
     app.router.add_post("/api/chat/file", api_chat_with_file)
     app.router.add_post("/api/upload", api_upload)
     app.router.add_post("/api/sessions/clear", api_sessions_clear)
+
+    # Approvals (human-in-the-loop)
+    app.router.add_get("/api/approvals/pending", api_approvals_pending)
+    app.router.add_post("/api/approvals/respond", api_approvals_respond)
+    app.router.add_get("/api/approvals/history", api_approvals_history)
+
+    # Hardware detection
+    app.router.add_get("/api/hardware", api_hardware)
 
     # Status & Project
     app.router.add_get("/api/status", api_status)
@@ -1410,6 +1571,10 @@ def create_app(config: dict | None = None) -> web.Application:
     app.router.add_get("/api/providers", api_providers)
     app.router.add_post("/api/providers/save", api_providers_save)
     app.router.add_post("/api/providers/verify", api_providers_verify)
+
+    # Routing
+    app.router.add_get("/api/routing", api_routing_get)
+    app.router.add_post("/api/routing", api_routing_update)
 
     # WhatsApp QR
     app.router.add_get("/api/whatsapp/status", api_whatsapp_status)

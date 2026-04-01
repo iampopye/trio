@@ -4,8 +4,9 @@ Security model:
     1. Allowlisted base commands only (ls, cat, git, python, npm, etc.)
     2. Blocklisted dangerous patterns as a second layer
     3. Pipe chain validation — every command in a pipeline is checked
-    4. Workspace restriction (optional) limits cwd
-    5. Timeout + output truncation
+    4. **Sandbox enforcement** — paths and cd targets validated via SandboxManager
+    5. Workspace restriction (optional) limits cwd
+    6. Timeout + output truncation
 """
 
 # Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
@@ -20,6 +21,7 @@ from typing import Any
 
 from trio.tools.base import BaseTool, ToolResult
 from trio.core.config import get_workspace_dir
+from trio.core.sandbox import get_sandbox, SandboxViolation
 
 logger = logging.getLogger(__name__)
 
@@ -189,7 +191,24 @@ class ShellTool(BaseTool):
             logger.warning(f"Shell command blocked: {reason} | cmd={command[:100]}")
             return ToolResult(output=reason, success=False)
 
-        cwd = self._workspace if self._restrict else None
+        # ── Sandbox enforcement ──────────────────────────────────────────
+        sandbox = get_sandbox()
+        if sandbox.enabled:
+            try:
+                sandbox.validate_command(command)
+            except SandboxViolation as exc:
+                logger.warning("Shell sandbox violation: %s | cmd=%s",
+                               exc, command[:200])
+                return ToolResult(
+                    output=f"Sandbox violation: {exc}",
+                    success=False,
+                    metadata={"sandbox_violation": True},
+                )
+
+        # When sandbox is active, always run from the sandbox root
+        cwd = str(sandbox.root) if sandbox.enabled else (
+            self._workspace if self._restrict else None
+        )
 
         try:
             proc = await asyncio.create_subprocess_shell(

@@ -15,10 +15,12 @@ import logging
 import time
 from typing import Any
 
+from trio.core.approvals import ApprovalManager, ApprovalPolicy
 from trio.core.bus import InboundMessage, OutboundMessage, StreamChunk, MessageBus
 from trio.core.config import get_agent_defaults, get_workspace_dir
 from trio.core.context import build_system_prompt, build_messages
 from trio.core.memory import MemoryStore
+from trio.core.router import ModelRouter
 from trio.core.session import Session, SessionManager
 from trio.providers.base import BaseProvider, LLMResponse
 from trio.shared.guardrails import check_input, filter_output
@@ -40,6 +42,8 @@ class AgentLoop:
         provider: BaseProvider,
         tools: ToolRegistry,
         config: dict,
+        approval_manager: ApprovalManager | None = None,
+        router: ModelRouter | None = None,
     ):
         self.bus = bus
         self.sessions = sessions
@@ -47,6 +51,22 @@ class AgentLoop:
         self.provider = provider
         self.tools = tools
         self.config = config
+
+        # Smart model router — if provided, route() is used to pick the best
+        # provider per request; otherwise falls back to the single `provider`.
+        if router is not None:
+            self.router = router
+        else:
+            self.router = ModelRouter(config)
+
+        # Human-in-the-loop approval system
+        if approval_manager is not None:
+            self.approval_manager = approval_manager
+        else:
+            self.approval_manager = ApprovalManager(
+                policy=ApprovalPolicy(config),
+                config=config,
+            )
 
         defaults = get_agent_defaults(config)
         self.max_iterations = defaults.get("max_iterations", 20)
@@ -168,11 +188,21 @@ class AgentLoop:
 
         messages = build_messages(session, system_prompt, max_history=self.memory_window)
 
+        # 5b. Route to the best available provider
+        try:
+            active_provider = await self.router.route(messages)
+        except RuntimeError:
+            # Router could not find any provider — fall back to the
+            # explicitly configured one (may still fail, but it is the
+            # same behaviour as before the router was added).
+            active_provider = self.provider
+            logger.warning("Router failed to find a provider; using default")
+
         # 6. Agent loop — think + act with bounded iteration
         final_response = ""
         for iteration in range(self.max_iterations):
             # Check if provider supports tool calling
-            has_tools = self.provider.supports_tools() and self.tools.list_tools()
+            has_tools = active_provider.supports_tools() and self.tools.list_tools()
             tool_schemas = self.tools.get_schemas() if has_tools else None
 
             # Generate response (streaming)
@@ -180,7 +210,7 @@ class AgentLoop:
             think_parser = ThinkTagParser() if mode == "reasoning" else None
             show_thinking = self._deep_thinking.get(session_key, False)
 
-            async for chunk in self.provider.stream_generate(
+            async for chunk in active_provider.stream_generate(
                 messages=messages,
                 model=model,
                 tools=tool_schemas,
@@ -225,16 +255,20 @@ class AgentLoop:
             # Tool calling via OpenAI-compat providers returns structured tool_calls
             # which we handle via the non-streaming path
             final_response = accumulated
-            break  # TODO: implement tool call loop for tool-calling providers
+            break  # TODO: implement full tool call loop for tool-calling providers
+
+        # 6b. (Future) When tool_calls are present they pass through approval:
+        #   approved = await self._execute_tool_with_approval(tool_name, params, msg)
 
         # 7. Guardrails — output check
         output_result = filter_output(final_response)
         final_text = output_result.filtered_text
 
-        # 8. Append stats
+        # 8. Append stats (include routed provider name)
         duration = time.time() - start_time
         if final_text and not final_text.startswith("Error:"):
-            stats = f"\n\n_({duration:.1f}s | {model})_"
+            routed_via = self.router.last_routed_provider or "default"
+            stats = f"\n\n_({duration:.1f}s | {model} via {routed_via})_"
             final_text += stats
 
         # 9. Send final response
@@ -258,6 +292,68 @@ class AgentLoop:
             await self.memory.consolidate(old_messages, self.provider)
             session.history = session.history[-self.memory_window:]
             self.sessions.save_session(session)
+
+    async def _execute_tool_with_approval(
+        self,
+        tool_name: str,
+        params: dict,
+        msg: InboundMessage,
+    ):
+        """Execute a tool after checking the approval policy.
+
+        Returns a ToolResult. If the action is denied the result will carry
+        success=False with an explanatory message.
+        """
+        from trio.tools.base import ToolResult
+
+        # Build a human-readable description of what is about to happen
+        description = f"Tool '{tool_name}' called"
+        details: dict = {"parameters": params}
+
+        # Enrich description for well-known tools
+        if tool_name == "shell":
+            cmd = params.get("command", params.get("cmd", ""))
+            description = f"Run shell command: {cmd}"
+            details["command"] = cmd
+        elif tool_name == "file_ops":
+            op = params.get("operation", params.get("action", "unknown"))
+            path = params.get("path", params.get("file", ""))
+            description = f"File operation '{op}' on {path}"
+            details["operation"] = op
+            details["path"] = path
+        elif tool_name == "browser":
+            url = params.get("url", "")
+            description = f"Web request to {url}"
+            details["url"] = url
+        elif tool_name == "delegate":
+            agent = params.get("agent", params.get("name", ""))
+            description = f"Delegate to sub-agent '{agent}'"
+            details["agent"] = agent
+        elif tool_name == "email":
+            to = params.get("to", "")
+            description = f"Send email to {to}"
+            details["to"] = to
+
+        approved = await self.approval_manager.request_approval(
+            action_type=tool_name,
+            description=description,
+            details=details,
+        )
+
+        if not approved:
+            # Notify the user that the action was blocked
+            await self.bus.publish_outbound(OutboundMessage(
+                channel=msg.channel,
+                chat_id=msg.chat_id,
+                content=f"Action denied: {description}",
+            ))
+            return ToolResult(
+                output=f"Action denied by user: {description}",
+                success=False,
+            )
+
+        # Approved — execute
+        return await self.tools.execute(tool_name, params)
 
     def _handle_command(self, msg: InboundMessage) -> str | None:
         """Handle bot commands. Returns response string or None if not a command."""
