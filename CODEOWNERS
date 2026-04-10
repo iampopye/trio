@@ -1,4 +1,49 @@
 # trio.ai Code Owners
-# These users will be automatically requested for review on all PRs.
+#
+# Lines added to this file determine who is automatically requested for
+# review when someone opens a pull request that modifies matching files.
+# When combined with branch protection rules requiring code owner review,
+# these owners must approve before any PR can be merged.
+#
+# Order matters — the LAST matching pattern wins.
+# Reference: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/customizing-your-repository/about-code-owners
 
+# ── Default owner: every file requires Karan's approval ──────────────────
 * @iampopye
+
+# ── Critical security and infrastructure (DOUBLE-LOCKED) ────────────────
+# These paths are core to the project. Only the repo owner can approve changes.
+/LICENSE                @iampopye
+/SECURITY.md            @iampopye
+/CODEOWNERS             @iampopye
+/CONTRIBUTING.md        @iampopye
+/.github/               @iampopye
+/pyproject.toml         @iampopye
+/install.py             @iampopye
+
+# ── Core agent framework ────────────────────────────────────────────────
+/trio/core/             @iampopye
+/trio/shared/guardrails.py  @iampopye
+/trio/shared/pairing.py     @iampopye
+/trio/shared/access_store.py @iampopye
+
+# ── Provider integrations ───────────────────────────────────────────────
+/trio/providers/        @iampopye
+
+# ── LLM training engine ─────────────────────────────────────────────────
+/trio_model/            @iampopye
+/scripts/train_default_model.py    @iampopye
+/scripts/setup_models.py           @iampopye
+
+# ── Authentication, encryption, secrets ─────────────────────────────────
+/trio/core/config.py    @iampopye
+/trio/web/app.py        @iampopye
+/trio/tools/shell.py    @iampopye
+/trio/tools/file_ops.py @iampopye
+/trio/plugins/loader.py @iampopye
+/trio/plugins/manifest.py @iampopye
+
+# ── Branding and intellectual property ──────────────────────────────────
+/README.md              @iampopye
+/NOTICE                 @iampopye
+/trio/web/static/       @iampopye
