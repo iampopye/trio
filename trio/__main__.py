@@ -84,6 +84,10 @@ def main():
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
+    # trio help
+    help_parser = subparsers.add_parser("help", help="Show all commands grouped by category")
+    help_parser.add_argument("topic", nargs="?", help="Specific command to get detailed help for")
+
     # trio onboard
     subparsers.add_parser("onboard", help="Initialize config and workspace")
 
@@ -173,6 +177,21 @@ def main():
     serve_parser.add_argument("--port", type=int, default=28337, help="Port (default: 28337)")
     serve_parser.add_argument("--host", default="127.0.0.1", help="Host (default: 127.0.0.1)")
 
+    # trio repo
+    repo_parser = subparsers.add_parser("repo", help="Manage multiple project workspaces")
+    repo_sub = repo_parser.add_subparsers(dest="repo_action")
+    repo_sub.add_parser("list", help="List all registered repos")
+    repo_register = repo_sub.add_parser("register", help="Register a new repo")
+    repo_register.add_argument("alias", help="Short alias for the repo")
+    repo_register.add_argument("path", help="Path to the repo directory")
+    repo_register.add_argument("--description", default="", help="Optional description")
+    repo_unregister = repo_sub.add_parser("unregister", help="Remove a repo from the registry")
+    repo_unregister.add_argument("alias", help="Alias to remove")
+    repo_use = repo_sub.add_parser("use", help="Set the active repo")
+    repo_use.add_argument("alias", help="Alias to activate")
+    repo_search = repo_sub.add_parser("search", help="Search across all registered repos")
+    repo_search.add_argument("query", help="Search query (filename pattern)")
+
     # trio train
     train_parser = subparsers.add_parser("train", help="Train or retrain the trio-max model")
     train_parser.add_argument("--reset", action="store_true", help="Start fresh, ignore saved progress")
@@ -184,7 +203,11 @@ def main():
         parser.print_help()
         sys.exit(0)
 
-    if args.command == "onboard":
+    if args.command == "help":
+        from trio.cli.help_cmd import run_help
+        asyncio.run(run_help(args.topic))
+
+    elif args.command == "onboard":
         from trio.cli.onboard import run_onboard
         asyncio.run(run_onboard())
 
@@ -239,6 +262,10 @@ def main():
     elif args.command == "daemon":
         from trio.cli.daemon_cmd import run_daemon
         asyncio.run(run_daemon(args.daemon_action))
+
+    elif args.command == "repo":
+        from trio.cli.repo_cmd import run_repo
+        asyncio.run(run_repo(args))
 
     elif args.command == "serve":
         from trio.web.app import run_server

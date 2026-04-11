@@ -38,6 +38,8 @@ KNOWN_PROVIDERS = {
     "minimax": "https://api.minimax.chat/v1",
     "moonshot": "https://api.moonshot.cn/v1",
     "dashscope": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "github_models": "https://models.inference.ai.azure.com",
+    "together": "https://api.together.xyz/v1",
 }
 
 

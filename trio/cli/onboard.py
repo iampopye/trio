@@ -220,9 +220,11 @@ def _pick_best_model(models: list[str]) -> str:
 def _setup_provider_manual(config: dict):
     """Manual provider selection."""
     console.print("\n  [bold]Select provider:[/bold]")
+    console.print("  [dim]Tip: 'github_models' is FREE with any GitHub account.[/dim]")
     provider = Prompt.ask(
         "  Provider",
-        choices=["ollama", "openai", "anthropic", "gemini", "groq", "openrouter", "deepseek"],
+        choices=["ollama", "github_models", "groq", "gemini", "openai", "anthropic",
+                 "openrouter", "deepseek", "together"],
         default="ollama",
     )
 
@@ -235,6 +237,28 @@ def _setup_provider_manual(config: dict):
         }
         config["agents"]["defaults"]["provider"] = "ollama"
         config["agents"]["defaults"]["model"] = model
+
+    elif provider == "github_models":
+        console.print("\n  [bold cyan]GitHub Models[/bold cyan] [dim](free with any GitHub account)[/dim]")
+        console.print("  [dim]→ Generate a fine-grained PAT at:[/dim]")
+        console.print("  [link]https://github.com/settings/personal-access-tokens/new[/link]")
+        console.print("  [dim]→ Permissions needed: 'Models: read'[/dim]")
+        console.print("  [dim]→ Browse models: https://github.com/marketplace/models[/dim]\n")
+        api_key = Prompt.ask("  GitHub PAT (ghp_... or github_pat_...)")
+        model = Prompt.ask(
+            "  Model",
+            default="gpt-4o-mini",
+            show_default=True,
+        )
+        config["providers"]["github_models"] = {
+            "apiKey": api_key,
+            "apiBase": "https://models.inference.ai.azure.com",
+            "default_model": model,
+            "provider_name": "github_models",
+        }
+        config["agents"]["defaults"]["provider"] = "github_models"
+        config["agents"]["defaults"]["model"] = model
+
     else:
         api_key = Prompt.ask(f"  {provider} API key")
         defaults = {
@@ -244,6 +268,7 @@ def _setup_provider_manual(config: dict):
             "groq": "llama-3.1-8b-instant",
             "openrouter": "meta-llama/llama-3.1-8b-instruct",
             "deepseek": "deepseek-chat",
+            "together": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
         }
         model = Prompt.ask("  Model", default=defaults.get(provider, ""))
         config["providers"][provider] = {

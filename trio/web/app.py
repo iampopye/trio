@@ -436,6 +436,37 @@ async def api_hardware(request):
 
 # ── Status & Project ─────────────────────────────────────────────────────────
 
+async def api_help(request):
+    """GET /api/help — return command catalog as JSON for the web UI Help page."""
+    from trio.cli.help_cmd import COMMAND_CATALOG, DETAILED_HELP
+
+    topic = request.query.get("topic", "").strip()
+    if topic:
+        return web.json_response({
+            "topic": topic,
+            "detailed": DETAILED_HELP.get(topic, ""),
+            "available_topics": list(DETAILED_HELP.keys()),
+        })
+
+    # Return full catalog
+    catalog = {
+        category: [{"command": cmd, "description": desc} for cmd, desc in commands]
+        for category, commands in COMMAND_CATALOG.items()
+    }
+    return web.json_response({
+        "catalog": catalog,
+        "available_topics": list(DETAILED_HELP.keys()),
+        "version": "0.2.1",
+        "docs": {
+            "readme": "https://github.com/iampopye/trio/blob/main/README.md",
+            "commands": "https://github.com/iampopye/trio/blob/main/COMMANDS.md",
+            "install": "https://github.com/iampopye/trio/blob/main/INSTALL.md",
+            "benchmarks": "https://github.com/iampopye/trio/blob/main/BENCHMARKS.md",
+            "security": "https://github.com/iampopye/trio/blob/main/SECURITY.md",
+        },
+    })
+
+
 async def api_status(request):
     config = request.app["config"]
     return web.json_response({
@@ -1530,6 +1561,7 @@ def create_app(config: dict | None = None) -> web.Application:
     app.router.add_get("/api/hardware", api_hardware)
 
     # Status & Project
+    app.router.add_get("/api/help", api_help)
     app.router.add_get("/api/status", api_status)
     app.router.add_get("/api/project", api_project)
 

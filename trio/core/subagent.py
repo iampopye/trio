@@ -25,16 +25,29 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class SubAgentConfig:
-    """Configuration for a sub-agent."""
+    """Configuration for a sub-agent.
+
+    Each sub-agent can use a different LLM provider/model for cost
+    optimization. For example:
+        - researcher → free/cheap (DeepSeek, Groq, Gemini Flash)
+        - coder → high quality (Claude, GPT-4o, trio-pro)
+        - summarizer → fast/cheap (trio-nano, Gemini Flash)
+        - reviewer → balanced (trio-max, GPT-4o-mini)
+    """
 
     name: str                       # e.g., "researcher", "coder", "reviewer"
     role: str                       # System prompt role description
     model: str | None = None        # Optional model override (use cheaper model for simple tasks)
+    provider: str | None = None     # Optional provider override (e.g., "anthropic", "openai", "ollama")
     tools: list[str] = field(default_factory=list)  # Which tools this sub-agent can use
     max_iterations: int = 5         # Max think-act cycles before returning
 
     def __repr__(self) -> str:
-        return f"SubAgentConfig(name={self.name!r}, model={self.model!r}, tools={self.tools})"
+        return (
+            f"SubAgentConfig(name={self.name!r}, "
+            f"provider={self.provider!r}, model={self.model!r}, "
+            f"tools={self.tools})"
+        )
 
 
 class SubAgent:
@@ -43,6 +56,10 @@ class SubAgent:
     Runs a bounded generate → tool-call → observe loop, then returns the
     final textual response.  Does NOT publish to the MessageBus — all
     communication stays internal so the parent agent can post-process.
+
+    If `config.provider` is set, the sub-agent constructs its own provider
+    instance (allowing per-agent routing — e.g., researcher uses Groq while
+    coder uses Claude). Otherwise it uses the parent's provider.
     """
 
     def __init__(
@@ -53,9 +70,44 @@ class SubAgent:
         memory: MemoryStore,
     ):
         self.config = config
-        self.provider = provider
+        self._parent_provider = provider
         self.tools = tools
         self.memory = memory
+        self.provider = self._resolve_provider(provider)
+
+    def _resolve_provider(self, parent: BaseProvider) -> BaseProvider:
+        """Build a sub-agent-specific provider if config.provider is set.
+
+        Falls back to parent provider if construction fails or no override.
+        """
+        if not self.config.provider:
+            return parent
+
+        try:
+            from trio.core.config import load_config, get_provider_config
+            from trio.providers.base import ProviderRegistry, register_all_providers
+
+            register_all_providers()
+            cfg = load_config()
+            provider_cfg = get_provider_config(cfg, self.config.provider)
+            if self.config.model:
+                provider_cfg = {**provider_cfg, "default_model": self.config.model}
+            sub_provider = ProviderRegistry.create(self.config.provider, provider_cfg)
+            logger.info(
+                "SubAgent '%s' using dedicated provider: %s (model=%s)",
+                self.config.name,
+                self.config.provider,
+                self.config.model or "default",
+            )
+            return sub_provider
+        except Exception as e:
+            logger.warning(
+                "SubAgent '%s' failed to load provider '%s' (%s); using parent provider",
+                self.config.name,
+                self.config.provider,
+                e,
+            )
+            return parent
 
     async def execute(self, task: str, context: list[dict] | None = None) -> str:
         """Execute a task and return the result.
@@ -237,11 +289,31 @@ class SubAgentRegistry:
         return list(self._configs.keys())
 
 
+def _get_routing_override(name: str) -> tuple[str | None, str | None]:
+    """Look up routing config for a sub-agent (provider, model). Empty tuple if none."""
+    try:
+        from trio.core.config import load_config
+        cfg = load_config()
+        routing = cfg.get("agents", {}).get("routing", {})
+        agent_route = routing.get(name, {})
+        return agent_route.get("provider"), agent_route.get("model")
+    except Exception:
+        return None, None
+
+
 def register_default_subagents(registry: SubAgentRegistry) -> None:
-    """Register the built-in sub-agent configurations."""
+    """Register the built-in sub-agent configurations.
+
+    Per-agent provider/model is read from `agents.routing.<name>` in config.
+    """
+
+    def _route(name: str) -> dict:
+        provider, model = _get_routing_override(name)
+        return {"provider": provider, "model": model} if provider or model else {}
 
     registry.register(SubAgentConfig(
         name="researcher",
+        **_route("researcher"),
         role=(
             "You are a research specialist. Your job is to search the web, "
             "read documents, and gather information on a given topic. "
@@ -254,6 +326,7 @@ def register_default_subagents(registry: SubAgentRegistry) -> None:
 
     registry.register(SubAgentConfig(
         name="coder",
+        **_route("coder"),
         role=(
             "You are an expert software engineer. Write clean, efficient, "
             "well-documented code. Follow best practices and modern patterns. "
@@ -267,6 +340,7 @@ def register_default_subagents(registry: SubAgentRegistry) -> None:
 
     registry.register(SubAgentConfig(
         name="reviewer",
+        **_route("reviewer"),
         role=(
             "You are a quality reviewer. Carefully analyze content for "
             "accuracy, completeness, clarity, and correctness. Provide "
@@ -279,6 +353,7 @@ def register_default_subagents(registry: SubAgentRegistry) -> None:
 
     registry.register(SubAgentConfig(
         name="planner",
+        **_route("planner"),
         role=(
             "You are a planning and decomposition specialist. Break complex "
             "tasks into clear, ordered steps. Identify dependencies between "
@@ -291,6 +366,7 @@ def register_default_subagents(registry: SubAgentRegistry) -> None:
 
     registry.register(SubAgentConfig(
         name="summarizer",
+        **_route("summarizer"),
         role=(
             "You are a summarization specialist. Condense long content into "
             "clear, accurate summaries. Preserve key facts, decisions, and "

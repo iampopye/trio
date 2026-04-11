@@ -22,7 +22,16 @@ DEFAULT_CONFIG = {
             "model": "trio-max",
             "max_iterations": 20,
             "memory_window": 20,
-        }
+        },
+        # Per-sub-agent provider/model overrides for cost optimization.
+        # If a sub-agent isn't listed here, it uses the parent provider.
+        # Set provider/model to use a different LLM for that specific agent.
+        # Example: researcher uses cheap Groq, coder uses Claude.
+        "routing": {
+            # "researcher": {"provider": "groq", "model": "llama-3.3-70b-versatile"},
+            # "coder":      {"provider": "anthropic", "model": "claude-opus-4-6"},
+            # "summarizer": {"provider": "gemini", "model": "gemini-2.5-flash"},
+        },
     },
     "channels": {
         "discord": {"enabled": False, "token": ""},  # nosec B105 — field name, not a secret
@@ -47,7 +56,21 @@ DEFAULT_CONFIG = {
             "browser", "email", "calendar", "notes", "screenshot", "delegate",
         ],
         "restrictToWorkspace": False,
-        "mcpServers": {},
+        # MCP servers — auto-loaded if installed. Disabled by default so we don't
+        # fail on missing binaries; users opt-in via `trio onboard` or by setting
+        # enabled=true here.
+        "mcpServers": {
+            "code-review-graph": {
+                "enabled": False,
+                "command": "uvx",
+                "args": ["code-review-graph", "serve"],
+                "description": (
+                    "Persistent code knowledge graph (Tree-sitter, 19 languages). "
+                    "Cuts coding-task tokens by ~8x. Best for the coder sub-agent. "
+                    "Install: pipx install code-review-graph"
+                ),
+            },
+        },
         "email": {
             "smtp_host": "",
             "smtp_port": 587,
