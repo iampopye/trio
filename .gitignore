@@ -66,3 +66,8 @@ training_log.txt
 # ── Temp/test dirs ───────────────────────────
 .tmphome*/
 triobot-*/
+
+# ── Secrets (local only, NEVER commit) ──────
+# Holds PyPI, HuggingFace, GitHub tokens for release workflow.
+# Travels with the repo folder (zip-and-move), but never to git.
+.secrets/
