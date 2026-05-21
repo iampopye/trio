@@ -273,6 +273,19 @@ async def _check_provider() -> DoctorCheck:
             pass  # nosec B110 — intentional silent fallback
         return DoctorCheck("Provider", False, f"ollama not reachable at {base_url}")
 
+    elif provider == "local":
+        from trio.providers.local import _find_gguf_model
+        local_cfg = config.get("providers", {}).get("local", {})
+        resolved = _find_gguf_model(
+            model_name=local_cfg.get("default_model", ""),
+            explicit_path=local_cfg.get("model_path", ""),
+        )
+        if resolved:
+            size_mb = Path(resolved).stat().st_size / (1024 * 1024)
+            return DoctorCheck("Provider", True, f"local ({Path(resolved).name}, {size_mb:.0f} MB)")
+        return DoctorCheck("Provider", False,
+                           "local — no .gguf model found (place one in ~/.trio/models/ or set providers.local.model_path)")
+
     else:
         api_key = config.get("providers", {}).get(provider, {}).get("apiKey", "")
         if api_key:

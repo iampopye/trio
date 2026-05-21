@@ -78,10 +78,12 @@ def _ensure_path():
 def main():
     _ensure_path()
 
+    from trio import __version__
     parser = argparse.ArgumentParser(
         prog="trio",
         description="trio.ai - train your own AI, deploy it everywhere",
     )
+    parser.add_argument("--version", "-V", action="version", version=f"trio {__version__}")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # trio help
