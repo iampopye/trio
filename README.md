@@ -12,7 +12,7 @@
   <a href="https://github.com/iampopye/trio/stargazers"><img src="https://img.shields.io/github/stars/iampopye/trio?style=flat-square&color=ffd700" alt="Stars"></a>
   <a href="https://github.com/iampopye/trio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-2563eb?style=flat-square" alt="MIT License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square" alt="Python 3.10+"></a>
-  <a href="https://github.com/iampopye/trio"><img src="https://img.shields.io/badge/version-0.2.1-purple?style=flat-square" alt="v0.2.1"></a>
+  <a href="https://pypi.org/project/triobot/"><img src="https://img.shields.io/pypi/v/triobot?style=flat-square&color=purple&label=pypi" alt="PyPI"></a>
   <a href="https://github.com/iampopye/trio/blob/main/SECURITY.md"><img src="https://img.shields.io/badge/security-policy-0f766e?style=flat-square" alt="Security"></a>
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-green?style=flat-square" alt="MCP"></a>
 </p>
@@ -50,7 +50,7 @@ Most AI agent frameworks lock you into one provider, one platform, and someone e
 ### Install
 
 ```bash
-pip install trio-ai
+pip install triobot
 trio onboard
 ```
 
@@ -116,7 +116,7 @@ trio agent
 ### Train your own
 
 ```bash
-pip install trio-ai[model]
+pip install triobot[model]
 trio train --setup                 # Download pre-quantized models
 trio train                          # Train from scratch (resume with Ctrl+C)
 ```

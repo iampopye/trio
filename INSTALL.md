@@ -23,7 +23,7 @@ trio.ai runs on Windows, macOS, Linux, and WSL2. This guide has step-by-step ins
 If you have Python 3.10+ installed:
 
 ```bash
-pip install trio-ai
+pip install triobot
 trio onboard
 ```
 
@@ -52,7 +52,7 @@ Pick your operating system:
 Open a terminal (Command Prompt on Windows, Terminal on Mac, your favourite shell on Linux) and run:
 
 ```bash
-pip install trio-ai
+pip install triobot
 ```
 
 You should see "Successfully installed trio-ai".
@@ -95,14 +95,14 @@ trio serve
 ### Standard install
 
 ```powershell
-pip install trio-ai
+pip install triobot
 trio onboard
 ```
 
 ### With local model training
 
 ```powershell
-pip install trio-ai[model]
+pip install triobot[model]
 ```
 
 This installs PyTorch, tiktoken, and other ML dependencies. Recommended for users with NVIDIA GPUs.
@@ -110,7 +110,7 @@ This installs PyTorch, tiktoken, and other ML dependencies. Recommended for user
 ### With all features (channels, ML, web)
 
 ```powershell
-pip install trio-ai[all]
+pip install triobot[all]
 ```
 
 ### Windows-specific notes
@@ -136,7 +136,7 @@ brew install python@3.12
 ### Standard install
 
 ```bash
-pip install trio-ai
+pip install triobot
 trio onboard
 ```
 
@@ -145,7 +145,7 @@ trio onboard
 trio.ai uses Metal Performance Shaders (MPS) for GPU acceleration on Apple Silicon. No extra setup needed.
 
 ```bash
-pip install trio-ai[model]
+pip install triobot[model]
 trio train --setup    # Downloads MPS-optimized models
 ```
 
@@ -162,7 +162,7 @@ Standard install works. ML dependencies will use CPU mode unless an eGPU is conn
 ```bash
 sudo apt update
 sudo apt install -y python3 python3-pip python3-venv
-pip install trio-ai
+pip install triobot
 trio onboard
 ```
 
@@ -170,7 +170,7 @@ trio onboard
 
 ```bash
 sudo dnf install -y python3 python3-pip
-pip install trio-ai
+pip install triobot
 trio onboard
 ```
 
@@ -178,7 +178,7 @@ trio onboard
 
 ```bash
 sudo pacman -S python python-pip
-pip install trio-ai
+pip install triobot
 trio onboard
 ```
 
@@ -189,7 +189,7 @@ trio onboard
 sudo apt install nvidia-cuda-toolkit  # Ubuntu/Debian
 
 # Install trio.ai with ML extras
-pip install trio-ai[model]
+pip install triobot[model]
 
 # Verify GPU is detected
 trio doctor
@@ -199,7 +199,7 @@ trio doctor
 
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/rocm6.0
-pip install trio-ai[model]
+pip install triobot[model]
 ```
 
 ---
@@ -223,7 +223,7 @@ Open the WSL terminal and run:
 ```bash
 sudo apt update
 sudo apt install -y python3 python3-pip
-pip install trio-ai
+pip install triobot
 trio onboard
 ```
 
@@ -233,7 +233,7 @@ If you have an NVIDIA GPU, WSL2 can use it directly:
 
 ```bash
 nvidia-smi    # Should show your GPU
-pip install trio-ai[model]
+pip install triobot[model]
 trio doctor
 ```
 
@@ -274,26 +274,26 @@ pip install -e ".[all,dev]"
 trio.ai uses optional dependency groups so you only install what you need.
 
 ```bash
-pip install trio-ai                 # Minimal install (CLI + core)
-pip install trio-ai[model]          # + Local model training (PyTorch)
-pip install trio-ai[serve]          # + Web UI server (FastAPI)
-pip install trio-ai[discord]        # + Discord channel
-pip install trio-ai[telegram]       # + Telegram channel
-pip install trio-ai[slack]          # + Slack channel
-pip install trio-ai[teams]          # + Microsoft Teams channel
-pip install trio-ai[whatsapp]       # + WhatsApp Business API
-pip install trio-ai[search]         # + DuckDuckGo web search
-pip install trio-ai[web]            # + Web scraping (BeautifulSoup, PyPDF2, Playwright)
-pip install trio-ai[math]           # + Symbolic math (SymPy)
-pip install trio-ai[screenshot]     # + Screen capture (mss, Pillow)
-pip install trio-ai[all]            # Everything above
-pip install trio-ai[dev]            # + Testing (pytest)
+pip install triobot                 # Minimal install (CLI + core)
+pip install triobot[model]          # + Local model training (PyTorch)
+pip install triobot[serve]          # + Web UI server (FastAPI)
+pip install triobot[discord]        # + Discord channel
+pip install triobot[telegram]       # + Telegram channel
+pip install triobot[slack]          # + Slack channel
+pip install triobot[teams]          # + Microsoft Teams channel
+pip install triobot[whatsapp]       # + WhatsApp Business API
+pip install triobot[search]         # + DuckDuckGo web search
+pip install triobot[web]            # + Web scraping (BeautifulSoup, PyPDF2, Playwright)
+pip install triobot[math]           # + Symbolic math (SymPy)
+pip install triobot[screenshot]     # + Screen capture (mss, Pillow)
+pip install triobot[all]            # Everything above
+pip install triobot[dev]            # + Testing (pytest)
 ```
 
 You can mix and match:
 
 ```bash
-pip install trio-ai[discord,telegram,slack,model]
+pip install triobot[discord,telegram,slack,model]
 ```
 
 ---
@@ -344,7 +344,7 @@ You may have a conflicting `trio` async library installed. Remove it:
 
 ```bash
 pip uninstall trio
-pip install trio-ai
+pip install triobot
 ```
 
 trio.ai uses the package name `triobot` on PyPI to avoid this conflict, but the import name is still `trio`.
@@ -365,7 +365,7 @@ Don't use `sudo pip install`. Use `pip install --user` or a virtual environment:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install trio-ai
+pip install triobot
 ```
 
 ### CUDA out of memory
