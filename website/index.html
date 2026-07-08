@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>trio.ai — there are many AI agents, but this one is yours</title>
+<meta name="description" content="Open-source local-first AI. Train your own model. Deploy across 17 channels. Compatible with Ollama, OpenAI, and every local engine.">
+<meta property="og:title" content="trio.ai">
+<meta property="og:description" content="There are many AI agents. This one trains, ships, and runs with you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5ef;
+  --bg-elev: #ffffff;
+  --ink: #0f0e0c;
+  --ink-soft: #353128;
+  --ink-mute: #7a7468;
+  --ink-faint: #b2ac9f;
+  --rule: #d8d2c1;
+  --rule-soft: #e8e3d4;
+  --accent: #d4421e;
+  --code-bg: #16140f;
+  --code-ink: #f5f0e1;
+  --code-mute: #8a8270;
+  --serif: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Inter', -apple-system, system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+[data-theme="dark"] {
+  --bg: #0f0e0c;
+  --bg-elev: #1a1814;
+  --ink: #f5f0e1;
+  --ink-soft: #d8d2c1;
+  --ink-mute: #8a8270;
+  --ink-faint: #5a5346;
+  --rule: #2a2620;
+  --rule-soft: #1f1c17;
+  --accent: #e85a3a;
+  --code-bg: #06050a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
+}
+a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--ink-faint); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--accent); }
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 32px; }
+
+/* ── header ── */
+header {
+  border-bottom: 1px solid var(--rule);
+  padding: 22px 0;
+}
+header .inner { display: flex; justify-content: space-between; align-items: center; }
+.brand {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.brand a { text-decoration: none; }
+nav { display: flex; gap: 28px; font-size: 14px; color: var(--ink-mute); }
+nav a { text-decoration: none; }
+nav a:hover { color: var(--accent); }
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-mute);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.theme-toggle:hover { color: var(--ink); border-color: var(--ink-mute); }
+
+/* ── hero ── */
+.hero {
+  padding: 96px 0 56px;
+  max-width: 720px;
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 6vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero .lede {
+  font-size: 1.15rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  max-width: 560px;
+}
+
+/* ── install box ── */
+.install {
+  margin: 56px 0 80px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg-elev);
+}
+.tabs { display: flex; border-bottom: 1px solid var(--rule); overflow-x: auto; }
+.tab {
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--rule);
+  padding: 12px 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--ink-mute);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab.active { color: var(--ink); background: var(--bg); }
+.tab:hover:not(.active) { color: var(--ink-soft); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+.cmd {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 22px 24px;
+  font-family: var(--mono);
+  font-size: 14px;
+  display: flex; align-items: center; gap: 14px;
+  border-radius: 0 0 7px 7px;
+  overflow-x: auto;
+}
+.cmd::-webkit-scrollbar { height: 4px; }
+.cmd::-webkit-scrollbar-thumb { background: var(--code-mute); border-radius: 2px; }
+.cmd .prompt { color: var(--accent); user-select: none; flex-shrink: 0; }
+.cmd code { flex: 1; white-space: nowrap; background: transparent; }
+.copy-btn {
+  background: transparent;
+  border: 1px solid var(--code-mute);
+  color: var(--code-mute);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 11px;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+.copy-btn:hover { color: var(--code-ink); border-color: var(--code-ink); }
+.copy-btn.copied { color: #6ec96e; border-color: #6ec96e; }
+
+/* ── section header ── */
+.section-head {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin: 80px 0 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.section-head h2 {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+}
+
+/* ── figure ── */
+.fig {
+  margin: 56px 0;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 48px;
+  align-items: start;
+}
+.fig.reverse { grid-template-columns: 1.5fr 1fr; }
+.fig.reverse .fig-text { order: 1; }
+.fig.reverse .fig-art { order: 2; }
+.fig-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 14px;
+}
+.fig-label .num { color: var(--accent); font-weight: 600; }
+.fig h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin-bottom: 14px;
+}
+.fig p {
+  font-size: 0.96rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.fig p code {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  background: var(--rule-soft);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--ink);
+}
+.fig-art {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 24px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  overflow-x: auto;
+}
+.fig-art .caret { color: var(--accent); }
+.fig-art .key { color: var(--accent); }
+.fig-art .dim { color: var(--ink-mute); }
+
+/* ── commands strip ── */
+.cmd-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-elev);
+}
+.cmd-grid > div {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+  display: flex; justify-content: space-between; gap: 16px;
+  font-size: 13px;
+}
+.cmd-grid > div:nth-child(2n) { border-right: none; }
+.cmd-grid > div:nth-last-child(-n+2) { border-bottom: none; }
+.cmd-grid code {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-weight: 500;
+}
+.cmd-grid span { color: var(--ink-mute); text-align: right; }
+
+/* ── footer ── */
+footer {
+  margin: 120px 0 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px;
+  color: var(--ink-mute);
+}
+footer a { color: var(--ink-mute); }
+footer .links { display: flex; gap: 24px; }
+
+@media (max-width: 700px) {
+  .wrap { padding: 0 22px; }
+  .hero { padding: 56px 0 32px; }
+  .fig, .fig.reverse { grid-template-columns: 1fr; gap: 20px; }
+  .fig.reverse .fig-text, .fig.reverse .fig-art { order: unset; }
+  .cmd-grid { grid-template-columns: 1fr; }
+  .cmd-grid > div { border-right: none; }
+  nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap inner">
+    <div class="brand"><a href="/">trio.ai</a></div>
+    <nav>
+      <a href="https://github.com/iampopye/trio">Source</a>
+      <a href="https://pypi.org/project/triobot/">PyPI</a>
+      <a href="https://huggingface.co/mrtechgarg">Models</a>
+      <a href="#install">Install</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle">DARK</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section class="hero">
+  <h1>There are many AI agents,<br>but this one is <em>yours.</em></h1>
+  <p class="lede">
+    Open-source, local-first, MIT licensed.
+    Train your own model. Run it on your hardware. Deploy it across 17 channels.
+    Compatible with Ollama, OpenAI, and every wrapper that speaks them.
+  </p>
+</section>
+
+<section class="install" id="install">
+  <div class="tabs">
+    <button class="tab active" data-pane="ps">powershell</button>
+    <button class="tab" data-pane="sh">curl · macos / linux</button>
+    <button class="tab" data-pane="pip">pip</button>
+    <button class="tab" data-pane="uv">uv</button>
+    <button class="tab" data-pane="src">from source</button>
+  </div>
+  <div class="tab-pane active" data-pane="ps">
+    <div class="cmd">
+      <span class="prompt">PS&gt;</span>
+      <code id="c-ps">powershell -c "irm https://riocloudsolutions.com/trio/install.ps1 | iex"</code>
+      <button class="copy-btn" data-copy="c-ps">copy</button>
+    </div>
+  </div>
+  <div class="tab-pane" data-pane="sh">
+    <div class="cmd">
+      <span class="prompt">$</span>
+      <code id="c-sh">curl -fsSL https://riocloudsolutions.com/trio/install.sh | sh</code>
+      <button class="copy-btn" data-copy="c-sh">copy</button>
+    </div>
+  </div>
+  <div class="tab-pane" data-pane="pip">
+    <div class="cmd">
+      <span class="prompt">$</span>
+      <code id="c-pip">pip install triobot &amp;&amp; trio onboard</code>
+      <button class="copy-btn" data-copy="c-pip">copy</button>
+    </div>
+  </div>
+  <div class="tab-pane" data-pane="uv">
+    <div class="cmd">
+      <span class="prompt">$</span>
+      <code id="c-uv">uv tool install triobot &amp;&amp; triobot</code>
+      <button class="copy-btn" data-copy="c-uv">copy</button>
+    </div>
+  </div>
+  <div class="tab-pane" data-pane="src">
+    <div class="cmd">
+      <span class="prompt">$</span>
+      <code id="c-src">git clone https://github.com/iampopye/trio &amp;&amp; cd trio &amp;&amp; pip install -e ".[model]"</code>
+      <button class="copy-btn" data-copy="c-src">copy</button>
+    </div>
+  </div>
+</section>
+
+<div class="section-head"><h2>Why Trio?</h2><span>Eight reasons</span></div>
+
+<section class="fig">
+  <div class="fig-text">
+    <div class="fig-label"><span class="num">Fig. 01</span> · YOUR MODEL</div>
+    <h3>Train it. Ship it. Own it.</h3>
+    <p>Six model tiers from <code>trio-nano</code> (1 GB, runs on a Raspberry Pi) to <code>trio-pro</code> (18 GB MoE).</p>
+    <p>Built-in pretrain · SFT · DPO · Constitutional AI pipeline. Push tuned weights to your HuggingFace org in one command. No middleman.</p>
+  </div>
+  <div class="fig-art">
+<span class="dim"># fine-tune on your own data</span><br>
+<span class="caret">$</span> trio train --tier medium \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--data <span class="key">./my-corpus</span> \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--push <span class="key">myorg/trio-medium-mine</span>
+  </div>
+</section>
+
+<section class="fig reverse">
+  <div class="fig-text">
+    <div class="fig-label"><span class="num">Fig. 02</span> · OLLAMA-NATIVE</div>
+    <h3>Speaks every local protocol.</h3>
+    <p>Every trio model ships as a GGUF + Modelfile. Pull them from any Ollama client. Trio also exposes an Ollama-compatible HTTP API on <code>:11434</code>-equivalent so LM Studio, Jan, Continue, OpenCode, BlackBox, OpenInterpreter all just work.</p>
+  </div>
+  <div class="fig-art">
+<span class="caret">$</span> ollama run trio-medium<br>
+<span class="dim"># or via API</span><br>
+<span class="caret">$</span> curl localhost:11434/api/chat \<br>
+&nbsp;&nbsp;-d '{"model":"<span class="key">trio-max</span>",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"messages":[...]}'
+  </div>
+</section>
+
+<section class="fig">
+  <div class="fig-text">
+    <div class="fig-label"><span class="num">Fig. 03</span> · SEVENTEEN CHANNELS</div>
+    <h3>Same brain. Every surface.</h3>
+    <p>Discord. Slack. WhatsApp. Telegram. Teams. iMessage. SMS. Email. Matrix. Reddit. Instagram. Messenger. LINE. Signal. Google Chat. Plus the CLI and the web UI.</p>
+    <p>One <code>trio onboard</code>, and the same model answers across every channel you wire in.</p>
+  </div>
+  <div class="fig-art">
+<span class="dim">┌─ enabled channels ─────────────┐</span><br>
+<span class="dim">│</span> <span class="key">●</span> discord  · trio-medium       <span class="dim">│</span><br>
+<span class="dim">│</span> <span class="key">●</span> slack    · trio-medium       <span class="dim">│</span><br>
+<span class="dim">│</span> <span class="key">●</span> whatsapp · trio-small        <span class="dim">│</span><br>
+<span class="dim">│</span> <span class="key">●</span> cli      · trio-max          <span class="dim">│</span><br>
+<span class="dim">│</span> <span class="key">●</span> web      · trio-medium       <span class="dim">│</span><br>
+<span class="dim">└────────────────────────────────┘</span>
+  </div>
+</section>
+
+<section class="fig reverse">
+  <div class="fig-text">
+    <div class="fig-label"><span class="num">Fig. 04</span> · LOCAL FIRST</div>
+    <h3>Never pay for tokens you didn't have to.</h3>
+    <p>Smart Router cascades <code>local → free tier → paid</code>. Picks the cheapest provider that meets the quality bar for each query.</p>
+    <p>Per-request cost shown in the chat footer. Daily and monthly budget caps. You see the bill before it ships.</p>
+  </div>
+  <div class="fig-art">
+<span class="caret">trio&gt;</span> what is the capital of france?<br>
+<br>
+&nbsp;&nbsp;Paris.<br>
+<br>
+<span class="dim">  _(2.1s · trio-medium · local · $0.00)_</span>
+  </div>
+</section>
+
+<section class="fig">
+  <div class="fig-text">
+    <div class="fig-label"><span class="num">Fig. 05</span> · 3,876 SKILLS</div>
+    <h3>Markdown is the new SDK.</h3>
+    <p>Drop a <code>.md</code> file in <code>~/.trio/skills/</code>. Trio picks it up automatically. No restart, no JSON, no glue code.</p>
+    <p>The community hub ships 3,876 of them — coding, marketing, security, finance, legal, data, creative. <code>trio search "python"</code> finds yours.</p>
+  </div>
+  <div class="fig-art">
+<span class="dim">---</span><br>
+<span class="key">name:</span> code_reviewer<br>
+<span class="key">description:</span> Senior code review<br>
+<span class="key">tags:</span> [coding, review]<br>
+<span class="dim">---</span><br>
+<br>
+You are an experienced engineer<br>
+who reviews code for...
+  </div>
+</section>
+
+<section class="fig reverse">
+  <div class="fig-text">
+    <div class="fig-label"><span class="num">Fig. 06</span> · TWELVE TOOLS</div>
+    <h3>Trio doesn't just chat.</h3>
+    <p>Shell · file ops · browser automation · web search · RAG · screenshots · math solver · email · calendar · notes · sub-agent delegate · MCP client. Sandboxed by default, gated by your approvals.</p>
+  </div>
+  <div class="fig-art">
+<span class="caret">trio&gt;</span> read my latest invoice PDF<br>
+<br>
+<span class="dim">› [file_ops]</span> opening <span class="key">invoice.pdf</span><br>
+<span class="dim">› [rag_search]</span> extracted 14 line items<br>
+<span class="dim">› [calculator]</span> total: <span class="key">$2,840</span>
+  </div>
+</section>
+
+<section class="fig">
+  <div class="fig-text">
+    <div class="fig-label"><span class="num">Fig. 07</span> · CONSTITUTIONAL</div>
+    <h3>You write the rules.</h3>
+    <p>Trio's training pipeline includes Constitutional AI — the alignment method behind Claude. Your <code>constitution.md</code> defines what the model can and can't do.</p>
+    <p>Five-layer runtime guardrails on top: input filtering, jailbreak detection, content safety, rate limiting, output redaction.</p>
+  </div>
+  <div class="fig-art">
+<span class="dim"># constitution.md</span><br>
+- Always disclose uncertainty.<br>
+- Never claim authorship of someone<br>
+&nbsp;&nbsp;else's words without attribution.<br>
+- Refuse to write code that<br>
+&nbsp;&nbsp;exfiltrates user data.<br>
+- ...
+  </div>
+</section>
+
+<section class="fig reverse">
+  <div class="fig-text">
+    <div class="fig-label"><span class="num">Fig. 08</span> · YOUR DATA. YOUR DISK.</div>
+    <h3>Nothing leaves unless you say so.</h3>
+    <p>Sessions, memory, RAG store, channel keys — all in <code>~/.trio/</code>, AES-128 encrypted (Fernet), key bound to the machine.</p>
+    <p>No telemetry. No phone-home. The only network call trio makes is the one you asked for.</p>
+  </div>
+  <div class="fig-art">
+<span class="dim">~/.trio/</span><br>
+&nbsp;&nbsp;config.json&nbsp;&nbsp;<span class="dim">(encrypted)</span><br>
+&nbsp;&nbsp;.secret_key&nbsp;&nbsp;<span class="dim">(chmod 600)</span><br>
+&nbsp;&nbsp;sessions/&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">(local only)</span><br>
+&nbsp;&nbsp;memory/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">(local only)</span><br>
+&nbsp;&nbsp;rag/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">(local only)</span>
+  </div>
+</section>
+
+<div class="section-head"><h2>Once installed</h2><span>Mnemonic like pip</span></div>
+
+<div class="cmd-grid">
+  <div><code>triobot</code><span>interactive model picker + chat</span></div>
+  <div><code>trio agent</code><span>chat with default model</span></div>
+  <div><code>trio serve</code><span>web UI on :28337</span></div>
+  <div><code>trio gateway</code><span>start all chat channels</span></div>
+  <div><code>trio install &lt;name&gt;</code><span>add a model or skill</span></div>
+  <div><code>trio search &lt;q&gt;</code><span>browse the hub</span></div>
+  <div><code>trio doctor</code><span>diagnose + auto-repair</span></div>
+  <div><code>trio train</code><span>fine-tune on your data</span></div>
+</div>
+
+<footer>
+  <div>© 2026 trio.ai · MIT · Karan Garg</div>
+  <div class="links">
+    <a href="https://github.com/iampopye/trio">github</a>
+    <a href="https://github.com/iampopye/trio/issues">issues</a>
+    <a href="mailto:karangarg.dev@gmail.com">contact</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+// theme toggle
+const root = document.documentElement;
+const themeBtn = document.getElementById('themeToggle');
+const saved = localStorage.getItem('trio-theme');
+if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  root.setAttribute('data-theme', 'dark');
+  themeBtn.textContent = 'LIGHT';
+}
+themeBtn.addEventListener('click', () => {
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  if (isDark) { root.removeAttribute('data-theme'); themeBtn.textContent = 'DARK'; localStorage.setItem('trio-theme', 'light'); }
+  else        { root.setAttribute('data-theme', 'dark'); themeBtn.textContent = 'LIGHT'; localStorage.setItem('trio-theme', 'dark'); }
+});
+
+// tab switching
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    const pane = t.dataset.pane;
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.pane === pane));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.toggle('active', x.dataset.pane === pane));
+  });
+});
+
+// auto-pick OS tab
+(function() {
+  const ua = navigator.userAgent.toLowerCase();
+  let target = 'ps';
+  if (ua.includes('mac') || ua.includes('linux')) target = 'sh';
+  const el = document.querySelector(`.tab[data-pane="${target}"]`);
+  if (el) el.click();
+})();
+
+// copy buttons
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const text = document.getElementById(btn.dataset.copy).textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      const orig = btn.textContent;
+      btn.textContent = 'copied'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1400);
+    } catch {
+      btn.textContent = 'select manually';
+    }
+  });
+});
+</script>
+
+</body>
+</html>

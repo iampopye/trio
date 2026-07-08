@@ -1,0 +1,46 @@
+{
+  "name": "triobot",
+  "version": "0.2.3",
+  "description": "triobot (trio.ai) - train your own AI, deploy it everywhere. npm launcher for the triobot Python CLI.",
+  "keywords": [
+    "ai",
+    "agent",
+    "chatbot",
+    "llm",
+    "ollama",
+    "cli",
+    "trio",
+    "triobot"
+  ],
+  "homepage": "https://github.com/iampopye/trio",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iampopye/trio.git"
+  },
+  "license": "MIT",
+  "author": "Karan Garg",
+  "type": "commonjs",
+  "bin": {
+    "trio": "bin/trio.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "files": [
+    "bin/",
+    "scripts/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

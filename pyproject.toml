@@ -82,11 +82,15 @@ all = [
 dev = ["pytest>=7.0", "pytest-asyncio>=0.21.0"]
 
 [project.scripts]
-trio = "trio.__main__:main"
+trio = "triobot.__main__:main"
+triobot = "triobot.cli.launch_cmd:main"
 
 [project.urls]
 Homepage = "https://github.com/iampopye/trio"
 Repository = "https://github.com/iampopye/trio"
 
 [tool.setuptools.packages.find]
-include = ["trio*", "trio_model*"]
+include = ["triobot*", "trio_model*"]
+
+[tool.setuptools.package-data]
+"triobot.models" = ["*.Modelfile"]

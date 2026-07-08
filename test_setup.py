@@ -77,8 +77,8 @@ def test_config():
 
 def test_agent_imports():
     print("\n-- Agent Framework Import Test -----------------------------")
-    from trio.core.config import load_config, get_trio_dir
-    from trio.providers.base import ProviderRegistry, register_all_providers
+    from triobot.core.config import load_config, get_trio_dir
+    from triobot.providers.base import ProviderRegistry, register_all_providers
     register_all_providers()
     providers = ProviderRegistry.available()
     print(f"  Config dir: {get_trio_dir()}")
