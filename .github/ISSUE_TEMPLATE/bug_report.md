@@ -22,7 +22,7 @@ What actually happened.
 - OS: [e.g., Windows 11, Ubuntu 22.04, macOS 14]
 - Python version: [e.g., 3.12]
 - trio version: [e.g., 0.1.0]
-- Provider: [e.g., trio-nano, ollama, openai]
+- Provider / model: [e.g., ollama / llama3.1:8b, openai / gpt-4o]
 
 ## Logs / Screenshots
 If applicable, paste error logs or screenshots.

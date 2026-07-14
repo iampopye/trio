@@ -34,17 +34,9 @@ COMMAND_CATALOG = {
     "Models & Providers": [
         ("trio provider list", "Show configured providers and active model"),
         ("trio provider add", "Add a new LLM provider interactively"),
-        ("trio provider set --model trio-max", "Set default model"),
+        ("trio provider set --model llama3.1:8b", "Set default model (bring your own)"),
         ("trio provider set --provider openai --model gpt-4o", "Switch provider + model"),
         ("trio provider login", "OAuth login (e.g. GitHub Models)"),
-    ],
-    "Built-in trio model tiers": [
-        ("trio-nano  (~1M params, 600 MB)", "CPU, 4 GB RAM — embedded, IoT, testing"),
-        ("trio-small (~125M params, 1.2 GB)", "CPU/GPU, 8 GB RAM — lightweight chat"),
-        ("trio-medium (~350M params, 2.5 GB)", "GPU/Apple Silicon — personal assistant"),
-        ("trio-high (~750M params, 5 GB)", "RTX 3060+, M2+ — production workloads"),
-        ("trio-max (~3B params, 5.6 GB)", "RTX 4070+, M3+ — enterprise tasks"),
-        ("trio-pro (~30B MoE, 18 GB)", "RTX 4090, A100 — research, advanced agents"),
     ],
     "Skills (3,876 community-curated)": [
         ("trio skill list", "Show installed skills"),
@@ -71,9 +63,8 @@ COMMAND_CATALOG = {
         ("trio daemon logs", "Tail recent daemon logs"),
         ("trio daemon uninstall", "Remove the system service"),
     ],
-    "Training": [
-        ("trio train --setup", "Download pre-trained GGUF models"),
-        ("trio train", "Train from scratch (resume with Ctrl+C)"),
+    "Training (experimental)": [
+        ("trio train", "Train the from-scratch trio model (resume with Ctrl+C)"),
         ("trio train --reset", "Restart training from scratch"),
     ],
     "Security & Pairing": [
@@ -106,7 +97,7 @@ DETAILED_HELP = {
 [bold]In-chat slash commands:[/bold]
   /help              Show available slash commands
   /provider          Switch LLM provider with picker
-  /model <name>      Change model (e.g. /model trio-max)
+  /model <name>      Change model (e.g. /model llama3.1:8b)
   /skill list        List installed skills
   /skill install X   Install a skill from TrioHub
   /clear             Clear chat history
@@ -125,13 +116,13 @@ DETAILED_HELP = {
 [bold]Sub-commands:[/bold]
   trio provider list                          Show configured providers
   trio provider add                            Add a new provider (interactive)
-  trio provider set --model trio-max           Set default model
+  trio provider set --model llama3.1:8b        Set default model (bring your own)
   trio provider set --provider openai --model gpt-4o
   trio provider login                          OAuth login (GitHub Models, etc.)
 
 [bold]Supported providers:[/bold]
-  - [green]Local trio-* models[/green] (free, runs on your machine)
-  - [green]Ollama[/green] (free, local, requires Ollama running)
+  - [green]Ollama[/green] (free, local, bring your own model — requires Ollama running)
+  - [green]Local GGUF[/green] (free, runs on your machine via llama-cpp-python)
   - [green]Groq[/green] (free tier, fast)
   - [green]Google Gemini[/green] (free tier)
   - [green]GitHub Models[/green] (free with GitHub account)
@@ -196,26 +187,22 @@ DETAILED_HELP = {
   ~/.trio/logs/daemon.log
 """,
     "train": """
-[bold cyan]trio train[/bold cyan] — Train your own LLM from scratch.
+[bold cyan]trio train[/bold cyan] — Train a trio model from scratch [dim](experimental)[/dim].
+
+This is genuine from-scratch training via the local pipeline (trio_model/).
+A production-ready trio model is still in development — until it ships, use a
+provider (Ollama or an API) for day-to-day chat.
 
 [bold]Quick start:[/bold]
-  trio train --setup           Download pre-trained GGUF models (recommended)
-  trio train                    Train from scratch
+  trio train                    Start or resume training
   trio train --reset            Restart training (ignore checkpoints)
 
-[bold]Model tiers:[/bold]
-  - [green]trio-nano[/green]    ~1M params,  4 GB RAM,   CPU
-  - [green]trio-small[/green]   ~125M params, 16 GB VRAM, T4 GPU (Kaggle/Colab)
-  - [green]trio-medium[/green]  ~350M params, 24 GB VRAM, RTX 3090 / A100
-  - [green]trio-high[/green]    ~750M params, 40 GB VRAM, A100
-  - [green]trio-max[/green]     ~3B params,   80 GB VRAM, A100/H100
-  - [green]trio-pro[/green]     ~30B MoE,     multi-GPU,  data center
-
-[bold]Auto-detected:[/bold]
-  trio.ai picks the right config for your hardware automatically.
+[bold]Run an existing model instead:[/bold]
+  trio onboard                  Configure a provider (e.g. Ollama)
+  ollama pull llama3.1:8b       Pull a local model to chat with now
 
 [bold]Pause/resume:[/bold]
-  Press Ctrl+C anytime — checkpoints are saved every 500 steps.
+  Press Ctrl+C anytime — checkpoints are saved periodically.
   Run 'trio train' again to resume from the last checkpoint.
 """,
     "serve": """

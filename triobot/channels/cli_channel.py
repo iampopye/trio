@@ -15,13 +15,35 @@ logger = logging.getLogger(__name__)
 class CLIChannel(BaseChannel):
     """Interactive terminal channel for `trio agent` mode."""
 
-    def __init__(self, bus: MessageBus, config: dict | None = None):
+    def __init__(
+        self,
+        bus: MessageBus,
+        config: dict | None = None,
+        *,
+        provider=None,
+        sessions=None,
+        memory=None,
+        tools=None,
+        mcp_manager=None,
+        agent=None,
+        console=None,
+    ):
         super().__init__(name="cli", bus=bus, config=config or {})
         self._running = True
         self._streaming = False
         self._streamed_content = False
         self._session_name: str | None = None
         self._response_done = asyncio.Event()
+        # Slash-command dependencies (may be None in legacy/test construction).
+        self._provider = provider
+        self._sessions = sessions
+        self._memory = memory
+        self._tools = tools
+        self._mcp_manager = mcp_manager
+        self._agent = agent
+        self._console = console
+        self._ctx = None  # built lazily on first command
+        self._registry_ready = False
 
     async def start(self) -> None:
         """Start reading user input from terminal."""
@@ -85,145 +107,93 @@ class CLIChannel(BaseChannel):
                 if not stripped:
                     continue
 
-                # Handle slash commands locally without sending to LLM
-                if stripped.startswith("/"):
+                # Slash commands, !shell escapes, and @file lines all route
+                # through the registry dispatcher first (local, no LLM).
+                if (
+                    stripped.startswith("/")
+                    or stripped.startswith("!")
+                    or "@" in stripped
+                ):
                     handled = await self._handle_slash_command(stripped)
                     if handled:
+                        if not self._running:
+                            break
                         continue
 
-                # Reset response event
-                self._response_done.clear()
-
-                # Publish to bus
-                await self.publish_inbound(
-                    chat_id="cli_user",
-                    user_id="cli_user",
-                    content=stripped,
-                )
-
-                # Wait for response to complete
-                try:
-                    await asyncio.wait_for(self._response_done.wait(), timeout=300)
-                except asyncio.TimeoutError:
-                    print("\n[timeout — no response after 5 minutes]\n")
-
-                print()  # Blank line before next prompt
+                # Normal chat input → send to the LLM.
+                await self._route_to_llm(stripped)
 
             except (KeyboardInterrupt, EOFError):
                 print("\nGoodbye!")
                 self._running = False
                 break
 
+    def _get_context(self):
+        """Build the CommandContext once, on demand, from the stored refs."""
+        if self._ctx is None:
+            from triobot.cli.slash import CommandContext
+            from triobot.cli.slash.registry import build_registry
+
+            if not self._registry_ready:
+                build_registry()
+                self._registry_ready = True
+
+            if self._console is None:
+                from rich.console import Console
+
+                self._console = Console()
+
+            self._ctx = CommandContext(
+                channel=self,
+                config=self.config,
+                provider=self._provider,
+                bus=self.bus,
+                sessions=self._sessions,
+                memory=self._memory,
+                tools=self._tools,
+                mcp_manager=self._mcp_manager,
+                agent=self._agent,
+                console=self._console,
+            )
+        return self._ctx
+
     async def _handle_slash_command(self, cmd: str) -> bool:
-        """Handle in-chat slash commands. Returns True if the command was handled."""
-        parts = cmd[1:].split(maxsplit=1)
-        if not parts:
-            return False
-        verb = parts[0].lower()
-        arg = parts[1].strip() if len(parts) > 1 else ""
+        """Route a slash / ! / @ line through the registry.
 
-        if verb == "help":
-            self._show_slash_help()
+        Returns True if handled locally (no LLM round-trip needed).
+        """
+        from triobot.cli.slash import dispatch
+
+        result = await dispatch(cmd, self._get_context())
+
+        if result.message:
+            self._console.print(result.message)
+
+        if result.exit_repl:
+            print("\nGoodbye!")
+            self._running = False
             return True
 
-        if verb == "provider":
-            await self._slash_provider(arg)
+        if result.send_to_llm is not None:
+            # @file expansion etc. — route the rewritten text to the LLM.
+            await self._route_to_llm(result.send_to_llm)
             return True
 
-        if verb == "model":
-            await self._slash_model(arg)
-            return True
+        return result.handled
 
-        if verb == "skill":
-            await self._slash_skill(arg)
-            return True
-
-        if verb == "clear":
-            print("\033[2J\033[H", end="")  # ANSI clear screen
-            print("trio - chat cleared\n")
-            return True
-
-        # Unknown slash command — let it fall through to the LLM
-        return False
-
-    def _show_slash_help(self) -> None:
-        """Print available slash commands."""
-        print("\n\033[1mAvailable slash commands:\033[0m")
-        print("  /help                Show this help")
-        print("  /provider            Show current provider and how to switch")
-        print("  /provider <name>     Switch provider (e.g. /provider openai)")
-        print("  /model <name>        Switch model (e.g. /model trio-max)")
-        print("  /skill list          List installed skills")
-        print("  /skill install <n>   Install a skill from TrioHub")
-        print("  /clear               Clear the screen")
-        print("  /exit                Exit chat")
-        print()
-        print("Run \033[36mtrio help\033[0m for the full command reference.\n")
-
-    async def _slash_provider(self, arg: str) -> None:
-        """Show or switch provider."""
-        from triobot.core.config import load_config, save_config
-
-        cfg = load_config()
-        current = cfg.get("agents", {}).get("defaults", {}).get("provider", "trio")
-
-        if not arg:
-            print(f"\nCurrent provider: \033[36m{current}\033[0m")
-            print("Available: trio, ollama, openai, anthropic, gemini, groq, deepseek, openrouter, github_models")
-            print("Switch with: /provider <name>\n")
-            return
-
-        new_provider = arg.lower().strip()
-        cfg.setdefault("agents", {}).setdefault("defaults", {})["provider"] = new_provider
-        save_config(cfg)
-        print(f"\n✓ Provider switched to: \033[36m{new_provider}\033[0m")
-        print("Restart 'trio agent' for the change to take effect.\n")
-
-    async def _slash_model(self, arg: str) -> None:
-        """Show or switch model."""
-        from triobot.core.config import load_config, save_config
-
-        cfg = load_config()
-        current = cfg.get("agents", {}).get("defaults", {}).get("model", "trio-max")
-
-        if not arg:
-            print(f"\nCurrent model: \033[36m{current}\033[0m")
-            print("Built-in: trio-nano, trio-small, trio-medium, trio-high, trio-max, trio-pro")
-            print("Switch with: /model <name>\n")
-            return
-
-        new_model = arg.strip()
-        cfg.setdefault("agents", {}).setdefault("defaults", {})["model"] = new_model
-        save_config(cfg)
-        print(f"\n✓ Model switched to: \033[36m{new_model}\033[0m")
-        print("Restart 'trio agent' for the change to take effect.\n")
-
-    async def _slash_skill(self, arg: str) -> None:
-        """List or install skills."""
-        if not arg or arg == "list":
-            from triobot.core.config import get_skills_dir
-            skills_dir = get_skills_dir()
-            files = list(skills_dir.glob("*.md")) if skills_dir.is_dir() else []
-            if not files:
-                print("\nNo skills installed yet.")
-                print("Browse: \033[36mtrio hub trending\033[0m")
-                print("Install: \033[36m/skill install <name>\033[0m\n")
-                return
-            print(f"\nInstalled skills ({len(files)}):")
-            for f in sorted(files)[:50]:
-                print(f"  • {f.stem}")
-            if len(files) > 50:
-                print(f"  ... and {len(files) - 50} more")
-            print()
-            return
-
-        if arg.startswith("install "):
-            skill_name = arg[len("install "):].strip()
-            print(f"\nTo install '{skill_name}', run in a separate terminal:")
-            print(f"  \033[36mtrio skill install {skill_name}\033[0m\n")
-            return
-
-        print("\nUsage: /skill list | /skill install <name>\n")
+    async def _route_to_llm(self, text: str) -> None:
+        """Publish `text` to the bus and wait for the response to complete."""
+        self._response_done.clear()
+        await self.publish_inbound(
+            chat_id="cli_user",
+            user_id="cli_user",
+            content=text,
+        )
+        try:
+            await asyncio.wait_for(self._response_done.wait(), timeout=300)
+        except asyncio.TimeoutError:
+            print("\n[timeout — no response after 5 minutes]\n")
+        print()  # Blank line before next prompt
 
     def set_session_name(self, name: str | None):
         """Set the current session name for the prompt."""

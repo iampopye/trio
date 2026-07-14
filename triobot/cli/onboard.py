@@ -297,57 +297,49 @@ def _setup_local_gguf(config: dict):
         console.print("    For GPU:      [cyan]CMAKE_ARGS=\"-DGGML_CUDA=on\" pip install llama-cpp-python[/cyan]")
         console.print()
 
-    # List available GGUF models
+    # List available GGUF models — triobot ships none; you bring your own.
     available = _list_gguf_models()
-    if available:
-        console.print(f"\n  Found {len(available)} GGUF model(s):")
-        for idx, name in enumerate(available, 1):
-            console.print(f"    [cyan]{idx}[/cyan]. {name}")
-        console.print()
-
-    # Choose model — full trio lineup
-    TRIO_MODELS = [
-        ("trio-nano",   "3B",  "1.8GB", "Ultra-fast, edge/mobile"),
-        ("trio-small",  "4B",  "2.8GB", "Lightweight, everyday tasks"),
-        ("trio-medium", "8B",  "5GB",   "Balanced quality + speed"),
-        ("trio-high",   "9B",  "5.5GB", "High quality, multimodal"),
-        ("trio-max",    "12B", "7GB",   "Best on consumer GPU"),
-        ("trio-pro",    "30B", "17GB",  "Premium, pro workloads"),
-    ]
-
-    console.print("  [bold]Choose a trio model:[/bold]")
-    console.print()
-    for i, (name, params, size, desc) in enumerate(TRIO_MODELS, 1):
-        detected = _find_gguf_model(model_name=name)
-        tag = "[green][ready][/green]" if detected else f"[dim][download ~{size}][/dim]"
-        rec = " [yellow](recommended)[/yellow]" if name == "trio-small" else ""
-        console.print(f"    [cyan]{i}[/cyan]  [bold]{name}[/bold]  [dim]({params})[/dim]  {desc}  {tag}{rec}")
-    console.print(f"    [cyan]7[/cyan]  Custom path to a .gguf file")
-    console.print()
-
-    model_choice = Prompt.ask("  Model", choices=[str(i) for i in range(1, 8)], default="2")
 
     model_name = ""
     model_path = ""
 
-    choice_idx = int(model_choice) - 1
-    if choice_idx < len(TRIO_MODELS):
-        model_name = TRIO_MODELS[choice_idx][0]
-        detected = _find_gguf_model(model_name=model_name)
-        if detected:
-            model_path = detected
-            console.print(f"  [green]OK[/green] Found: {detected}")
+    if available:
+        console.print(f"\n  Found {len(available)} GGUF model(s) in your model dirs:")
+        for idx, name in enumerate(available, 1):
+            console.print(f"    [cyan]{idx}[/cyan]. {name}")
+        custom_idx = len(available) + 1
+        console.print(f"    [cyan]{custom_idx}[/cyan]. Custom path to a .gguf file")
+        console.print()
+
+        choice = Prompt.ask(
+            "  Model",
+            choices=[str(i) for i in range(1, custom_idx + 1)],
+            default="1",
+        )
+        choice_idx = int(choice) - 1
+        if choice_idx < len(available):
+            model_name = available[choice_idx].replace(".gguf", "")
+            model_path = _find_gguf_model(model_name=model_name) or ""
+            console.print(f"  [green]OK[/green] Selected: {available[choice_idx]}")
         else:
-            console.print(f"  [yellow]![/yellow] {model_name} not downloaded yet.")
-            console.print(f"    Run: [cyan]trio train --setup --model {model_name}[/cyan]")
+            model_path = Prompt.ask("  Path to .gguf file")
+            if model_path and os.path.isfile(model_path):
+                model_name = os.path.basename(model_path).replace(".gguf", "")
+                console.print(f"  [green]OK[/green] Found: {model_path}")
+            else:
+                console.print(f"  [yellow]! File not found: {model_path}[/yellow]")
+                model_name = "custom"
     else:
-        model_path = Prompt.ask("  Path to .gguf file")
+        console.print("\n  [yellow]No GGUF models found in ~/.trio/models/.[/yellow]")
+        console.print("  Download a .gguf model (e.g. from HuggingFace) and place it there,")
+        console.print("  or point to one now.\n")
+        model_path = Prompt.ask("  Path to .gguf file (leave blank to set later)", default="")
         if model_path and os.path.isfile(model_path):
             model_name = os.path.basename(model_path).replace(".gguf", "")
             console.print(f"  [green]OK[/green] Found: {model_path}")
-        else:
+        elif model_path:
             console.print(f"  [yellow]! File not found: {model_path}[/yellow]")
-            model_name = "custom"
+            model_name = os.path.basename(model_path).replace(".gguf", "")
 
     # GPU layers
     console.print()
@@ -632,7 +624,7 @@ def _step_system_check() -> None:
     gpu_layers = get_gpu_layers(hw, rec["size_gb"])
     layer_desc = "full GPU offload" if gpu_layers >= 999 else f"{gpu_layers} GPU layers" if gpu_layers > 0 else "CPU only"
     console.print()
-    console.print(f"  [bold yellow]>>>[/bold yellow]  Recommended model: [bold green]{rec['name']}[/bold green] "
+    console.print(f"  [bold yellow]>>>[/bold yellow]  Suggested model [dim](pull via Ollama)[/dim]: [bold green]{rec['name']}[/bold green] "
                   f"[dim]({rec['params']}, ~{rec['size_gb']} GB, {layer_desc})[/dim]")
     console.print(f"       [dim]{rec['reason']}[/dim]")
 
@@ -640,111 +632,71 @@ def _step_system_check() -> None:
     return ollama_info
 
 
-def _check_trio_models() -> list[str]:
-    """Check which trio GGUF models are available locally."""
-    from pathlib import Path
-    search_dirs = [
-        Path.home() / ".trio" / "models",
-        Path(__file__).resolve().parent.parent.parent / "models",
-    ]
-    all_tiers = ["trio-nano", "trio-small", "trio-medium", "trio-high", "trio-max", "trio-pro"]
-    found = []
-    for d in search_dirs:
-        if not d.is_dir():
-            continue
-        for name in all_tiers:
-            if (d / f"{name}-q4_k_m.gguf").is_file() or (d / f"{name}.gguf").is_file():
-                if name not in found:
-                    found.append(name)
-    return found
-
-
 def _step_provider(config: dict, ollama_info: dict | None) -> None:
-    """Step 2/6: AI Model selection."""
+    """Step 2/6: AI Provider selection (provider-agnostic — bring your own model)."""
     from triobot.core.hardware import detect_hardware, recommend_model
 
     console.print(Panel(
-        "[bold white]Step 2/6[/bold white]  [bold cyan]AI Model[/bold cyan]",
+        "[bold white]Step 2/6[/bold white]  [bold cyan]AI Provider[/bold cyan]",
         border_style="cyan", box=box.HEAVY,
     ))
 
-    # Check for local trio models
-    trio_models = _check_trio_models()
-
-    # Get hardware-based recommendation
+    # Hardware-based suggestion (a real, pullable open model — advisory only)
     hw = detect_hardware()
     hw_rec = recommend_model(hw)
-    recommended_name = hw_rec["name"]
+    suggested = hw_rec["name"]
 
-    TRIO_LINEUP = [
-        ("trio-nano",   "3B",  "1.8GB", "Ultra-fast, edge/mobile"),
-        ("trio-small",  "4B",  "2.8GB", "Everyday tasks"),
-        ("trio-medium", "8B",  "5GB",   "Balanced quality + speed"),
-        ("trio-high",   "9B",  "5.5GB", "High quality, multimodal"),
-        ("trio-max",    "12B", "7GB",   "Best on consumer GPU"),
-        ("trio-pro",    "30B", "17GB",  "Premium, pro workloads"),
-    ]
-
-    # Find default choice index (1-based) for the recommended model
-    rec_index = next((i for i, (n, *_) in enumerate(TRIO_LINEUP, 1) if n == recommended_name), 2)
-
+    console.print("  triobot is provider-agnostic — you bring your own model.\n")
     console.print("  Choose how to power your AI:\n")
-    console.print("    [bold cyan]--- trio models (free, runs on your machine) ---[/bold cyan]")
-
-    for i, (name, params, size, desc) in enumerate(TRIO_LINEUP, 1):
-        ready = name in trio_models
-        tag = "[green][ready][/green]" if ready else f"[dim][download ~{size}][/dim]"
-        rec = " [yellow]*recommended for your hardware*[/yellow]" if name == recommended_name else ""
-        console.print(f"    [cyan]{i}[/cyan]  [bold]{name}[/bold]  [dim]({params})[/dim]  {desc}  {tag}{rec}")
-
+    console.print("    [bold cyan]--- local (free, runs on your machine) ---[/bold cyan]")
+    console.print("    [cyan]1[/cyan]  Ollama            [dim]bring your own model (e.g. llama3.1:8b)[/dim]")
+    console.print("    [cyan]2[/cyan]  Local GGUF file   [dim]llama-cpp-python, point to a .gguf[/dim]")
     console.print()
     console.print("    [bold cyan]--- bring your own API key ---[/bold cyan]")
-    console.print("    [cyan]7[/cyan]  OpenAI  [dim](GPT-4o, GPT-4)[/dim]")
-    console.print("    [cyan]8[/cyan]  Anthropic  [dim](Claude Sonnet, Opus)[/dim]")
-    console.print("    [cyan]9[/cyan]  Google Gemini  [dim](Gemini 2.5 Pro/Flash)[/dim]")
-    console.print("    [cyan]10[/cyan] Groq / OpenRouter  [dim](any OpenAI-compatible API)[/dim]")
+    console.print("    [cyan]3[/cyan]  OpenAI  [dim](GPT-4o, GPT-4)[/dim]")
+    console.print("    [cyan]4[/cyan]  Anthropic  [dim](Claude Sonnet, Opus)[/dim]")
+    console.print("    [cyan]5[/cyan]  Google Gemini  [dim](Gemini 2.5 Pro/Flash)[/dim]")
+    console.print("    [cyan]6[/cyan]  Groq / OpenRouter / other  [dim](any OpenAI-compatible API)[/dim]")
 
-    max_choice = 10
     if ollama_info and ollama_info.get("models"):
         console.print()
-        console.print("    [bold cyan]--- detected on this machine ---[/bold cyan]")
-        model_list = ", ".join(ollama_info["models"][:5])
-        console.print(f"    [cyan]11[/cyan] Ollama  [dim]({model_list})[/dim]")
-        max_choice = 11
+        console.print(
+            "    [dim]Detected Ollama models: "
+            f"{', '.join(ollama_info['models'][:5])}[/dim]"
+        )
 
     console.print()
+    console.print(
+        f"  [dim]Suggested for your hardware: [green]{suggested}[/green] "
+        f"(~{hw_rec['size_gb']} GB) — pull it via Ollama with "
+        f"'ollama pull {suggested}'.[/dim]"
+    )
+    console.print()
 
-    choice = Prompt.ask("  Choose", choices=[str(i) for i in range(1, max_choice + 1)], default=str(rec_index))
+    choice = Prompt.ask("  Choose", choices=[str(i) for i in range(1, 7)], default="1")
     choice_num = int(choice)
 
-    if choice_num <= 6:
-        model_name = TRIO_LINEUP[choice_num - 1][0]
-        model_installed = model_name in trio_models
+    if choice_num == 1:
+        base_default = ollama_info.get("url", "http://localhost:11434") if ollama_info else "http://localhost:11434"
+        if ollama_info and ollama_info.get("models"):
+            model_default = _pick_best_model(ollama_info["models"])
+        else:
+            model_default = suggested
+        base_url = Prompt.ask("  Ollama URL", default=base_default)
+        model = Prompt.ask("  Model", default=model_default)
+        config["providers"]["ollama"] = {
+            "base_url": base_url,
+            "default_model": model,
+        }
+        config["agents"]["defaults"]["provider"] = "ollama"
+        config["agents"]["defaults"]["model"] = model
+        console.print(f"\n  [green][OK] Provider: ollama ({model})[/green]")
+        console.print(f"  [dim]If it isn't pulled yet: ollama pull {model}[/dim]")
 
-        if not model_installed:
-            console.print(f"\n  [dim]Downloading {model_name}...[/dim]")
-            console.print(f"  [dim]This is a one-time download. Grab a coffee.[/dim]\n")
-            try:
-                import subprocess, sys  # nosec B404
-                script = Path(__file__).resolve().parent.parent.parent / "scripts" / "setup_models.py"
-                result = subprocess.run(  # nosec B603 B607
-                    [sys.executable, str(script), "--model", model_name],
-                    timeout=1200,
-                )
-                if result.returncode == 0:
-                    console.print(f"  [green][OK][/green] {model_name} downloaded and ready!")
-                else:
-                    console.print(f"  [yellow]Download had issues. Retry: trio train --setup --model {model_name}[/yellow]")
-            except Exception as e:
-                console.print(f"  [yellow]Download failed: {e}[/yellow]")
-                console.print(f"  [dim]Run later: trio train --setup --model {model_name}[/dim]")
+    elif choice_num == 2:
+        _setup_local_gguf(config)
 
-        config["providers"]["trio"] = {"default_model": model_name}
-        config["agents"]["defaults"]["provider"] = "trio"
-        config["agents"]["defaults"]["model"] = model_name
-        console.print(f"\n  [green][OK] Model: {model_name} (runs locally, no internet needed)[/green]")
-
-    elif choice_num == 7:
+    elif choice_num == 3:
         api_key = Prompt.ask("  OpenAI API key")
         model = Prompt.ask("  Model", default="gpt-4o")
         config["providers"]["openai"] = {"apiKey": api_key, "default_model": model}
@@ -752,7 +704,7 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
         config["agents"]["defaults"]["model"] = model
         console.print(f"\n  [green][OK] Provider: openai ({model})[/green]")
 
-    elif choice_num == 8:
+    elif choice_num == 4:
         api_key = Prompt.ask("  Anthropic API key")
         model = Prompt.ask("  Model", default="claude-sonnet-4-6")
         config["providers"]["anthropic"] = {"apiKey": api_key, "default_model": model}
@@ -760,7 +712,7 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
         config["agents"]["defaults"]["model"] = model
         console.print(f"\n  [green][OK] Provider: anthropic ({model})[/green]")
 
-    elif choice_num == 9:
+    elif choice_num == 5:
         api_key = Prompt.ask("  Gemini API key")
         model = Prompt.ask("  Model", default="gemini-2.5-flash")
         config["providers"]["gemini"] = {"apiKey": api_key, "default_model": model}
@@ -768,22 +720,8 @@ def _step_provider(config: dict, ollama_info: dict | None) -> None:
         config["agents"]["defaults"]["model"] = model
         console.print(f"\n  [green][OK] Provider: gemini ({model})[/green]")
 
-    elif choice_num == 10:
+    elif choice_num == 6:
         _setup_provider_manual(config)
-
-    elif choice_num == 11 and ollama_info:
-        best = _pick_best_model(ollama_info["models"])
-        if len(ollama_info["models"]) > 1:
-            model = Prompt.ask("  Ollama model", default=best)
-        else:
-            model = best
-        config["providers"]["ollama"] = {
-            "base_url": ollama_info.get("url", "http://localhost:11434"),
-            "default_model": model,
-        }
-        config["agents"]["defaults"]["provider"] = "ollama"
-        config["agents"]["defaults"]["model"] = model
-        console.print(f"\n  [green][OK] Provider: ollama ({model})[/green]")
 
     console.print()
 

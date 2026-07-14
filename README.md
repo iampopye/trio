@@ -1,11 +1,11 @@
 <h1 align="center">trio.ai</h1>
 
 <p align="center">
-  <strong>Train your own AI. Deploy it everywhere. Own it forever.</strong>
+  <strong>Bring any model. Deploy it everywhere. Own your stack.</strong>
 </p>
 
 <p align="center">
-  The open-source agent framework that lets you train custom LLMs and run them across <strong>17 chat platforms</strong> with <strong>3,876 built-in skills</strong>, <strong>12 tools</strong>, and a <strong>5-layer security guardrail</strong>.
+  The open-source, provider-agnostic agent framework that runs across <strong>17 chat platforms</strong> with <strong>any model you bring</strong> (Ollama or any OpenAI-compatible / API provider), <strong>3,876 built-in skills</strong>, <strong>12 tools</strong>, and a <strong>5-layer security guardrail</strong>.
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 <p align="center">
   <a href="#-quick-start">Quick Start</a> •
-  <a href="#-model-tiers">Models</a> •
+  <a href="#-models--providers">Models</a> •
   <a href="#-skills">Skills</a> •
   <a href="#-channels">Channels</a> •
   <a href="#-commands">Commands</a> •
@@ -31,9 +31,9 @@
 
 ## Why trio.ai
 
-Most AI agent frameworks lock you into one provider, one platform, and someone else's model. **trio.ai is different.**
+Most AI agent frameworks lock you into one provider and one platform. **trio.ai is different — it's provider-agnostic and runs the model *you* choose.**
 
-- **Train your own LLM** — built-in transformer training pipeline (nano to pro, 1M to 30B params)
+- **Bring your own model** — run a local model via Ollama or llama-cpp (GGUF), or plug in any API provider
 - **Use any provider** — Ollama, OpenAI, Claude, Gemini, Groq, DeepSeek, OpenRouter, GitHub Models
 - **Deploy anywhere** — 17 chat channels (Discord, Telegram, Slack, WhatsApp, Teams, SMS, Email, and more)
 - **3,876 built-in skills** — coding, marketing, DevOps, security, finance, data science, legal, health, and more
@@ -41,7 +41,9 @@ Most AI agent frameworks lock you into one provider, one platform, and someone e
 - **Smart routing** — automatically picks local first, free APIs next, paid only if you allow
 - **MCP compatible** — works with Claude Code, Cursor, Zed, Continue, and any MCP client
 
-> **Stop paying per-token. Stop trusting closed-source models. Stop being locked in.**
+> **Roadmap:** a genuine from-scratch trio model is in development (see [Roadmap](#-roadmap)). Until it ships, triobot runs on whatever model you bring.
+
+> **Stop being locked in. Run the model you choose, on the platform you choose.**
 
 ---
 
@@ -54,7 +56,7 @@ pip install triobot
 trio onboard
 ```
 
-That's it. `trio onboard` walks you through provider setup, model download, and channel configuration in under 2 minutes.
+That's it. `trio onboard` walks you through provider setup (bring your own model), and channel configuration in under 2 minutes.
 
 ### Start chatting
 
@@ -82,43 +84,40 @@ trio onboard
 
 ---
 
-## 🧠 Model Tiers
+## 🧠 Models & Providers
 
-trio.ai ships with **6 built-in model tiers** you can train, download, or run locally via Ollama:
+trio.ai is **provider-agnostic** — it ships no models of its own. You bring the
+model you want to run, whether that's a local model via **Ollama** or **llama-cpp
+(GGUF)**, or a hosted model from any **OpenAI-compatible / API provider**.
 
-| Tier | Params | Size (Q4) | Hardware | Best For |
-|------|--------|-----------|----------|----------|
-| **trio-nano** | ~1M | 600 MB | CPU, 4 GB RAM | Embedded devices, IoT, testing |
-| **trio-small** | ~125M | 1.2 GB | CPU/GPU, 8 GB RAM | Lightweight chat, edge deployment |
-| **trio-medium** | ~350M | 2.5 GB | GPU/Apple Silicon | Personal assistant, coding helper |
-| **trio-high** | ~750M | 5.0 GB | RTX 3060+, M2+ | Production workloads |
-| **trio-max** | ~3B | 5.6 GB | RTX 4070+, M3+ | Enterprise tasks, complex reasoning |
-| **trio-pro** | ~30B (MoE) | 18 GB | RTX 4090, A100 | Research, advanced agentic workflows |
+| Provider | Type | Example models |
+|----------|------|----------------|
+| **Ollama** | Local, free | `llama3.1:8b`, `qwen2.5:14b`, `mistral`, `phi3`, any model you `ollama pull` |
+| **Local GGUF** | Local, free | any `.gguf` file via llama-cpp-python |
+| **OpenAI** | API | `gpt-4o`, `gpt-4o-mini` |
+| **Anthropic** | API | `claude-sonnet-4`, `claude-opus-4` |
+| **Google Gemini** | API | `gemini-2.5-pro`, `gemini-2.5-flash` |
+| **Groq / OpenRouter / DeepSeek / GitHub Models** | API | any OpenAI-compatible model |
+
+`trio onboard` will detect your hardware and **suggest** a suitable open model to
+pull via Ollama — the suggestion is advisory; run whatever you like.
 
 ### Switch models on the fly
 
 ```bash
-# Set default model
-trio provider set --model trio-max
+# Set the default model (bring your own — any name your provider serves)
+trio provider set --provider ollama --model llama3.1:8b
 
 # Or use any external provider
 trio provider set --provider openai --model gpt-4o
 trio provider set --provider anthropic --model claude-opus-4-6
 trio provider set --provider gemini --model gemini-2.5-pro
-trio provider set --provider ollama --model llama3.1:8b
 
-# In-chat: switch with the /provider slash command
+# In-chat: switch with slash commands
 trio agent
 > /provider                       # Open provider picker
-> /model trio-max                 # Quick model switch
-```
-
-### Train your own
-
-```bash
-pip install triobot[model]
-trio train --setup                 # Download pre-quantized models
-trio train                          # Train from scratch (resume with Ctrl+C)
+> /models                         # List models your provider offers
+> /model llama3.1:8b              # Quick model switch
 ```
 
 ---
@@ -273,7 +272,7 @@ trio serve                                # Browser UI on port 28337
 # Models & Providers
 trio provider list                        # Show configured providers
 trio provider add                         # Add a new LLM provider
-trio provider set --model trio-max        # Set default model
+trio provider set --model llama3.1:8b     # Set default model (bring your own)
 
 # Skills
 trio skill list                           # Installed skills
@@ -291,9 +290,8 @@ trio gateway                              # Start all enabled channels
 trio daemon install                       # Auto-start on boot
 trio daemon start | stop | restart        # Control the daemon
 
-# Training
-trio train --setup                        # Download pre-trained models
-trio train                                # Train from scratch
+# Training (experimental — from-scratch trio model, see Roadmap)
+trio train                                # Train from scratch (resume with Ctrl+C)
 trio train --reset                        # Restart training
 
 # Maintenance
@@ -347,7 +345,8 @@ graph TB
 
 | Feature | trio.ai | Claude Code | OpenClaude | LangChain |
 |---------|:-------:|:-----------:|:----------:|:---------:|
-| Train your own LLM | ✅ | ❌ | ❌ | ❌ |
+| Provider-agnostic (bring any model) | ✅ | ❌ | ✅ | ✅ |
+| From-scratch training engine (experimental) | ✅ | ❌ | ❌ | ❌ |
 | 17 chat channels | ✅ | ❌ | ❌ | ⚠️ |
 | Built-in skills (3,876+) | ✅ | ❌ | ❌ | ❌ |
 | Multi-provider | ✅ | ❌ | ✅ | ✅ |
@@ -409,17 +408,32 @@ trio/
 │   ├── shared/                 #   Guardrails, pairing, security
 │   ├── cli/                    #   13 CLI commands
 │   └── web/                    #   Browser UI (aiohttp)
-├── trio_model/                 # LLM training engine
+├── trio_model/                 # From-scratch training engine (experimental)
 │   ├── model/                  #   Transformer (RoPE, GQA, RMSNorm, SwiGLU)
 │   ├── training/               #   Pre-train, SFT, Constitutional AI
 │   └── inference/              #   FastAPI inference server
 ├── triohub/                    # Community skill/plugin registry
 ├── COMMANDS.md                 # Full command reference
 ├── INSTALL.md                  # Platform-specific install guides
-├── BENCHMARKS.md               # Performance & cost comparisons
 ├── SECURITY.md                 # Security policy
 └── NOTICE                      # Third-party attributions
 ```
+
+---
+
+## 🗺 Roadmap
+
+trio.ai is a provider-agnostic framework today. On the roadmap:
+
+- **A genuine from-scratch trio model** — the training engine in `trio_model/`
+  (transformer with RoPE, GQA, RMSNorm, SwiGLU) is real and usable for
+  experimentation via `trio train`, but no trained trio model has shipped yet.
+  When one is ready, it will be published openly with honest, reproducible
+  benchmarks — until then, bring your own model.
+- **Published benchmarks** — real numbers for the trio model once it exists.
+
+We'd rather ship an honest framework now and a real model when it's genuinely
+ready than overclaim. If you see a stale claim anywhere, please open an issue.
 
 ---
 
@@ -453,7 +467,7 @@ trio.ai is released under the **MIT License**. See [LICENSE](LICENSE) for detail
 ---
 
 <p align="center">
-  <strong>Built from scratch. Train it. Deploy it. Own it.</strong>
+  <strong>Provider-agnostic. Bring your model. Deploy it everywhere. Own your stack.</strong>
 </p>
 
 <p align="center">

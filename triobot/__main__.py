@@ -81,7 +81,7 @@ def main():
     from triobot import __version__
     parser = argparse.ArgumentParser(
         prog="trio",
-        description="trio.ai - train your own AI, deploy it everywhere",
+        description="triobot - a provider-agnostic AI agent framework, deploy it everywhere",
     )
     parser.add_argument("--version", "-V", action="version", version=f"trio {__version__}")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
@@ -195,18 +195,16 @@ def main():
     repo_search.add_argument("query", help="Search query (filename pattern)")
 
     # trio train
-    train_parser = subparsers.add_parser("train", help="Train or retrain the trio-max model")
+    train_parser = subparsers.add_parser("train", help="Train the from-scratch trio model (experimental)")
     train_parser.add_argument("--reset", action="store_true", help="Start fresh, ignore saved progress")
-    train_parser.add_argument("--setup", action="store_true", help="Download and install trio-max/nano via Ollama")
 
     # trio launch (alias of standalone `triobot` command)
     launch_parser = subparsers.add_parser(
         "launch",
-        help="Pick a trio tier, auto-download via Ollama, drop into chat",
+        help="Launch chat with your configured provider (run 'trio onboard' first)",
     )
-    launch_parser.add_argument("--tier", default=None, help="Skip the picker and use this tier")
     launch_parser.add_argument("--no-launch", action="store_true",
-                               help="Register the model but don't open chat")
+                               help="Report the configured provider/model but don't open chat")
 
     args = parser.parse_args()
 
@@ -284,34 +282,23 @@ def main():
 
     elif args.command == "launch":
         from triobot.cli.launch_cmd import run_launch
-        sys.exit(asyncio.run(run_launch(
-            tier_name=args.tier,
-            no_launch=args.no_launch,
-        )))
+        sys.exit(asyncio.run(run_launch(no_launch=args.no_launch)))
 
     elif args.command == "train":
-        if args.setup:
-            # Download pre-quantized GGUF models and register with Ollama
-            import subprocess  # nosec B404
-            script = os.path.join(os.path.dirname(__file__), "..", "scripts", "setup_models.py")
-            script = os.path.normpath(script)
-            if not os.path.exists(script):
-                print("[trio.ai] Error: setup_models.py not found at", script)
-                sys.exit(1)
-            print("[trio.ai] Setting up trio-max and trio-nano via Ollama...\n")
-            subprocess.run([sys.executable, "-u", script])  # nosec B603 B607
-        else:
-            # Train from scratch using local training pipeline
-            import subprocess  # nosec B404
-            script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
-            if not os.path.exists(script):
-                script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
-            cmd = [sys.executable, "-u", script]
-            if args.reset:
-                cmd.append("--reset")
-            print("[trio.ai] Starting model training...")
-            print("[trio.ai] You can pause anytime (Ctrl+C) and resume with: trio train\n")
-            subprocess.run(cmd)  # nosec B603 B607
+        # Train the from-scratch trio model using the local training pipeline
+        # (trio_model/). This is genuine, experimental training — not a download.
+        import subprocess  # nosec B404
+        script = os.path.join(os.path.dirname(__file__), "..", "scripts", "train_default_model.py")
+        script = os.path.normpath(script)
+        if not os.path.exists(script):
+            print("[trio.ai] Error: train_default_model.py not found at", script)
+            sys.exit(1)
+        cmd = [sys.executable, "-u", script]
+        if args.reset:
+            cmd.append("--reset")
+        print("[trio.ai] Starting from-scratch model training (experimental)...")
+        print("[trio.ai] You can pause anytime (Ctrl+C) and resume with: trio train\n")
+        subprocess.run(cmd)  # nosec B603 B607
 
 
 if __name__ == "__main__":

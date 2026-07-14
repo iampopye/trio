@@ -30,9 +30,9 @@ class SubAgentConfig:
     Each sub-agent can use a different LLM provider/model for cost
     optimization. For example:
         - researcher → free/cheap (DeepSeek, Groq, Gemini Flash)
-        - coder → high quality (Claude, GPT-4o, trio-pro)
-        - summarizer → fast/cheap (trio-nano, Gemini Flash)
-        - reviewer → balanced (trio-max, GPT-4o-mini)
+        - coder → high quality (Claude, GPT-4o)
+        - summarizer → fast/cheap (Gemini Flash, a small local Ollama model)
+        - reviewer → balanced (GPT-4o-mini, a mid-size local model)
     """
 
     name: str                       # e.g., "researcher", "coder", "reviewer"

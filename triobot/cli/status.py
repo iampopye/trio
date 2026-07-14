@@ -37,20 +37,23 @@ async def run_status():
 
     # Provider
     defaults = config.get("agents", {}).get("defaults", {})
-    provider = defaults.get("provider", "trio")
+    provider = defaults.get("provider", "ollama")
     model = defaults.get("model", "?")
     console.print(f"\nProvider: [cyan]{provider}[/cyan]")
     console.print(f"Default model: [cyan]{model}[/cyan]")
 
     # Check provider status
-    if provider == "trio":
+    if provider in ("trio", "local"):
         from pathlib import Path as _P
         model_dir = _P.home() / ".trio" / "models"
-        found = list(model_dir.glob("*.pt")) if model_dir.exists() else []
+        found = (
+            list(model_dir.glob("*.gguf")) + list(model_dir.glob("*.pt"))
+            if model_dir.exists() else []
+        )
         if found:
-            console.print(f"trio-max: [green]ready[/green]")
+            console.print(f"Local model: [green]{len(found)} file(s) found[/green] in ~/.trio/models/")
         else:
-            console.print("trio-max: [yellow]will deploy on first use[/yellow]")
+            console.print("Local model: [yellow]none found[/yellow] — add a .gguf to ~/.trio/models/")
     elif provider == "ollama":
         base_url = config.get("providers", {}).get("ollama", {}).get("base_url", "http://localhost:11434")
         try:

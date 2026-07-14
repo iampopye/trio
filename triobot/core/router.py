@@ -471,7 +471,8 @@ class ModelRouter:
 
         if name in ("local", "trio"):
             cfg = dict(providers_cfg.get("local", providers_cfg.get("trio", {})))
-            cfg.setdefault("default_model", "trio-max")
+            # No bundled model — auto-detect any local GGUF ("" = discover).
+            cfg.setdefault("default_model", "")
             return cfg
 
         if name == "ollama":

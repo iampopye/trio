@@ -141,7 +141,7 @@ async def security_headers_middleware(request: web.Request, handler):
     return resp
 
 SYSTEM_PROMPT = (
-    "You are trio-max, an advanced AI assistant created by trio.ai. "
+    "You are triobot, a helpful AI assistant. "
     "You are helpful, accurate, and thorough. You can help with coding, "
     "writing, analysis, math, search, and general questions. "
     "Keep responses clear and well-formatted using markdown."
@@ -166,7 +166,7 @@ def _create_provider(config: dict):
     if provider_name == "local":
         from triobot.providers.local import LocalProvider
         pc = config.get("providers", {}).get("local", {})
-        pc.setdefault("default_model", "trio-max")
+        pc.setdefault("default_model", "")  # auto-detect any local GGUF
         return LocalProvider(pc)
     elif provider_name in ("ollama", "trio"):
         from triobot.providers.ollama import OllamaProvider
@@ -422,7 +422,7 @@ async def api_approvals_history(request):
 # ── Hardware Detection ────────────────────────────────────────────────────────
 
 async def api_hardware(request):
-    """GET /api/hardware -- detect hardware and recommend optimal trio model."""
+    """GET /api/hardware -- detect hardware and suggest a suitable open model."""
     from triobot.core.hardware import detect_hardware, recommend_model, get_gpu_layers
     hw = detect_hardware()
     rec = recommend_model(hw)
@@ -461,7 +461,6 @@ async def api_help(request):
             "readme": "https://github.com/iampopye/trio/blob/main/README.md",
             "commands": "https://github.com/iampopye/trio/blob/main/COMMANDS.md",
             "install": "https://github.com/iampopye/trio/blob/main/INSTALL.md",
-            "benchmarks": "https://github.com/iampopye/trio/blob/main/BENCHMARKS.md",
             "security": "https://github.com/iampopye/trio/blob/main/SECURITY.md",
         },
     })
@@ -471,8 +470,8 @@ async def api_status(request):
     config = request.app["config"]
     return web.json_response({
         "status": "running",
-        "provider": config.get("provider", "local"),
-        "model": config.get("model", "trio-max"),
+        "provider": config.get("provider", "ollama"),
+        "model": config.get("model", ""),
         "sessions": len(request.app["sessions"]),
         "version": "0.2.1",
     })
@@ -917,7 +916,7 @@ async def api_models(request):
     gguf = _list_gguf_models()
 
     config = request.app["config"]
-    active = config.get("model", "trio-max")
+    active = config.get("model", "")
 
     models = []
     for name in gguf:
@@ -932,7 +931,7 @@ async def api_models(request):
         models.append({
             "name": name,
             "size_mb": round(size_mb),
-            "active": name.startswith(active.replace("-", "_")) or active in name,
+            "active": bool(active) and (name.startswith(active.replace("-", "_")) or active in name),
             "path": model_path,
         })
 
@@ -974,8 +973,8 @@ async def api_settings(request):
         "memory": config.get("memory", {}).get("enabled", True),
         "session_persistence": config.get("sessions", {}).get("persist", True),
         "deep_thinking": config.get("deep_thinking", False),
-        "provider": config.get("provider", "local"),
-        "model": config.get("model", "trio-max"),
+        "provider": config.get("provider", "ollama"),
+        "model": config.get("model", ""),
     })
 
 
@@ -1169,10 +1168,10 @@ async def api_chat_history(request):
 
 SUPPORTED_PROVIDERS = {
     "local": {
-        "name": "trio models (Local)",
-        "desc": "Free, runs on your machine. 6 tiers: nano (3B), small (4B), medium (8B), high (9B), max (12B), pro (30B MoE).",
-        "fields": [],
-        "models": ["trio-nano", "trio-small", "trio-medium", "trio-high", "trio-max", "trio-pro"],
+        "name": "Local GGUF",
+        "desc": "Free, runs on your machine via llama-cpp-python. Point to any .gguf file you have.",
+        "fields": [{"key": "model_path", "label": "GGUF path", "placeholder": "/path/to/model.gguf"}],
+        "models": [],
         "free": True,
     },
     "openai": {
@@ -1224,7 +1223,7 @@ SUPPORTED_PROVIDERS = {
 async def api_providers(request):
     """GET /api/providers -- list all supported providers with config status."""
     config = request.app["config"]
-    current = config.get("provider", "local")
+    current = config.get("provider", "ollama")
     providers_cfg = config.get("providers", {})
 
     result = []

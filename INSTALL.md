@@ -142,11 +142,14 @@ trio onboard
 
 ### Apple Silicon (M1/M2/M3/M4)
 
-trio.ai uses Metal Performance Shaders (MPS) for GPU acceleration on Apple Silicon. No extra setup needed.
+trio.ai is provider-agnostic — bring your own model. On Apple Silicon, the
+easiest local path is Ollama, which uses Metal (MPS) GPU acceleration automatically.
 
 ```bash
-pip install triobot[model]
-trio train --setup    # Downloads MPS-optimized models
+pip install triobot
+# Install Ollama from https://ollama.com, then pull any model:
+ollama pull llama3.1:8b
+trio onboard          # Select Ollama and point it at your model
 ```
 
 ### Intel Macs
@@ -370,11 +373,11 @@ pip install triobot
 
 ### CUDA out of memory
 
-Switch to a smaller model tier:
+Switch to a smaller model (pull a lighter one via Ollama):
 
 ```bash
-trio provider set --model trio-nano    # CPU-friendly, ~600 MB
-trio provider set --model trio-small   # 1.2 GB
+ollama pull llama3.2:1b                        # Ultra-light, CPU-friendly
+trio provider set --provider ollama --model llama3.2:1b
 ```
 
 Or enable CPU offloading via Ollama:

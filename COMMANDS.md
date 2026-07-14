@@ -107,7 +107,6 @@ Set the default provider and model.
 
 ```bash
 trio provider set --provider ollama --model llama3.1:8b
-trio provider set --model trio-max
 trio provider set --provider openai --model gpt-4o
 trio provider set --provider anthropic --model claude-opus-4-6
 ```
@@ -119,16 +118,23 @@ OAuth login for providers that support it (e.g., GitHub Models).
 trio provider login              # Interactive OAuth flow
 ```
 
-### Built-in trio model tiers
+### Models are provider-defined
 
-| Command | What it does |
-|---------|--------------|
-| `trio provider set --model trio-nano` | Use the 1M-param model (CPU, 4GB RAM) |
-| `trio provider set --model trio-small` | Use the 125M model (8GB RAM) |
-| `trio provider set --model trio-medium` | Use the 350M model (GPU/Apple Silicon) |
-| `trio provider set --model trio-high` | Use the 750M model (RTX 3060+) |
-| `trio provider set --model trio-max` | Use the 3B model (RTX 4070+) |
-| `trio provider set --model trio-pro` | Use the 30B MoE model (RTX 4090+) |
+triobot is provider-agnostic and ships no models of its own — the model is
+whatever your configured provider serves. List what's available and pick one:
+
+```bash
+trio agent
+> /models                        # List models the current provider offers
+> /model llama3.1:8b            # Switch to any model your provider serves
+```
+
+For a local, free setup, install [Ollama](https://ollama.com) and pull a model:
+
+```bash
+ollama pull llama3.1:8b
+trio provider set --provider ollama --model llama3.1:8b
+```
 
 ---
 
@@ -254,17 +260,15 @@ trio heartbeat edit              # Edit ~/.trio/HEARTBEAT.md
 
 ---
 
-## Training
+## Training (experimental)
 
-### `trio train --setup`
-Download pre-trained GGUF models and register them with Ollama.
-
-```bash
-trio train --setup
-```
+triobot ships no models — for day-to-day use, bring a model via Ollama or an API
+provider (see **Provider & Model Management** above). The commands below drive the
+genuine, *experimental* from-scratch training engine in `trio_model/`. A
+production-ready trio model has not shipped yet (see the Roadmap in the README).
 
 ### `trio train`
-Start training a model from scratch using your local data.
+Start (or resume) training a model from scratch using your local data.
 
 ```bash
 trio train                       # Resume from last checkpoint
@@ -344,7 +348,7 @@ When you're inside `trio agent`, use these slash commands:
 |---------|-------------|
 | `/help` | Show all slash commands |
 | `/provider` | Switch LLM provider with an interactive picker |
-| `/model <name>` | Change model (e.g., `/model trio-max`) |
+| `/model <name>` | Change model (e.g., `/model llama3.1:8b`) |
 | `/skill list` | List installed skills |
 | `/skill install <name>` | Install a skill from TrioHub |
 | `/clear` | Clear chat history |
@@ -388,4 +392,3 @@ trio status                      # Show effective config
 - **Discussions**: https://github.com/iampopye/trio/discussions
 - **Security**: See [SECURITY.md](SECURITY.md)
 - **Install Guide**: See [INSTALL.md](INSTALL.md)
-- **Benchmarks**: See [BENCHMARKS.md](BENCHMARKS.md)

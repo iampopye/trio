@@ -1,7 +1,8 @@
-"""trio.ai hardware auto-detection and model recommendation engine.
+"""triobot hardware auto-detection and model-size recommendation engine.
 
-Detects CPU, GPU, RAM across Windows, macOS, and Linux and recommends
-the best trio model tier for the current machine.
+Detects CPU, GPU, RAM across Windows, macOS, and Linux and suggests a
+suitable open model (pullable via Ollama) for the current machine. These are
+advisory suggestions only — triobot is provider-agnostic and ships no models.
 """
 
 # Copyright (c) 2026 Karan Garg. Licensed under MIT. See LICENSE file.
@@ -37,15 +38,18 @@ class HardwareInfo:
         return asdict(self)
 
 
-# ── Trio model tiers ──────────────────────────────────────────────────────────
+# ── Recommended open models by hardware class ────────────────────────────────
+#
+# Real, widely-available open models (pull with `ollama pull <name>`). These are
+# advisory suggestions matched to detected RAM/VRAM — bring any model you like.
 
-TRIO_MODELS = [
-    {"name": "trio-nano",   "params": "3B",  "size_gb": 1.0,  "description": "Ultra-fast, edge/mobile"},
-    {"name": "trio-small",  "params": "4B",  "size_gb": 2.5,  "description": "Everyday tasks"},
-    {"name": "trio-medium", "params": "8B",  "size_gb": 4.7,  "description": "Balanced quality + speed"},
-    {"name": "trio-high",   "params": "9B",  "size_gb": 5.3,  "description": "High quality, multimodal"},
-    {"name": "trio-max",    "params": "12B", "size_gb": 7.0,  "description": "Best on consumer GPU"},
-    {"name": "trio-pro",    "params": "30B", "size_gb": 18.0, "description": "Premium, pro workloads"},
+RECOMMENDED_MODELS = [
+    {"name": "llama3.2:1b",  "params": "1B",  "size_gb": 1.3,  "description": "Ultra-light, CPU-friendly"},
+    {"name": "llama3.2:3b",  "params": "3B",  "size_gb": 2.0,  "description": "Fast, small footprint"},
+    {"name": "llama3.1:8b",  "params": "8B",  "size_gb": 4.7,  "description": "Balanced quality + speed"},
+    {"name": "qwen2.5:14b",  "params": "14B", "size_gb": 9.0,  "description": "Higher quality, more RAM"},
+    {"name": "qwen2.5:32b",  "params": "32B", "size_gb": 20.0, "description": "Strong quality, large GPU"},
+    {"name": "llama3.1:70b", "params": "70B", "size_gb": 40.0, "description": "Top quality, high-end GPU/server"},
 ]
 
 
@@ -274,34 +278,35 @@ def detect_hardware() -> HardwareInfo:
 
 
 def recommend_model(hardware: HardwareInfo) -> dict:
-    """Suggest the best trio model based on detected hardware.
+    """Suggest a suitable open model (via Ollama) based on detected hardware.
 
     Returns a dict with keys: name, params, size_gb, description, reason.
+    The ``name`` is a real, pullable model — a suggestion, not a bundled model.
     """
     ram = hardware.ram_gb
     vram = hardware.gpu_vram_gb
 
-    # GPU with 8GB+ VRAM or 24GB+ RAM -> trio-pro
+    # GPU with 8GB+ VRAM or 24GB+ RAM -> largest suggestion
     if vram >= 8.0 or ram >= 24.0:
-        tier = TRIO_MODELS[5]  # trio-pro
+        tier = RECOMMENDED_MODELS[5]
         reason = (
             f"GPU VRAM {vram:.1f} GB >= 8 GB" if vram >= 8.0
             else f"RAM {ram:.1f} GB >= 24 GB"
         )
     elif ram >= 16.0:
-        tier = TRIO_MODELS[4]  # trio-max
+        tier = RECOMMENDED_MODELS[4]
         reason = f"RAM {ram:.1f} GB is in the 16-24 GB range"
     elif ram >= 12.0:
-        tier = TRIO_MODELS[3]  # trio-high
+        tier = RECOMMENDED_MODELS[3]
         reason = f"RAM {ram:.1f} GB is in the 12-16 GB range"
     elif ram >= 8.0:
-        tier = TRIO_MODELS[2]  # trio-medium
+        tier = RECOMMENDED_MODELS[2]
         reason = f"RAM {ram:.1f} GB is in the 8-12 GB range"
     elif ram >= 4.0:
-        tier = TRIO_MODELS[1]  # trio-small
+        tier = RECOMMENDED_MODELS[1]
         reason = f"RAM {ram:.1f} GB is in the 4-8 GB range"
     else:
-        tier = TRIO_MODELS[0]  # trio-nano
+        tier = RECOMMENDED_MODELS[0]
         reason = f"RAM {ram:.1f} GB < 4 GB"
 
     return {**tier, "reason": reason}

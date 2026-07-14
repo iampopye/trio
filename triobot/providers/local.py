@@ -32,27 +32,11 @@ logger = logging.getLogger(__name__)
 
 # ── Model Discovery ──────────────────────────────────────────────────────────
 
-# Known trio model filenames, in preference order per model name
-KNOWN_MODELS = {
-    "trio-nano": [
-        "trio-nano-q4_k_m.gguf", "trio-nano.gguf",
-    ],
-    "trio-small": [
-        "trio-small-q4_k_m.gguf", "trio-small.gguf",
-    ],
-    "trio-medium": [
-        "trio-medium-q4_k_m.gguf", "trio-medium.gguf",
-    ],
-    "trio-high": [
-        "trio-high-q4_k_m.gguf", "trio-high.gguf",
-    ],
-    "trio-max": [
-        "trio-max-q4_k_m.gguf", "trio-max.gguf",
-    ],
-    "trio-pro": [
-        "trio-pro-q4_k_m.gguf", "trio-pro.gguf",
-    ],
-}
+# Optional map of model name -> preferred GGUF filenames. Empty by default:
+# triobot is provider-agnostic and does not ship any bundled models. Users
+# bring their own GGUF file; discovery falls back to a glob on the model name
+# and then to any ``*.gguf`` in the search directories.
+KNOWN_MODELS: dict[str, list[str]] = {}
 
 
 def _find_gguf_model(model_name: str = "", explicit_path: str = "") -> str | None:
@@ -61,11 +45,12 @@ def _find_gguf_model(model_name: str = "", explicit_path: str = "") -> str | Non
     Search order:
         1. Explicit path from config (if provided and exists)
         2. ~/.trio/models/ directory
-        3. Project models/ directory (D:/models/trio/models/)
+        3. Project models/ directory
         4. Current working directory
 
-    For named models (trio-max, trio-nano), searches for known filenames.
-    Otherwise returns the first .gguf file found.
+    When ``model_name`` is given, first tries any preferred filenames in
+    ``KNOWN_MODELS`` then a ``<model_name>*.gguf`` glob. Otherwise returns the
+    first ``.gguf`` file found.
     """
     if explicit_path and os.path.isfile(explicit_path):
         return explicit_path
@@ -97,7 +82,7 @@ def _find_gguf_model(model_name: str = "", explicit_path: str = "") -> str | Non
                 return str(matches[0])
 
     # Last resort: find any .gguf file in search directories
-    if not model_name or model_name in ("trio-max", "trio-nano"):
+    if not model_name:
         for search_dir in search_dirs:
             if not search_dir.is_dir():
                 continue
@@ -141,7 +126,7 @@ class LocalProvider(BaseProvider):
         n_ctx:         Context window size (default 8192)
         n_gpu_layers:  GPU layers to offload (-1 = all, 0 = CPU only)
         chat_format:   Chat template format (default "chatml")
-        default_model: Model name hint for auto-detection (e.g. "trio-nano")
+        default_model: Model name hint for auto-detection (e.g. a GGUF file stem)
     """
 
     def __init__(self, config: dict[str, Any]):
@@ -150,7 +135,7 @@ class LocalProvider(BaseProvider):
         self.n_ctx = config.get("n_ctx", 8192)
         self.n_gpu_layers = config.get("n_gpu_layers", -1)
         self.chat_format = config.get("chat_format", "chatml")
-        self.default_model = config.get("default_model", "trio-nano")
+        self.default_model = config.get("default_model", "")
         self._model = None
         self._model_name = ""
         self._executor = None

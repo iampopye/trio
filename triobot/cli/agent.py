@@ -37,14 +37,14 @@ async def run_agent(message: str | None = None, no_markdown: bool = False, show_
 
     # Initialize providers
     register_all_providers()
-    provider_name = defaults.get("provider", "trio")
+    provider_name = defaults.get("provider", "ollama")
     provider_config = config.get("providers", {}).get(provider_name, {})
     provider_config["provider_name"] = provider_name
 
     # For "local" provider: auto-detect GGUF model path if not set
     if provider_name == "local":
         from triobot.providers.local import _find_gguf_model
-        model_hint = defaults.get("model", "trio-nano")
+        model_hint = defaults.get("model", "")
         if not provider_config.get("model_path"):
             detected = _find_gguf_model(model_name=model_hint)
             if detected:
@@ -101,8 +101,18 @@ async def run_agent(message: str | None = None, no_markdown: bool = False, show_
         except Exception as e:
             console.print(f"[yellow]Warning: Could not pre-load model: {e}[/yellow]")
 
-    # Create CLI channel
-    cli = CLIChannel(bus=bus)
+    # Create CLI channel — hand it the live refs the slash commands need.
+    cli = CLIChannel(
+        bus=bus,
+        config=config,
+        provider=provider,
+        sessions=sessions,
+        memory=memory,
+        tools=tools,
+        mcp_manager=mcp_manager,
+        agent=agent,
+        console=console,
+    )
     channel_manager = ChannelManager(bus)
     channel_manager.register(cli)
 
